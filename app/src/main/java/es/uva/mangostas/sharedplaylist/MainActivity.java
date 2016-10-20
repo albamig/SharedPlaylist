@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 lista.add("caca");
 
                 adapter.add("platano");
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
     }
