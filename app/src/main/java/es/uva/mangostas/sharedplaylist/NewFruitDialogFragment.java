@@ -1,5 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -24,19 +25,33 @@ public class NewFruitDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //Añadir elemento a la lista
-                        EditText edit = (EditText)getDialog().findViewById(R.id.fruit);
-                        String text = edit.getText().toString();
-                        Log.d("Fruta", text);
+                        mListener.onDialogPositiveClick(NewFruitDialogFragment.this);
                     }
                 })
                 .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         //Salir de esta bullshit
-                        NewFruitDialogFragment.this.getDialog().cancel();
+                        mListener.onDialogNegativeClick(NewFruitDialogFragment.this);
 
                     }
                 });
         return builder.create();
+    }
+
+
+    public interface NewFruitDialogListner {
+        public void onDialogPositiveClick(DialogFragment dialog);
+        public void onDialogNegativeClick(DialogFragment dialog);
+    }
+    NewFruitDialogListner mListener;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try{
+            mListener = (NewFruitDialogListner)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + "must implement the interface");
+        }
     }
 }

@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NewFruitDialogFragment.NewFruitDialogListner{
     ListView listView ;
     ArrayAdapter<String> adapter;
     @Override
@@ -30,9 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Defined Array values to show in ListView
         ArrayList<String> values = new ArrayList<String>();
-        values.add("naranja");
-        values.add("pera");
-        values.add("mandarina");
 
         // Define a new Adapter
         // First parameter - Context
@@ -82,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter.add("platano");
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();**/
-                NewFruitDialogFragment dialog = new NewFruitDialogFragment();
-                dialog.show(getFragmentManager(), "");
+                showNewFruitDialog();
 
             }
         });
@@ -109,5 +105,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    //Metodos de la interfaz del dialogo.
+
+    public void showNewFruitDialog() {
+        DialogFragment dialog = new NewFruitDialogFragment();
+        dialog.show(getFragmentManager(), "Fruta");
+    }
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        EditText edit = (EditText)dialog.getDialog().findViewById(R.id.fruit);
+        String text = edit.getText().toString();
+        adapter.add(text);
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        dialog.getDialog().cancel();
     }
 }
