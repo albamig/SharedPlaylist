@@ -1,5 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -74,12 +76,15 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<String> lista = new ArrayList<String>();
+                /**ArrayList<String> lista = new ArrayList<String>();
                 lista.add("caca");
 
                 adapter.add("platano");
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .setAction("Action", null).show();**/
+                NewFruitDialogFragment dialog = new NewFruitDialogFragment();
+                dialog.show(getFragmentManager(), "");
+
             }
         });
     }
