@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">SharedPlaylist</string>
     <string name="action_settings">Settings</string>
+    <string name="dialog_new_fruit">¿Qué fruta desea añadir?</string>
+    <string name="aceptar">Añadir</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="fruta">Fruta</string>
 </resources>

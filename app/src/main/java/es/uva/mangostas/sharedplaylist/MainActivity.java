@@ -1,5 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,12 +11,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NewFruitDialogFragment.NewFruitDialogListner{
     ListView listView ;
     ArrayAdapter<String> adapter;
     @Override
@@ -28,9 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Defined Array values to show in ListView
         ArrayList<String> values = new ArrayList<String>();
-        values.add("naranja");
-        values.add("pera");
-        values.add("mandarina");
 
         // Define a new Adapter
         // First parameter - Context
@@ -74,10 +73,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<String> lista = new ArrayList<String>();
-                lista.add("caca");
-
-                adapter.add("platano");
+                showNewFruitDialog();
             }
         });
     }
@@ -102,5 +98,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    //Metodos de la interfaz del dialogo.
+
+    public void showNewFruitDialog() {
+        DialogFragment dialog = new NewFruitDialogFragment();
+        dialog.show(getFragmentManager(), "Fruta");
+    }
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        EditText edit = (EditText)dialog.getDialog().findViewById(R.id.fruit);
+        String text = edit.getText().toString();
+        adapter.add(text);
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        dialog.getDialog().cancel();
     }
 }
