@@ -73,14 +73,7 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**ArrayList<String> lista = new ArrayList<String>();
-                lista.add("caca");
-
-                adapter.add("platano");
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();**/
                 showNewFruitDialog();
-
             }
         });
     }
