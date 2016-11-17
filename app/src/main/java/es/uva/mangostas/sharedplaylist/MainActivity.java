@@ -3,10 +3,7 @@ package es.uva.mangostas.sharedplaylist;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -28,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
     ArrayAdapter<String> adapter;
     private YouTubePlayer youTubePlayer;
     private ArrayList<String> playList;
+    private YouTubePlayerFragment youTubePlayerFragmen;
+    private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk"; //SERGIO DIJO ALGO DEL MANIFIESTO (IGUAL HAY QUE MOVER ESTO)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         playList = new ArrayList<>();
 
         //CANCIONES DE PRUEBA
-        playList.add("OBXRJgSd-aU");
-        playList.add("0rEVwwB3Iw0");
+        //playList.add("OBXRJgSd-aU");
+        //playList.add("0rEVwwB3Iw0");
 
 
         // Define a new Adapter
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
 
-        adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, playList);
 
 
@@ -93,9 +91,14 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
             }
         });
 
-        //Iniciamos el hilo del controlador de Youtube
-        YouTubePlayerFragment fragment = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtubeFragment);
-        fragment.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
+        //Inicializamos el fragmento
+        youTubePlayerFragmen = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtubeFragment);
+        //Lo escondemos hasta que le llegue algo que reproducir
+        getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+
+        //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
+        //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
+
     }
 
     @Override
@@ -126,16 +129,25 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         dialog.show(getFragmentManager(), "Fruta");
     }
 
+    //Si quedan videos en la playList reproduce el primero
     public void nextVideo(){
 
-        if(playList.size()!=0) {
+        //comprobamos que hay videos en la lista
+        if(playList.size()>0) {
 
+            //cogemos el primer video y lo eliminamos de la lista
             String video = adapter.getItem(0);
             adapter.remove(video);
+            //cargamos el video
             youTubePlayer.loadVideo(video);
 
         } else {
             //No quedan videos por reproducir!!
+            youTubePlayer.release();
+            //Escondemos el fragmento
+            getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+
+
         }
     }
 
@@ -143,7 +155,16 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
     public void onDialogPositiveClick(DialogFragment dialog) {
         EditText edit = (EditText) dialog.getDialog().findViewById(R.id.fruit);
         String text = edit.getText().toString();
-        adapter.add(text);
+        //Si el adaptador esta vacio habria que iniciar el reproductor
+        if(adapter.isEmpty()){
+            adapter.add(text);
+            getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
+            youTubePlayerFragmen.initialize(APIKEY, this);
+        } else {
+            adapter.add(text);
+        }
+
+
     }
 
     @Override
@@ -151,12 +172,14 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         dialog.getDialog().cancel();
     }
 
-
+    //se llama a este metodo al inicializar el reproductor con exito
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
         if (!b) {
             this.youTubePlayer=youTubePlayer;
+            //le ponemos un controlador de cambios de estado al reproductor
             youTubePlayer.setPlayerStateChangeListener(this);
+            //reproducimos el primer video
             nextVideo();
         }
     }
@@ -189,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
 
     @Override
     public void onVideoEnded() {
+        //cuando se acaba un video reproducimos el siguiente
         nextVideo();
     }
 
