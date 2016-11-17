@@ -51,6 +51,7 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintHorizontal_bias="0.0" />
 
+    <!-- Fragmento del reproductor de Youtube -->
     <fragment
         tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="parent"

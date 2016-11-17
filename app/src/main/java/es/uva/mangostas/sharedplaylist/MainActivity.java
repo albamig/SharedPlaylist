@@ -15,6 +15,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+
+import com.google.android.youtube.player.YouTubePlayerFragment;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NewFruitDialogFragment.NewFruitDialogListner{
@@ -28,8 +31,12 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
 
-        // Defined Array values to show in ListView
-        ArrayList<String> values = new ArrayList<String>();
+        // Defined Array playList to show in ListView
+        ArrayList<String> playList = new ArrayList<>();
+
+        //CANCIONES DE PRUEBA
+        playList.add("OBXRJgSd-aU");
+        playList.add("0rEVwwB3Iw0");
 
         // Define a new Adapter
         // First parameter - Context
@@ -38,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         // Forth - the Array of data
 
         adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+                android.R.layout.simple_list_item_1, android.R.id.text1, playList);
 
 
         // Assign adapter to ListView
@@ -76,6 +83,12 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
                 showNewFruitDialog();
             }
         });
+
+        //Iniciamos el hilo del controlador de Youtube
+        YouTubePlayerFragment fragment=(YouTubePlayerFragment)getFragmentManager().findFragmentById(R.id.youtubeFragment);
+        YoutubePlayerControler youtubePlayerControler = new YoutubePlayerControler(fragment, playList);
+        youtubePlayerControler.start();
+
     }
 
     @Override
@@ -116,4 +129,6 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
     public void onDialogNegativeClick(DialogFragment dialog) {
         dialog.getDialog().cancel();
     }
+
+
 }
