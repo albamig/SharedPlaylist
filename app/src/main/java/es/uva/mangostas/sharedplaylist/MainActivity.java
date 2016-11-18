@@ -24,6 +24,7 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 public class MainActivity extends AppCompatActivity implements  NewFruitDialogFragment.NewFruitDialogListner, YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener {
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
         //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
         //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
+        adapter.add(new ShpSong("Melendi cream"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
 
         youTubePlayerFragmen.initialize(APIKEY, this);
@@ -154,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
             if(adapter.getItem(0) instanceof ShpVideo) {
                 if(!isIni) {
                     youTubePlayerFragmen.initialize(APIKEY, this);
-                    adapter.remove(adapter.getItem(0));
                     isIni = true;
                 } else {
                     yTPlayer.loadVideo(((ShpVideo) adapter.getItem(0)).getYtCode());
@@ -162,7 +163,13 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
                 }
 
             } else {
-                Toast.makeText(getApplicationContext(), "Esta es de SANTOS", Toast.LENGTH_LONG).show();
+                yTPlayer.release();
+                isIni = false;
+                ShpSong song;
+                song = (ShpSong)adapter.getItem(0);
+                Toast.makeText(getApplicationContext(), "Esta es de SANTOS:" + song.getPath(), Toast.LENGTH_LONG).show();
+                adapter.remove(adapter.getItem(0));
+                nextSong();
             }
         } else {
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
@@ -256,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
             //reproducimos el primer video
             ShpVideo video;
             video = (ShpVideo)adapter.getItem(0);
+            adapter.remove(video);
             yTPlayer.loadVideo(video.getYtCode());
         }
     }
