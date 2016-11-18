@@ -2,8 +2,10 @@ package es.uva.mangostas.sharedplaylist;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,12 +21,16 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements NewFruitDialogFragment.NewFruitDialogListner, YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener {
+import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
+
+public class MainActivity extends AppCompatActivity implements  NewFruitDialogFragment.NewFruitDialogListner, YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener {
     ListView listView;
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<ShpMediaObject> adapter;
     private YouTubePlayer youTubePlayer;
-    private ArrayList<String> playList;
+    private ArrayList<ShpMediaObject> playList;
     private YouTubePlayerFragment youTubePlayerFragmen;
+    private ShpPlayer shpPlayerFragment;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk"; //SERGIO DIJO ALGO DEL MANIFIESTO (IGUAL HAY QUE MOVER ESTO)
 
     @Override
@@ -32,17 +38,13 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
 
         // Defined Array playList to show in ListView
-        playList = new ArrayList<>();
+        playList = new ArrayList<ShpMediaObject>();
 
-        //CANCIONES DE PRUEBA
-        //playList.add("OBXRJgSd-aU");
-        //playList.add("0rEVwwB3Iw0");
+        ;
 
 
         // Define a new Adapter
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
 
-        adapter = new ArrayAdapter<>(this,
+        adapter = new ArrayAdapter<ShpMediaObject>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, playList);
 
 
@@ -93,11 +95,19 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
 
         //Inicializamos el fragmento
         youTubePlayerFragmen = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtubeFragment);
+        //shpPlayerFragment = getFragmentManager().findFragmentById(R.id.youtubeFragment);
+
         //Lo escondemos hasta que le llegue algo que reproducir
         getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+        //getFragmentManager().beginTransaction().hide(shpPlayerFragment).commit();
 
         //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
         //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
+        adapter.add(new ShpVideo("OBXRJgSd-aU"));
+        adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+
+        nextVideo();
+
 
     }
 
@@ -133,27 +143,40 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
     public void nextVideo(){
 
         //comprobamos que hay videos en la lista
-        if(playList.size()>0) {
-
-            //cogemos el primer video y lo eliminamos de la lista
-            String video = adapter.getItem(0);
-            adapter.remove(video);
-            //cargamos el video
-            youTubePlayer.loadVideo(video);
-
+        if(!adapter.isEmpty()) {
+            //Comprobamos si el objeto es un video de YT
+            if(adapter.getItem(0) instanceof ShpVideo) {
+                //Guardamos el objeto y lo eliminamos de la lista
+                ShpVideo video = (ShpVideo)adapter.getItem(0);
+                adapter.remove(video);
+                getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
+                youTubePlayerFragmen.initialize(APIKEY, this);
+                Log.d("LLEGA:" , "Despues de Inicialize");
+                youTubePlayer.loadVideo(video.getYtCode());
+            } else {
+                //Llamar al de SANTOS
+            }
         } else {
             //No quedan videos por reproducir!!
             youTubePlayer.release();
             //Escondemos el fragmento
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+            getFragmentManager().beginTransaction().hide(shpPlayerFragment).commit();
 
 
         }
     }
 
+    /**
+     * Metodo para añadir elementos a la lista
+     * @param dialog
+     */
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        EditText edit = (EditText) dialog.getDialog().findViewById(R.id.fruit);
+
+        //CANCIONES DE PRUEBA
+
+        /**EditText edit = (EditText) dialog.getDialog().findViewById(R.id.fruit);
         String text = edit.getText().toString();
         //Si el adaptador esta vacio habria que iniciar el reproductor
         if(adapter.isEmpty()){
@@ -162,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
             youTubePlayerFragmen.initialize(APIKEY, this);
         } else {
             adapter.add(text);
-        }
+        }*/
 
 
     }
@@ -180,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements NewFruitDialogFra
             //le ponemos un controlador de cambios de estado al reproductor
             youTubePlayer.setPlayerStateChangeListener(this);
             //reproducimos el primer video
-            nextVideo();
         }
     }
 
