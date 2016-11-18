@@ -1,10 +1,12 @@
 package es.uva.mangostas.sharedplaylist;
 
 import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.BoringLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -27,10 +29,12 @@ import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 public class MainActivity extends AppCompatActivity implements  NewFruitDialogFragment.NewFruitDialogListner, YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener {
     ListView listView;
     ArrayAdapter<ShpMediaObject> adapter;
-    private YouTubePlayer youTubePlayer;
+    private YouTubePlayer yTPlayer;
     private ArrayList<ShpMediaObject> playList;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private ShpPlayer shpPlayerFragment;
+    private ShpMediaObject now;
+    private Boolean isIni = false;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk"; //SERGIO DIJO ALGO DEL MANIFIESTO (IGUAL HAY QUE MOVER ESTO)
 
     @Override
@@ -95,18 +99,20 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
 
         //Inicializamos el fragmento
         youTubePlayerFragmen = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtubeFragment);
+
         //shpPlayerFragment = getFragmentManager().findFragmentById(R.id.youtubeFragment);
 
         //Lo escondemos hasta que le llegue algo que reproducir
-        getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+        //getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
         //getFragmentManager().beginTransaction().hide(shpPlayerFragment).commit();
+
 
         //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
         //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
 
-        nextVideo();
+        youTubePlayerFragmen.initialize(APIKEY, this);
 
 
     }
@@ -139,33 +145,65 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
         dialog.show(getFragmentManager(), "Fruta");
     }
 
+    /**
+     * Este metodo llama a los reprouctores depoendiendo del tipo
+     * de cancion que hay en la primera posicion de la lista.
+     */
+    public void nextSong() {
+        if(!adapter.isEmpty()) {
+            if(adapter.getItem(0) instanceof ShpVideo) {
+                if(!isIni) {
+                    youTubePlayerFragmen.initialize(APIKEY, this);
+                    adapter.remove(adapter.getItem(0));
+                    isIni = true;
+                } else {
+                    yTPlayer.loadVideo(((ShpVideo) adapter.getItem(0)).getYtCode());
+                    adapter.remove(adapter.getItem(0));
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Esta es de SANTOS", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+            Toast.makeText(getApplicationContext(), "No queda nada", Toast.LENGTH_LONG).show();
+        }
+    }
+
     //Si quedan videos en la playList reproduce el primero
-    public void nextVideo(){
+    /**public void nextVideo(){
+
 
         //comprobamos que hay videos en la lista
         if(!adapter.isEmpty()) {
             //Comprobamos si el objeto es un video de YT
             if(adapter.getItem(0) instanceof ShpVideo) {
                 //Guardamos el objeto y lo eliminamos de la lista
-                ShpVideo video = (ShpVideo)adapter.getItem(0);
-                adapter.remove(video);
-                getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
-                youTubePlayerFragmen.initialize(APIKEY, this);
+                now = (ShpVideo)adapter.getItem(0);
+                adapter.remove(now);
+                if(!isIni) {
+                    youTubePlayerFragmen.initialize(APIKEY, this);
+                    isIni = true;
+                } else {
+                    //playSongOrVideo(true, now);
+                }
+               // getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
                 Log.d("LLEGA:" , "Despues de Inicialize");
-                youTubePlayer.loadVideo(video.getYtCode());
+               //youTubePlayer.loadVideo(video.getYtCode());
             } else {
                 //Llamar al de SANTOS
             }
         } else {
             //No quedan videos por reproducir!!
-            youTubePlayer.release();
+            //yTPlayer.release();
             //Escondemos el fragmento
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+            isIni = false;
             getFragmentManager().beginTransaction().hide(shpPlayerFragment).commit();
 
 
         }
-    }
+    }*/
 
     /**
      * Metodo para añadir elementos a la lista
@@ -190,6 +228,16 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
 
     }
 
+    /**public void playSongOrVideo(Boolean songOrVideo, ShpMediaObject item) {
+        if(songOrVideo) {
+            ShpVideo video = (ShpVideo)item;
+            yTPlayer.loadVideo(video.getYtCode());
+        } else {
+            Toast.makeText(getApplicationContext(), "Este es de Santos", Toast.LENGTH_LONG).show();
+        }
+
+    }*/
+
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         dialog.getDialog().cancel();
@@ -199,10 +247,16 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
         if (!b) {
-            this.youTubePlayer=youTubePlayer;
+            if(youTubePlayer != null) {
+                this.yTPlayer=youTubePlayer;
+            }
+
             //le ponemos un controlador de cambios de estado al reproductor
-            youTubePlayer.setPlayerStateChangeListener(this);
+            yTPlayer.setPlayerStateChangeListener(this);
             //reproducimos el primer video
+            ShpVideo video;
+            video = (ShpVideo)adapter.getItem(0);
+            yTPlayer.loadVideo(video.getYtCode());
         }
     }
 
@@ -235,7 +289,8 @@ public class MainActivity extends AppCompatActivity implements  NewFruitDialogFr
     @Override
     public void onVideoEnded() {
         //cuando se acaba un video reproducimos el siguiente
-        nextVideo();
+        Toast.makeText(getApplicationContext(), "Pasando de tema", Toast.LENGTH_LONG).show();
+        nextSong();
     }
 
     @Override
