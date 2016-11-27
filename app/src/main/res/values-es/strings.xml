@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SharedPlaylist</string>
+    <string name="aceptar">Añadir</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="make_list">Crear lista</string>
+    <string name="fruta">Fruta</string>
+    <string name="search_list">Buscar lista</string>
+</resources>

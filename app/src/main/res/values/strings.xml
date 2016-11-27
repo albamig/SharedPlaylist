@@ -2,7 +2,9 @@
     <string name="app_name">SharedPlaylist</string>
     <string name="action_settings">Settings</string>
     <string name="dialog_new_fruit">¿Qué fruta desea añadir?</string>
-    <string name="aceptar">Añadir</string>
-    <string name="cancelar">Cancelar</string>
-    <string name="fruta">Fruta</string>
+    <string name="aceptar">Add</string>
+    <string name="cancelar">Cancel</string>
+    <string name="fruta">Fruit</string>
+    <string name="make_list">Make list</string>
+    <string name="search_list">Search list</string>
 </resources>
