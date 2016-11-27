@@ -42,9 +42,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         listView = (ListView) findViewById(R.id.listView);
 
         // Defined Array playList to show in ListView
-        playList = new ArrayList<ShpMediaObject>();
-
-        ;
+        playList = new ArrayList<>();
 
 
         // Define a new Adapter
@@ -53,8 +51,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
 
-        adapter = new ArrayAdapter<ShpMediaObject>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, playList);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                android.R.id.text1, playList);
 
 
         // Assign adapter to ListView
