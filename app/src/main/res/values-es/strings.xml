@@ -7,4 +7,6 @@
     <string name="make_list">Crear lista</string>
     <string name="fruta">Fruta</string>
     <string name="search_list">Buscar lista</string>
+    <string name="youTube">youTube</string>
+    <string name="local">lcal</string>
 </resources>

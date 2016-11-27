@@ -2,6 +2,7 @@ package es.uva.mangostas.sharedplaylist;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -72,7 +73,7 @@ public class ClientActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "En desarrollo...", Toast.LENGTH_LONG).show();
+                //Mostrar el dialogo de la eleccion
             }
         });
     }
