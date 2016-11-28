@@ -6,10 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * Created by oscar on 27/11/16.
- */
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
