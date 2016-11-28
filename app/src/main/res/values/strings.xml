@@ -9,4 +9,7 @@
     <string name="search_list">Search list</string>
     <string name="youTube">youTube</string>
     <string name="local">lcal</string>
+
+    <string name="menu_yt_tit">YouTube</string>
+    <string name="menu_fs_tit">Local</string>
 </resources>

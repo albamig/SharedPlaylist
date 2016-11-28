@@ -18,6 +18,7 @@ public class ClientActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;
     private ArrayAdapter<ShpMediaObject> adapter;
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
