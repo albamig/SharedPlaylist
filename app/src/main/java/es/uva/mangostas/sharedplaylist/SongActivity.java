@@ -82,7 +82,6 @@ public class SongActivity extends AppCompatActivity {
             }
         });
         lista = (ListView) findViewById(R.id.listView_lista);
-        PickFiler();
 
     }
     //Recibe como argumnto un PATH y se encarga de coger todos los datos necesarios sobre los ficheros que contiene ese directorio y guardarles en las variables globales
