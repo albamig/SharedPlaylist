@@ -1,7 +1,9 @@
 package es.uva.mangostas.sharedplaylist;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,20 +12,25 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener {
+public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
     private ListView listView;
+    private MediaPlayer myMediaPlayer;
+    private Handler handler;
+    private MediaController myMediaController;
     private ArrayAdapter<ShpMediaObject> adapter;
     private YouTubePlayer yTPlayer;
     private ArrayList<ShpMediaObject> playList;
@@ -43,6 +50,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
+
+        //Prep the media player
+        prepMediaPlayer();
 
 
         // Define a new Adapter
@@ -104,10 +114,36 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
-        adapter.add(new ShpSong("Melendi cream"));
+        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
 
         nextSong();
 
+
+    }
+
+    /**
+     * Metodo para preparar el media player para reproducir canciones
+     */
+    private void prepMediaPlayer() {
+        myMediaPlayer = new MediaPlayer();
+        myMediaController = new MediaController(this);
+        myMediaController.setMediaPlayer(this);
+        myMediaController.setAnchorView(findViewById(R.id.mediaPlayer));
+        handler = new Handler();
+
+        myMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer player) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        myMediaController.setEnabled(true);
+                        myMediaController.show();
+                        myMediaPlayer.start();
+                    }
+                });
+            }
+        });
 
     }
 
@@ -158,14 +194,29 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 isIni = false;
                 ShpSong song;
                 song = (ShpSong)adapter.getItem(0);
-                Intent intent = new Intent(ServerActivity.this, SongActivity.class);
+                try{
+                    myMediaPlayer.setDataSource(song.getPath());
+                    myMediaPlayer.prepare();
+                    myMediaPlayer.start();
+
+                    myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            myMediaPlayer.reset();
+                            nextSong();
+
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                /*Intent intent = new Intent(ServerActivity.this, SongActivity.class);
                 startActivity(intent);
-                adapter.remove(adapter.getItem(0));
-                nextSong();
+                adapter.remove(adapter.getItem(0));*/
             }
         } else {
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción de YouTube", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -186,6 +237,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             yTPlayer.loadVideo(video.getYtCode());
         }
     }
+
+
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
 
@@ -215,5 +268,62 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
 
+    }
+
+
+    //Metodos para el control del reproductor local
+    @Override
+    public void start() {
+        myMediaPlayer.start();
+    }
+
+    @Override
+    public void pause() {
+        myMediaPlayer.pause();
+    }
+
+    @Override
+    public int getDuration() {
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int pos) {
+
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
     }
 }
