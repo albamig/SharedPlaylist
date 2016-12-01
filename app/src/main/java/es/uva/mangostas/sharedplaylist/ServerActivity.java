@@ -1,7 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -22,20 +21,12 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchListResponse;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
@@ -100,7 +91,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 // React to the search term changing
                 // Called after it has updated results
 
-                Log.d("ytSearch", "Empiezo la busqueda");
+/*                Log.d("ytSearch", "Empiezo la busqueda");
 
                 try {
                     SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
@@ -128,14 +119,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                 SearchListResponse searchResponse = searchYt.execute();
                                 Log.d("testYT", "He realizado la consulta con exito");
 
-                                /*List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
-                                Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();*/
+                                *//*List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
+                                Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();*//*
 
                                 Log.d("testYT", "Procesada la petición. ¡Tengo la info!");
 
                                 return searchResponse;
 
-    /*                            while (iteratorSearchResults.hasNext()) {
+    *//*                            while (iteratorSearchResults.hasNext()) {
                                     com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
                                     //ResourceId rId = singleVideo.getId();
 
@@ -143,7 +134,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                     search.addSearchable(result);
 
                                    // Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
-                                }*/
+                                }*//*
                             } catch (IOException e) {
                                 Log.d("testYT", "Estoy tirando la IOException");
                             }
@@ -170,6 +161,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
+                }*/
+
+                for (int x = 0; x < 10; x++) {
+                    SearchResult option = new SearchResult("Result "
+                            + Integer.toString(x));
+                    search.addSearchable(option);
                 }
             }
 
