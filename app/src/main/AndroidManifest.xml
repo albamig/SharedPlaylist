@@ -35,7 +35,7 @@
         <activity
             android:name=".ClientActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
 
         </activity>
         <activity
@@ -49,6 +49,11 @@
             android:label="Reproductor">
 
         </activity>
+        <activity
+            android:name=".BluetoothService.DeviceListActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="select_device"
+            android:theme="@android:style/Theme.Holo.Dialog"/>
 
     </application>
 

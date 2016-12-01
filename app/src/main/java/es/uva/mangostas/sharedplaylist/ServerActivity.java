@@ -60,8 +60,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private Toolbar toolbar;
     private FloatingActionsMenu fab;
     private FloatingActionButton fab_yt;
-    private ShpPlayer shpPlayerFragment;
-    private ShpMediaObject now;
     //Nombre del dispositivo conectado
     String mConnectedDevice = null;
 
