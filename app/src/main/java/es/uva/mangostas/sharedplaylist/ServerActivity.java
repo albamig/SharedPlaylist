@@ -4,7 +4,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -74,7 +74,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         toolbar = (Toolbar) findViewById(R.id.appBarLayout);
         this.setSupportActionBar(toolbar);
 
-        fab = (FloatingActionsMenu) findViewById(R.id.menu_fab) ;
+        fab = (FloatingActionsMenu) findViewById(R.id.menu_fab);
         fab_yt = (FloatingActionButton) findViewById(R.id.action_yt);
         fab_yt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,7 +250,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
 
-        //nextSong();
+        nextSong();
 
 
     }
