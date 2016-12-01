@@ -1,12 +1,16 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -68,7 +72,7 @@ public class Reproductive extends AppCompatActivity implements MediaController.M
     private void playAudio() {
         mediaController = new MediaController(this);
         mediaController.setMediaPlayer(Reproductive.this);
-        mediaController.setAnchorView(findViewById(R.id.audioView));
+        mediaController.setAnchorView(findViewById(R.id.mediaPlayer));
         handler = new Handler();
         siguienteCancion(FilePath);
 
@@ -81,6 +85,7 @@ public class Reproductive extends AppCompatActivity implements MediaController.M
         pathAReproducir=nextSong(path);
         if(pathAReproducir!=null) {
             try {
+                Log.d("PATH: ", pathAReproducir);
                 mediaPlayer.setDataSource(pathAReproducir);
                 mediaPlayer.prepare();
                 mediaPlayer.start();

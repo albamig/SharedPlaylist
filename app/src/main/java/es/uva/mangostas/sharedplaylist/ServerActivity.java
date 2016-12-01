@@ -1,20 +1,23 @@
 package es.uva.mangostas.sharedplaylist;
 
-import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -38,30 +41,29 @@ import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener {
+public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
     private ListView listView;
     public SearchBox search;
     private Toolbar toolbar;
     private FloatingActionsMenu fab;
     private FloatingActionButton fab_yt;
-
-    private ArrayAdapter<ShpMediaObject> adapter;
-    private YouTubePlayer yTPlayer;
-    private ArrayList<ShpMediaObject> playList;
     private ShpPlayer shpPlayerFragment;
     private ShpMediaObject now;
-    private Boolean isIni = false;
-
     /**
      * Define a global instance of a Youtube object, which will be used
      * to make YouTube Data API requests.
      */
     private static YouTube youtube;
-    private YouTubePlayerFragment youTubePlayerFragmen;
-
-    private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk"; //SERGIO DIJO ALGO DEL MANIFIESTO (IGUAL HAY QUE MOVER ESTO)
     private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
-
+    private MediaPlayer myMediaPlayer;
+    private Handler handler;
+    private MediaController myMediaController;
+    private ArrayAdapter<ShpMediaObject> adapter;
+    private YouTubePlayer yTPlayer;
+    private ArrayList<ShpMediaObject> playList;
+    private YouTubePlayerFragment youTubePlayerFragmen;
+    private Boolean isIni = false;
+    private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -191,9 +193,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
-
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
+
+        //Prep the media player
+        prepMediaPlayer();
 
 
         // Define a new Adapter
@@ -243,8 +247,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
         //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
+        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
-        adapter.add(new ShpSong("Melendi cream"));
 
         //nextSong();
 
@@ -257,6 +261,32 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     protected void closeSearch() {
         search.hideCircularly(this);
+    }
+
+    /**
+     * Metodo para preparar el media player para reproducir canciones
+     */
+    private void prepMediaPlayer() {
+        myMediaPlayer = new MediaPlayer();
+        myMediaController = new MediaController(this);
+        myMediaController.setMediaPlayer(this);
+        myMediaController.setAnchorView(findViewById(R.id.mediaPlayer));
+        handler = new Handler();
+
+        myMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer player) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        myMediaController.setEnabled(true);
+                        myMediaController.show(0);
+                        myMediaPlayer.start();
+                    }
+                });
+            }
+        });
+
     }
 
     @Override
@@ -306,14 +336,31 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 isIni = false;
                 ShpSong song;
                 song = (ShpSong)adapter.getItem(0);
-                Intent intent = new Intent(ServerActivity.this, SongActivity.class);
+                try{
+                    myMediaPlayer.setDataSource(song.getPath());
+                    myMediaPlayer.prepare();
+                    myMediaPlayer.start();
+
+                    myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            myMediaPlayer.reset();
+                            myMediaController.hide();
+                            adapter.remove(adapter.getItem(0));
+                            nextSong();
+
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                /*Intent intent = new Intent(ServerActivity.this, SongActivity.class);
                 startActivity(intent);
-                adapter.remove(adapter.getItem(0));
-                nextSong();
+                adapter.remove(adapter.getItem(0));*/
             }
         } else {
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción de YouTube", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -330,10 +377,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             //reproducimos el primer video
             ShpVideo video;
             video = (ShpVideo)adapter.getItem(0);
-            adapter.remove(video);
             yTPlayer.loadVideo(video.getYtCode());
         }
     }
+
+
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
 
@@ -358,10 +406,76 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     public void onVideoEnded() {
         //cuando se acaba un video reproducimos el siguiente
         //Toast.makeText(getApplicationContext(), "Cambiando de tema...", Toast.LENGTH_LONG).show();
+        adapter.remove(adapter.getItem(0));
         nextSong();
     }
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
 
     }
+
+
+    //Metodos para el control del reproductor local
+    @Override
+    public void start() {
+        myMediaPlayer.start();
+    }
+
+    @Override
+    public void pause() {
+        myMediaPlayer.pause();
+    }
+
+    @Override
+    public int getDuration() {
+        return myMediaPlayer.getDuration();
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return myMediaPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public void seekTo(int pos) {
+        myMediaPlayer.seekTo(pos);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return myMediaPlayer.isPlaying();
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        int porcentage = (myMediaPlayer.getCurrentPosition() * 100) / myMediaPlayer.getDuration();
+        return porcentage;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        myMediaController.show(0);
+        return true;
+    }
 }
+

@@ -7,8 +7,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/mediaPlayer"
     tools:context="es.uva.mangostas.sharedplaylist.ServerActivity">
 
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@mipmap/cd"
+        tools:layout_editor_absoluteX="8dp"
+        android:id="@+id/actualSong"
+        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/appBarLayout"
@@ -25,21 +35,6 @@
         android:layout_marginTop="8dp"
         app:layout_constraintHorizontal_bias="1.0" />
 
-    <!-- Fragmento del reproductor de Youtube -->
-    <fragment
-        android:name="com.google.android.youtube.player.YouTubePlayerFragment"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/youtubeFragment"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/listView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="1.0" />
 
     <!-- http://www.hermosaprogramacion.com/2016/02/floating-action-button-android/ -->
     <com.getbase.floatingactionbutton.FloatingActionsMenu
@@ -103,6 +98,22 @@
         app:layout_constraintBottom_toTopOf="@+id/youtubeFragment"
         android:layout_marginBottom="16dp"
         app:layout_constraintHorizontal_bias="0.0" />
+
+    <!-- Fragmento del reproductor de Youtube -->
+    <fragment
+        android:name="com.google.android.youtube.player.YouTubePlayerFragment"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/youtubeFragment"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </android.support.constraint.ConstraintLayout>
