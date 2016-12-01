@@ -6,10 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * Created by oscar on 27/11/16.
- */
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
@@ -26,8 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-
+        switch (view.getId()) {
             case R.id.buttonServer :
                 startActivity(new Intent(this, ServerActivity.class));
                 break;
