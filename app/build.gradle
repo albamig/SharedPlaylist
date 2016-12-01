@@ -21,6 +21,9 @@ android {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
@@ -52,4 +55,7 @@ dependencies {
 
     // FAB Speed Dial
     compile 'com.getbase:floatingactionbutton:1.10.1'
+
+    // Search bar
+    compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
 }
