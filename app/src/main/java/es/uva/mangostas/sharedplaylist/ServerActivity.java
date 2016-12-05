@@ -31,7 +31,16 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -244,16 +253,78 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
         //getFragmentManager().beginTransaction().hide(shpPlayerFragment).commit();
 
-        //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
-        //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
-        adapter.add(new ShpVideo("OBXRJgSd-aU"));
-        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-        adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+        File appState = new File(getCacheDir(),"appState");
+        if(appState.exists()) {
+            //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
+            //youTubePlayerFragmen.initialize("AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk", this);
+            adapter.add(new ShpVideo("OBXRJgSd-aU"));
+            adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+            //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+            adapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3"));
+            adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+        }
 
-        nextSong();
 
 
     }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+
+        //Guardar lista de reproduccion
+        File appState = new File(getCacheDir(),"appState");
+        try {
+            FileWriter fw = new FileWriter(appState);
+            PrintWriter pw = new PrintWriter(fw);
+            for(int i = 0; i< playList.size(); i++){
+                if(playList.get(i) instanceof ShpVideo){
+                    pw.print("V"+((ShpVideo) playList.get(i)).getYtCode());
+                } else {
+                    pw.print(((ShpSong) playList.get(i)).getPath());
+                }
+            }
+            fw.close();
+        } catch (IOException e) {
+            Log.e("ERROR","error reading file", e);
+        }
+
+    }
+
+   protected void onResume(){
+       super.onResume();
+
+       File appState = new File(getCacheDir(),"appState");
+       //Recuperar lista
+       if(appState.exists()) {
+
+
+           try {
+                FileReader fr = new FileReader(appState);
+                BufferedReader br = new BufferedReader(fr);
+                // Lectura del fichero
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    if (linea.substring(0, 1) == "V") {
+                        adapter.add(new ShpVideo(linea.substring(1)));
+                    } else {
+                        adapter.add(new ShpSong(linea));
+                    }
+                }
+                fr.close();
+           } catch (FileNotFoundException e) {
+                Log.e("ERROR", "file not found", e);
+           } catch (IOException e) {
+                Log.e("ERROR", "error writing file", e);
+           }
+           appState.delete();
+
+
+       }
+
+       nextSong();
+    }
+
 
     private void browseOnYoutubeByTerm() {
         search.revealFromMenuItem(R.id.action_yt, this);
@@ -477,5 +548,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         myMediaController.show(0);
         return true;
     }
+
+
 }
 
