@@ -3,10 +3,8 @@ package es.uva.mangostas.sharedplaylist;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -17,13 +15,12 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.api.services.youtube.YouTube;
-import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +31,6 @@ import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
     private ListView listView;
-    public SearchBox search;
     private Toolbar toolbar;
     private FloatingActionsMenu fab;
     private FloatingActionButton fab_yt;
@@ -61,132 +57,131 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server);
 
-        search = (SearchBox) findViewById(R.id.searchbox);
         toolbar = (Toolbar) findViewById(R.id.appBarLayout);
         this.setSupportActionBar(toolbar);
 
         fab = (FloatingActionsMenu) findViewById(R.id.menu_fab) ;
         fab_yt = (FloatingActionButton) findViewById(R.id.action_yt);
-        fab_yt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                browseOnYoutubeByTerm();
-            }
-        });
+//        fab_yt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                browseOnYoutubeByTerm();
+//            }
+//        });
 
-        search.setSearchListener(new SearchBox.SearchListener() {
-
-            @Override
-            public void onSearchOpened() {
-                fab.collapse();
-            }
-
-            @Override
-            public void onSearchClosed() {
-                closeSearch();
-            }
-
-            @Override
-            public void onSearchTermChanged(final String term) {
-                // React to the search term changing
-                // Called after it has updated results
-
-/*                Log.d("ytSearch", "Empiezo la busqueda");
-
-                try {
-                    SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
-                        @Override
-                        protected SearchListResponse doInBackground(Void... voids) {
-
-                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-                                    new HttpRequestInitializer() {
-                                        public void initialize(HttpRequest request) throws IOException {
-                                        }
-                                    }).setApplicationName("ytst-150316")
-                                    .build();
-
-                            Log.d("testYT", "Inicializado el YouTube");
-
-                            try {
-                                YouTube.Search.List searchYt = youtube.search().list("id,snippet");
-                                searchYt.setKey(APIKEY);
-                                searchYt.setQ(term);
-                                searchYt.setType("video");
-                                searchYt.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-                                searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-
-                                Log.d("testYT", "Metida la info al objeto de consulta");
-                                SearchListResponse searchResponse = searchYt.execute();
-                                Log.d("testYT", "He realizado la consulta con exito");
-
-                                *//*List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
-                                Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();*//*
-
-                                Log.d("testYT", "Procesada la petición. ¡Tengo la info!");
-
-                                return searchResponse;
-
-    *//*                            while (iteratorSearchResults.hasNext()) {
-                                    com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
-                                    //ResourceId rId = singleVideo.getId();
-
-                                    SearchResult result = new SearchResult(singleVideo.getSnippet().getTitle());
-                                    search.addSearchable(result);
-
-                                   // Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
-                                }*//*
-                            } catch (IOException e) {
-                                Log.d("testYT", "Estoy tirando la IOException");
-                            }
-
-                            return null;
-                        }
-
-                    }.execute((Void) null).get();
-
-                    List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
-                    Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();
-
-                    while (iteratorSearchResults.hasNext()) {
-                        com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
-                        //ResourceId rId = singleVideo.getId();
-
-                        SearchResult result = new SearchResult(singleVideo.getSnippet().getTitle());
-                        search.addSearchable(result);
-
-                        Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
-                    }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }*/
-
-                for (int x = 0; x < 10; x++) {
-                    SearchResult option = new SearchResult("Result "
-                            + Integer.toString(x));
-                    search.addSearchable(option);
-                }
-            }
-
-            @Override
-            public void onSearch(final String searchTerm) {
-
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-                //React to result being clicked
-                Log.d("ytSearch", "Result");
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
-        });
+//        search.setSearchListener(new SearchBox.SearchListener() {
+//
+//            @Override
+//            public void onSearchOpened() {
+//                fab.collapse();
+//            }
+//
+//            @Override
+//            public void onSearchClosed() {
+//                closeSearch();
+//            }
+//
+//            @Override
+//            public void onSearchTermChanged(final String term) {
+//                // React to the search term changing
+//                // Called after it has updated results
+//
+///*                Log.d("ytSearch", "Empiezo la busqueda");
+//
+//                try {
+//                    SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
+//                        @Override
+//                        protected SearchListResponse doInBackground(Void... voids) {
+//
+//                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+//                                    new HttpRequestInitializer() {
+//                                        public void initialize(HttpRequest request) throws IOException {
+//                                        }
+//                                    }).setApplicationName("ytst-150316")
+//                                    .build();
+//
+//                            Log.d("testYT", "Inicializado el YouTube");
+//
+//                            try {
+//                                YouTube.Search.List searchYt = youtube.search().list("id,snippet");
+//                                searchYt.setKey(APIKEY);
+//                                searchYt.setQ(term);
+//                                searchYt.setType("video");
+//                                searchYt.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+//                                searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+//
+//                                Log.d("testYT", "Metida la info al objeto de consulta");
+//                                SearchListResponse searchResponse = searchYt.execute();
+//                                Log.d("testYT", "He realizado la consulta con exito");
+//
+//                                *//*List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
+//                                Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();*//*
+//
+//                                Log.d("testYT", "Procesada la petición. ¡Tengo la info!");
+//
+//                                return searchResponse;
+//
+//    *//*                            while (iteratorSearchResults.hasNext()) {
+//                                    com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
+//                                    //ResourceId rId = singleVideo.getId();
+//
+//                                    SearchResult result = new SearchResult(singleVideo.getSnippet().getTitle());
+//                                    search.addSearchable(result);
+//
+//                                   // Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
+//                                }*//*
+//                            } catch (IOException e) {
+//                                Log.d("testYT", "Estoy tirando la IOException");
+//                            }
+//
+//                            return null;
+//                        }
+//
+//                    }.execute((Void) null).get();
+//
+//                    List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
+//                    Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();
+//
+//                    while (iteratorSearchResults.hasNext()) {
+//                        com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
+//                        //ResourceId rId = singleVideo.getId();
+//
+//                        SearchResult result = new SearchResult(singleVideo.getSnippet().getTitle());
+//                        search.addSearchable(result);
+//
+//                        Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
+//                    }
+//
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }*/
+//
+//                for (int x = 0; x < 10; x++) {
+//                    SearchResult option = new SearchResult("Result "
+//                            + Integer.toString(x));
+//                    search.addSearchable(option);
+//                }
+//            }
+//
+//            @Override
+//            public void onSearch(final String searchTerm) {
+//
+//            }
+//
+//            @Override
+//            public void onResultClick(SearchResult result) {
+//                //React to result being clicked
+//                Log.d("ytSearch", "Result");
+//            }
+//
+//            @Override
+//            public void onSearchCleared() {
+//
+//            }
+//
+//        });
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
@@ -252,13 +247,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     }
 
-    private void browseOnYoutubeByTerm() {
-        search.revealFromMenuItem(R.id.action_yt, this);
-    }
-
-    protected void closeSearch() {
-        search.hideCircularly(this);
-    }
+//    private void browseOnYoutubeByTerm() {
+//        search.revealFromMenuItem(R.id.action_yt, this);
+//    }
+//
+//    protected void closeSearch() {
+//        search.hideCircularly(this);
+//    }
 
     /**
      * Metodo para preparar el media player para reproducir canciones
