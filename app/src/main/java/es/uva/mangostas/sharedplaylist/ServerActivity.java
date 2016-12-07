@@ -4,7 +4,6 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,6 +17,7 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -55,6 +55,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private static YouTube youtube;
     private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
+
     private MediaPlayer myMediaPlayer;
     private Handler handler;
     private MediaController myMediaController;
