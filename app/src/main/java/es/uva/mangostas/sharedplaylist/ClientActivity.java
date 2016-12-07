@@ -1,7 +1,9 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +35,7 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
+    private static final String TYPE = "Client";
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;
     private FloatingActionButton addVideoButton;
@@ -145,7 +148,7 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler);
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mService.start();
     }
 
@@ -216,6 +219,35 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
             byte[] message = msg.getBytes();
             mService.write(message);
             //Reseteamos el buffer y limpiamos la entrada de texto
+        }
+    }
+    private void connectDevice(Intent data) {
+        //Obtenemos la MAC
+        String address = data.getExtras()
+                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        //Obtenemos el objeto de dispositivo
+        BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        //Intentamos conectar
+        mService.connect(device);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE_INSECURE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    connectDevice(data);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    setupService();
+                } else {
+                    // User did not enable Bluetooth or an error occurred
+                    finish();
+                }
         }
     }
 }

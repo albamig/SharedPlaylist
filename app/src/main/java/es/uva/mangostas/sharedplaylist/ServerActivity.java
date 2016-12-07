@@ -74,6 +74,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private static YouTube youtube;
     private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
+    private static final String TYPE = "Server";
     private MediaPlayer myMediaPlayer;
     private Handler handler;
     private MediaController myMediaController;
@@ -338,7 +339,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler);
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mSendService.start();
 
     }

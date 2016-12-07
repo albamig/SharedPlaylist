@@ -16,6 +16,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -39,22 +40,26 @@ public class BTSharedPlayService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int state;
+    private String mtype;
+    private ArrayList<ConnectedThread> myConnections;
 
     //Constantes para el estado
     public static final int STATE_NONE = 0;       // Nada
     public static final int STATE_LISTEN = 1;     // Escuchando para conexiones
     public static final int STATE_CONNECTING = 2; // Conectando
-    public static final int STATE_CONNECTED = 3;  // Conectado a un dispositivo
+    public static final int STATE_CONNECTED_AND_LISTEN = 3;  // Conectado a un dispositivo y escuchando para nuevas conexiones
+    public static final int STATE_CONNECTED = 4;
 
     /**
      * Constructor del servicio
      * @param context
      * @param handler
      */
-    public BTSharedPlayService(Context context, Handler handler) {
+    public BTSharedPlayService(Context context, Handler handler, String type) {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         state = STATE_NONE;
         mHandler = handler;
+        mtype = type;
     }
 
     /**
@@ -99,6 +104,7 @@ public class BTSharedPlayService {
             mAcceptThread = new AcceptThread();
             mAcceptThread.start();
         }
+        myConnections = new ArrayList<>();
     }
 
     /**
@@ -115,7 +121,7 @@ public class BTSharedPlayService {
         }
 
         //Cancelamos los que ya estan conectados
-        if (mConnectedThread != null) {
+        if (mtype.equals("Client") && mConnectedThread != null) {
             mConnectThread.cancel();
             mConnectedThread = null;
         }
@@ -134,16 +140,14 @@ public class BTSharedPlayService {
             mConnectThread = null;
 
         }
-        //Cancelamos los que estan conectados
-        if (mConnectedThread != null) {
-            mConnectedThread.cancel();
-            mConnectedThread = null;
-        }
-
         //lanzamos el hilo que maneja la conexion
-        mConnectedThread = new ConnectedThread(socket);
-        mConnectedThread.start();
-
+        if (mtype.equals("Server")) {
+            myConnections.add(new ConnectedThread(socket));
+            myConnections.get(myConnections.size()-1).start();
+        } else if (mtype.equals("Client")) {
+            mConnectedThread = new ConnectedThread(socket);
+            mConnectedThread.start();
+            }
         //Enviamos el nombre del dispositivo que se ha conectado de vuelta a la Actividad
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
@@ -151,7 +155,7 @@ public class BTSharedPlayService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
-        setState(STATE_CONNECTED);
+        setState(STATE_CONNECTED_AND_LISTEN);
     }
 
     /**
@@ -164,9 +168,14 @@ public class BTSharedPlayService {
             mConnectThread = null;
         }
 
-        if (mConnectedThread != null) {
+        if (mtype.equals("Client") && mConnectedThread != null) {
             mConnectedThread.cancel();
             mConnectedThread = null;
+        } else if (mtype.equals("Server") && myConnections.size() > 0) {
+            for (int i = 0; i < myConnections.size(); i++) {
+                myConnections.get(i).cancel();
+                myConnections.remove(myConnections.get(i));
+            }
         }
 
         if (mAcceptThread != null) {
@@ -187,7 +196,7 @@ public class BTSharedPlayService {
         ConnectedThread r;
         //Sincronizamos la copia con el original para enviar el mesnaje.
         synchronized (this) {
-            if (state != STATE_CONNECTED) return;
+            if (state != STATE_CONNECTED_AND_LISTEN) return;
             r = mConnectedThread;
         }
 
@@ -249,7 +258,7 @@ public class BTSharedPlayService {
             BluetoothSocket socket = null;
 
             // Listen to the server socket if we're not connected
-            while (state != STATE_CONNECTED) {
+            while (true) {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
@@ -262,6 +271,7 @@ public class BTSharedPlayService {
                 if (socket != null) {
                     synchronized (BTSharedPlayService.this) {
                         switch (state) {
+                            case STATE_CONNECTED_AND_LISTEN:
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
                                 // Situation normal. Start the connected thread.
@@ -388,7 +398,7 @@ public class BTSharedPlayService {
             int bytes;
 
             // Keep listening to the InputStream while connected
-            while (state == STATE_CONNECTED) {
+            while (true) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
