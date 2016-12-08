@@ -2,10 +2,8 @@ package es.uva.mangostas.sharedplaylist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,9 +32,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     String term;
     private ListView listViewRes;
     TextView yt_title, yt_artist;
+    List<SearchResult> searchResultList;
 
     private static YouTube youtube;
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 15;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
 
@@ -55,8 +54,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // React to the search term changing
-                // Called after it has updated results
 
         Log.d("ytSearch", "Empiezo la busqueda");
 
@@ -79,7 +76,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 searchYt.setKey(APIKEY);
                                 searchYt.setQ(term);
                                 searchYt.setType("video");
-                                searchYt.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+                                searchYt.setFields("items(id/videoId, snippet/title, snippet/thumbnails/default/url)");
                                 searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
 
                                 Log.d("testYT", "Metida la info al objeto de consulta");
@@ -100,7 +97,8 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
                     }.execute((Void) null).get();
 
-                    List<SearchResult> searchResultList = searchResponse.getItems();
+                    searchResultList = searchResponse.getItems();
+
                     Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
 
                     while (iteratorSearchResults.hasNext()) {
@@ -146,10 +144,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup){
             view = inflater.inflate(R.layout.row_yt,null);
+
             yt_title = (TextView) view.findViewById(R.id.textView_Title);
             yt_artist = (TextView) view.findViewById(R.id.textView_Artis);
-
-            yt_title.setText("texto de yt");
+            yt_title.setText(searchResultList.get(i).getSnippet().getTitle());
             yt_artist.setText("artista de yt");
 
             listViewRes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -158,22 +156,8 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                     // TODO AQUI PICH METE EL BLUETOOTH
                 }
             });
-            return view;
-        }
 
-        private String urlAlbunArt(String artistAlbum){
-            String [] projection=new String[]{MediaStore.Audio.Albums.ALBUM_ART};
-            String selection=MediaStore.Audio.Albums._ID+"=?";
-            String[] selectionArgs=new String[]{artistAlbum};
-            Cursor cursor=getContentResolver().query(MediaStore.Audio.Albums.INTERNAL_CONTENT_URI,projection,selection,selectionArgs,null);
-            String urlAlbum="";
-            if(cursor!=null){
-                if(cursor.moveToFirst()){
-                    urlAlbum=cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART));
-                }
-                cursor.close();
-            }
-            return urlAlbum;
+            return view;
         }
 
     }
