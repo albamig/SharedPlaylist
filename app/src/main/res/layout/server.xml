@@ -82,14 +82,15 @@
 
     <!-- https://github.com/Quinny898/PersistentSearch -->
     <com.quinny898.library.persistentsearch.SearchBox
-        android:layout_width="48dp"
+        android:layout_width="wrap_content"
         android:id="@+id/searchbox"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:visibility="gone"
+        android:layout_marginTop="-6dp"
+        android:layout_marginLeft="-6dp"
+        android:layout_marginRight="-6dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="0dp" />
+        android:layout_alignParentTop="true" />
 
     <ListView
         tools:layout_constraintRight_creator="1"
@@ -102,7 +103,8 @@
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:layout_constraintBottom_toTopOf="@+id/youtubeFragment"
         android:layout_marginBottom="16dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0" />
 
     <!-- Fragmento del reproductor de Youtube -->
 

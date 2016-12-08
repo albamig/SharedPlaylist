@@ -1,10 +1,20 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -19,8 +29,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+
 public class YoutubeResultsActivity extends AppCompatActivity {
     String term;
+    private ListView listViewRes;
+    TextView yt_title, yt_artist;
 
     private static YouTube youtube;
     private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
@@ -32,8 +45,11 @@ public class YoutubeResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_results);
 
+        listViewRes = (ListView) findViewById(R.id.listViewRes);
+
         Intent intent = getIntent();
         term = intent.getStringExtra("term");
+
     }
 
     @Override
@@ -98,5 +114,67 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
+
+        YtAdapter ytAdapter = new YtAdapter();
+        listViewRes.setAdapter(ytAdapter);
+    }
+
+    public class YtAdapter extends BaseAdapter {
+        private LayoutInflater inflater;
+
+        public YtAdapter(){
+            inflater= (LayoutInflater) getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
+
+        }
+
+        @Override
+        public int getCount(){
+            return (int) NUMBER_OF_VIDEOS_RETURNED;
+        }
+
+        @Override
+        public Object getItem(int i){
+            return i;
+        }
+
+        @Override
+        public long getItemId(int i){
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup){
+            view = inflater.inflate(R.layout.row_yt,null);
+            yt_title = (TextView) view.findViewById(R.id.textView_Title);
+            yt_artist = (TextView) view.findViewById(R.id.textView_Artis);
+
+            yt_title.setText("texto de yt");
+            yt_artist.setText("artista de yt");
+
+            listViewRes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    // TODO AQUI PICH METE EL BLUETOOTH
+                }
+            });
+            return view;
+        }
+
+        private String urlAlbunArt(String artistAlbum){
+            String [] projection=new String[]{MediaStore.Audio.Albums.ALBUM_ART};
+            String selection=MediaStore.Audio.Albums._ID+"=?";
+            String[] selectionArgs=new String[]{artistAlbum};
+            Cursor cursor=getContentResolver().query(MediaStore.Audio.Albums.INTERNAL_CONTENT_URI,projection,selection,selectionArgs,null);
+            String urlAlbum="";
+            if(cursor!=null){
+                if(cursor.moveToFirst()){
+                    urlAlbum=cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART));
+                }
+                cursor.close();
+            }
+            return urlAlbum;
+        }
+
     }
 }
