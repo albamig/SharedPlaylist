@@ -1,7 +1,11 @@
 package es.uva.mangostas.sharedplaylist;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -84,6 +88,23 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
+
+    private BroadcastReceiver mBroadcastReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            switch (action){
+                case BluetoothDevice.ACTION_ACL_CONNECTED:
+                    Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_LONG).show();
+                    break;
+                case BluetoothDevice.ACTION_ACL_DISCONNECTED:
+                    Toast.makeText(getApplicationContext(), "Recibido", Toast.LENGTH_LONG).show();
+                    adapter.add(new ShpSong("/storage/sdcard0/bluetooth/1 C.H.I.T.O..mp3"));
+                    break;
+            }
+        }
+    };
+
 
     //Manejador para devolver información al servicio
     private final Handler mHandler = new Handler() {
@@ -210,15 +231,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
                                 return searchResponse;
 
-    /*                            while (iteratorSearchResults.hasNext()) {
-                                    com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
-                                    //ResourceId rId = singleVideo.getId();
-
-                                    SearchResult result = new SearchResult(singleVideo.getSnippet().getTitle());
-                                    search.addSearchable(result);
-
-                                   // Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
-                                }*/
                             } catch (IOException e) {
                                 Log.d("testYT", "Estoy tirando la IOException");
                             }
@@ -313,9 +325,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         //Añadimos elementos a la lista de manera estática
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
-        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+        //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+        adapter.add(new ShpSong("/storage/sdcard0/bluetooth/1 C.H.I.T.O..mp3"));
 
+        //Registramos el escuchador de eventos para el bluetooth con el filtro para que
+        // detecte los eventos que deseamos.
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        registerReceiver(mBroadcastReciever, filter);
         //Metodo para encender el servicio de Bluetooth
         setupService();
         //Comenzamos a reproducir los elementos de la lista
@@ -468,6 +487,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             ShpVideo video;
             video = (ShpVideo)adapter.getItem(0);
             yTPlayer.loadVideo(video.getYtCode());
+            adapter.remove(adapter.getItem(0));
         }
     }
 
@@ -496,7 +516,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     public void onVideoEnded() {
         //cuando se acaba un video reproducimos el siguiente
         //Toast.makeText(getApplicationContext(), "Cambiando de tema...", Toast.LENGTH_LONG).show();
-        adapter.remove(adapter.getItem(0));
         nextSong();
     }
     @Override

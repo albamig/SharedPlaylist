@@ -4,7 +4,13 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,16 +26,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
-import es.uva.mangostas.sharedplaylist.BluetoothService.VideoDialog;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-public class ClientActivity extends AppCompatActivity implements VideoDialog.NewVideoDialogListener {
+public class ClientActivity extends AppCompatActivity {
 
 
     //Codigos de los Intent
@@ -42,6 +50,7 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
     private ArrayAdapter<ShpMediaObject> adapter;
     private BluetoothAdapter btAdapter;
     private BTSharedPlayService mService;
+
 
     //Manejador para devolver información al servicio
     private final Handler mHandler = new Handler() {
@@ -94,7 +103,37 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
         addVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showVideoDialog();
+
+                File song = new File("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3");
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(song));
+                PackageManager pm = getPackageManager();
+
+                List<ResolveInfo> appsList = pm.queryIntentActivities( intent, 0);
+
+                if(appsList.size() > 0 ){
+                    String packageName = null;
+                    String className = null;
+                    boolean found = false;
+                    for(ResolveInfo info: appsList) {
+
+                        packageName = info.activityInfo.packageName;
+
+                        if( packageName.equals("com.android.bluetooth")){
+                            className = info.activityInfo.name;
+                            found = true;
+                            break;
+
+                        }
+
+                    }
+                    intent.setClassName(packageName, className);
+                    startActivity(intent);
+                }
+
             }
         });
         // Get ListView object from xml
@@ -138,6 +177,7 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
             }
 
         });
+
 
         setupService();
 
@@ -189,23 +229,6 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
         }
     }
 
-    //Metodos de la interfaz del dialogo
-    public void showVideoDialog() {
-        DialogFragment dialog = new VideoDialog();
-        dialog.show(getFragmentManager(), "Nuevo Video");
-    }
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        EditText edit = (EditText)dialog.getDialog().findViewById(R.id.fruit);
-        String message = edit.getText().toString();
-        sendMessage(message);
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        dialog.getDialog().cancel();
-    }
-
 
     private void sendMessage(String msg) {
         //Comprobamos que estamos conectados antes de enviar
@@ -250,4 +273,7 @@ public class ClientActivity extends AppCompatActivity implements VideoDialog.New
                 }
         }
     }
+
 }
+
+
