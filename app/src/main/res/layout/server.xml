@@ -43,54 +43,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintVertical_bias="0.0" />
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/menu_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        fab:fab_addButtonColorNormal="?attr/colorPrimary"
-        fab:fab_addButtonSize="normal"
-        fab:fab_labelStyle="@style/Etiquetas"
-        fab:fab_labelsPosition="left">
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_yt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="?attr/colorAccent"
-            fab:fab_icon="@drawable/ic_yt"
-            fab:fab_size="mini"
-            fab:fab_title="Youtube" />
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_fs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="?attr/colorAccent"
-            fab:fab_icon="@drawable/ic_fs"
-            fab:fab_size="mini"
-            fab:fab_title="Local" />
-
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-    <!-- https://github.com/Quinny898/PersistentSearch -->
-    <com.quinny898.library.persistentsearch.SearchBox
-        android:layout_width="48dp"
-        android:id="@+id/searchbox"
-        android:layout_height="48dp"
-        android:visibility="gone"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="0dp" />
-
     <ListView
         tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="parent"
