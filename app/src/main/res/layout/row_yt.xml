@@ -25,7 +25,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="60dp"
-                android:id="@+id/imageView"
+                android:id="@+id/imageView_ytImg"
                 android:src="@mipmap/auriculares" />
         </LinearLayout>
 
@@ -39,18 +39,17 @@
             android:layout_toLeftOf="@+id/linearLayout">
 
             <TextView
+                android:text="LargeText"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_ytTit"
+                android:layout_width="match_parent"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <TextView
                 android:text="TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_Artis"
-                />
-
-            <TextView
-                android:text="LargeText"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView_Title"
-                android:layout_width="match_parent"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:id="@+id/textView_ytChan" />
         </LinearLayout>
 
         <LinearLayout

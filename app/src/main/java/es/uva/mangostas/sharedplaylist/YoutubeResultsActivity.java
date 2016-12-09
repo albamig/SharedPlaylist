@@ -2,6 +2,8 @@ package es.uva.mangostas.sharedplaylist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,6 +26,8 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -31,7 +36,8 @@ import java.util.concurrent.ExecutionException;
 public class YoutubeResultsActivity extends AppCompatActivity {
     String term;
     private ListView listViewRes;
-    TextView yt_title, yt_artist;
+    TextView yt_title, yt_chan;
+    ImageView yt_img;
     List<SearchResult> searchResultList;
 
     private static YouTube youtube;
@@ -76,7 +82,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 searchYt.setKey(APIKEY);
                                 searchYt.setQ(term);
                                 searchYt.setType("video");
-                                searchYt.setFields("items(id/videoId, snippet/title, snippet/thumbnails/default/url)");
+                                searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, snippet/thumbnails/default/url)");
                                 searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
 
                                 Log.d("testYT", "Metida la info al objeto de consulta");
@@ -145,15 +151,29 @@ public class YoutubeResultsActivity extends AppCompatActivity {
         public View getView(int i, View view, ViewGroup viewGroup){
             view = inflater.inflate(R.layout.row_yt,null);
 
-            yt_title = (TextView) view.findViewById(R.id.textView_Title);
-            yt_artist = (TextView) view.findViewById(R.id.textView_Artis);
+            yt_title = (TextView) view.findViewById(R.id.textView_ytTit);
+            yt_chan = (TextView) view.findViewById(R.id.textView_ytChan);
             yt_title.setText(searchResultList.get(i).getSnippet().getTitle());
-            yt_artist.setText("artista de yt");
+            yt_chan.setText(searchResultList.get(i).getSnippet().getChannelTitle());
+
+            ImageView yt_img = (ImageView) findViewById(R.id.imageView_ytImg);
+            
+            try {
+                URL url = new URL(searchResultList.get(i).getSnippet().getThumbnails().getDefault().getUrl());
+                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                yt_img.setImageBitmap(bmp);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             listViewRes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     // TODO AQUI PICH METE EL BLUETOOTH
+                    // searchResultList.get(i).getId().getVideoId() Para conseguir el id del video
+                    // Está comprobado que ese es el id
                 }
             });
 
