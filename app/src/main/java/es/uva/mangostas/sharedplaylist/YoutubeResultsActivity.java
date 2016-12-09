@@ -28,20 +28,19 @@ import com.google.api.services.youtube.model.SearchResult;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
 public class YoutubeResultsActivity extends AppCompatActivity {
-    String term;
+    private String term;
     private ListView listViewRes;
-    TextView yt_title, yt_chan;
-    ImageView yt_img;
+    //TextView yt_title, yt_chan;
+    private ArrayList<Bitmap> yt_img_array;
     List<SearchResult> searchResultList;
 
-    private static YouTube youtube;
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 15;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 10;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
 
@@ -68,7 +67,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                         @Override
                         protected SearchListResponse doInBackground(Void... voids) {
 
-                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+                             YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                                     new HttpRequestInitializer() {
                                         public void initialize(HttpRequest request) throws IOException {
                                         }
@@ -105,22 +104,49 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
                     searchResultList = searchResponse.getItems();
 
-                    Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
-
-                    while (iteratorSearchResults.hasNext()) {
-                        SearchResult singleVideo = iteratorSearchResults.next();
-
-                        Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
-                    }
-
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
 
+        recuperarYtImg();
+
         YtAdapter ytAdapter = new YtAdapter();
         listViewRes.setAdapter(ytAdapter);
+    }
+
+    private void recuperarYtImg() {
+        for (int i = 0; i < NUMBER_OF_VIDEOS_RETURNED; i++) {
+            try {
+                Bitmap bmp = new AsyncTask<Integer, Void, Bitmap>() {
+                    @Override
+                    protected Bitmap doInBackground(Integer... i) {
+                        Log.d("ytImg", "Lanzo un hilo");
+                        Bitmap bmp = null;
+                        try {
+                            URL url = new URL(searchResultList.get(i[0]).getSnippet().getThumbnails().getDefault().getUrl());
+                            bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return bmp;
+                    }
+                }.execute(i).get();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                Log.d("ytImg", "Esto es un null");
+            }
+
+            yt_img_array.add(bmp)
+        }
     }
 
     public class YtAdapter extends BaseAdapter {
@@ -149,24 +175,16 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup){
+            Log.d("ytImg", "Lanzo una row "+ i);
             view = inflater.inflate(R.layout.row_yt,null);
 
-            yt_title = (TextView) view.findViewById(R.id.textView_ytTit);
-            yt_chan = (TextView) view.findViewById(R.id.textView_ytChan);
+            TextView yt_title = (TextView) view.findViewById(R.id.textView_ytTit);
+            TextView yt_chan = (TextView) view.findViewById(R.id.textView_ytChan);
             yt_title.setText(searchResultList.get(i).getSnippet().getTitle());
             yt_chan.setText(searchResultList.get(i).getSnippet().getChannelTitle());
 
             ImageView yt_img = (ImageView) findViewById(R.id.imageView_ytImg);
-            
-            try {
-                URL url = new URL(searchResultList.get(i).getSnippet().getThumbnails().getDefault().getUrl());
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                yt_img.setImageBitmap(bmp);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            yt_img.setImageBitmap(yt_img_array.get(i));
 
             listViewRes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -179,6 +197,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
             return view;
         }
+
 
     }
 }
