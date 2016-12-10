@@ -1,18 +1,9 @@
 package es.uva.mangostas.sharedplaylist;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,13 +24,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
-import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 public class ClientActivity extends AppCompatActivity {
@@ -110,17 +98,18 @@ public class ClientActivity extends AppCompatActivity {
         addVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //Definimos el archivo que se va  enviar a traves de su path de almacenamiento
                 File song = new File("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3");
+                //Declaramos un array de bytes el cual tiene el tamaño del archivo mas cuatro bytes para el tamaño del mismo
                 byte[] songArray = new byte[(int) song.length()+4];
+                //Guardamos y casteamos el tamaño del archivo al array de bytes
                 int tam = (int) song.length();
-                Log.d("Tamaño", ""+tam);
                 songArray[0] = (byte) (tam >> 24);
                 songArray[1] = (byte) (tam >> 16);
                 songArray[2] = (byte) (tam >> 8);
                 songArray[3] = (byte) (tam /*>> 0*/);
-                Log.d("Tamaño despues", ""+tam);
                 try {
+                    //Escribimos sobre el array de bytes los datos del fichero a traves de un inputStream
                     FileInputStream fis = new FileInputStream(song);
                     fis.read(songArray, 4, (int)song.length());
                     fis.close();
@@ -129,6 +118,7 @@ public class ClientActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
                 if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
                     Toast.makeText(getApplicationContext(), "No se puede enviar sin conexion", Toast.LENGTH_LONG).show();
 
@@ -264,7 +254,7 @@ public class ClientActivity extends AppCompatActivity {
     }
 
 
-    private void sendMessage(String msg) {
+    private void sendVideo(String msg) {
         //Comprobamos que estamos conectados antes de enviar
         if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
             Toast.makeText(getApplicationContext(), "No es posible enviar sin una conexion", Toast.LENGTH_LONG).show();
@@ -272,10 +262,19 @@ public class ClientActivity extends AppCompatActivity {
         }
         //Comprobamos que hay algo en el mensaje para enviar
         if (msg.length() > 0) {
-            //Obtenemos los bytes del mensaje y escribimos a traves del servicio
+            //Creamos un array de bytes para enviar el cual tiene 4 bytes mas para el tamaño
+            // que en el caso de los videos es 0.
+            byte[] video = new byte[msg.length()+4];
+            video[0] = (byte) (0 >> 24);
+            video[1] = (byte) (0 >> 16);
+            video[2] = (byte) (0 >> 8);
+            video[3] = (byte) (0 /*>> 0*/);
             byte[] message = msg.getBytes();
+            //Copiamos los datos del ID del video al array y lo enviamos
+            for (int i = 0; i < msg.length(); i++) {
+                video[i+4] = message[i];
+            }
             mService.write(message);
-            //Reseteamos el buffer y limpiamos la entrada de texto
         }
     }
     private void connectDevice(Intent data) {

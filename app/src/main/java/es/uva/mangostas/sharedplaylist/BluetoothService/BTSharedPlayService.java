@@ -397,24 +397,33 @@ public class BTSharedPlayService {
             byte[] buffer = new byte[1024];
             byte[] fin = null;
             int bytes;
-            int sizeofSong = 0;
+            int size = 0;
             int totalBytes = 0;
 
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
                     if (totalBytes == 0) {
-                        // Leemos el tamaño de la canción en los 4 primeros bytes que se han escrito
+                        //Leemos el tamaño de la canción en los 4 primeros bytes que se han escrito
                         mmInStream.read(buffer, 0, 4);
+
                         //Pasamos el valor de los bytes a un entero
-                        sizeofSong =(buffer[0]<<24)&0xff000000|
+                        size =(buffer[0]<<24)&0xff000000|
                                 (buffer[1]<<16)&0x00ff0000|
                                 (buffer[2]<< 8)&0x0000ff00|
                                 (buffer[3]<< 0)&0x000000ff;
-                        fin = new byte[sizeofSong];
+
+                        //Si la condicion se cumple se trata de un video por lo tanto lo tratamos como tal.
+                        if (size == 0) {
+                            bytes=mmInStream.read(buffer);
+                            mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
+                                    .sendToTarget();
+                        }
+                        //Definimos el array que almacenara la cancion con el tamaño de esta
+                        fin = new byte[size];
                     }
 
-                    //Definimos el array que almacenara la cancion con el tamaño de esta
+
 
 
                     //Pasamos a leer los datos de la canción
@@ -425,7 +434,7 @@ public class BTSharedPlayService {
                     totalBytes += bytes;
                     Log.d("Bytes", ""+totalBytes);
 
-                    if (totalBytes == sizeofSong) {
+                    if (totalBytes == size) {
                         //Si se cumple la condicion ya hemos leido los ultimos bytes de infomación
                         // por lo tanto los copiamos al buffer y enviamos los datos a la
                         // actividad del servidor.
@@ -434,6 +443,7 @@ public class BTSharedPlayService {
                         }
                         mHandler.obtainMessage(Constants.MESSAGE_SONG_READ, totalBytes, -1, fin)
                                 .sendToTarget();
+                        totalBytes = 0;
                     } else {
                         //Si no se cumple la condición copiamos los bytes leidos en el buffer final.
                         for (int i = 0; i < bytes; i++) {
