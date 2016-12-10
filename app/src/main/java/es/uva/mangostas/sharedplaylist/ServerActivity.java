@@ -41,6 +41,9 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -128,11 +131,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     String writeMessage = new String(writeBuf);
                     adapter.add(new ShpVideo(writeMessage));
                     break;
-                case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    Toast.makeText(getApplicationContext(), "Cancion Añadida", Toast.LENGTH_LONG).show();
+                case Constants.MESSAGE_VIDEO_READ:
+                    byte[] videoBuf = (byte[]) msg.obj;
+                    Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    String readMessage = new String(videoBuf, 0, msg.arg1);
                     adapter.add(new ShpVideo(readMessage));
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
@@ -149,6 +152,23 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                 Toast.LENGTH_SHORT).show();
                     }
                     break;
+                case Constants.MESSAGE_SONG_READ:
+                    byte[] songBuf = (byte[]) msg.obj;
+                    File song=new File(getFilesDir(), "CHITO.mp3");
+                    if (song.exists()) {
+                        song.delete();
+                    }
+                    try {
+                        FileOutputStream fos = new FileOutputStream(song);
+                        fos.write(songBuf);
+                        fos.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(), "Cancion añadida a la lista", Toast.LENGTH_LONG).show();
+                    adapter.add(new ShpSong(song.getPath()));
             }
         }
     };
@@ -327,7 +347,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
         //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
         adapter.add(new ShpVideo("0rEVwwB3Iw0"));
-        adapter.add(new ShpSong("/storage/sdcard0/bluetooth/1 C.H.I.T.O..mp3"));
 
         //Registramos el escuchador de eventos para el bluetooth con el filtro para que
         // detecte los eventos que deseamos.

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +30,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +56,7 @@ public class ClientActivity extends AppCompatActivity {
     private ArrayAdapter<ShpMediaObject> adapter;
     private BluetoothAdapter btAdapter;
     private BTSharedPlayService mService;
+    private BluetoothDevice device;
 
 
     //Manejador para devolver información al servicio
@@ -74,7 +81,7 @@ public class ClientActivity extends AppCompatActivity {
                     String writeMessage = new String(writeBuf);
                     adapter.add(new ShpVideo(writeMessage));
                     break;
-                case Constants.MESSAGE_READ:
+                case Constants.MESSAGE_VIDEO_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     Toast.makeText(getApplicationContext(), "Cancion Añadida", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
@@ -105,11 +112,38 @@ public class ClientActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 File song = new File("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3");
+                byte[] songArray = new byte[(int) song.length()+4];
+                int tam = (int) song.length();
+                Log.d("Tamaño", ""+tam);
+                songArray[0] = (byte) (tam >> 24);
+                songArray[1] = (byte) (tam >> 16);
+                songArray[2] = (byte) (tam >> 8);
+                songArray[3] = (byte) (tam /*>> 0*/);
+                Log.d("Tamaño despues", ""+tam);
+                try {
+                    FileInputStream fis = new FileInputStream(song);
+                    fis.read(songArray, 4, (int)song.length());
+                    fis.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
+                    Toast.makeText(getApplicationContext(), "No se puede enviar sin conexion", Toast.LENGTH_LONG).show();
+
+                } else {
+                    mService.write(songArray);
+                }
+
+
+                /**  File song = new File("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3");
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND);
-                intent.setType("text/plain");
+                intent.setType("music/*");
 
                 intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(song));
+                intent.putExtra(BluetoothDevice.EXTRA_NAME, device.getName());
                 PackageManager pm = getPackageManager();
 
                 List<ResolveInfo> appsList = pm.queryIntentActivities( intent, 0);
@@ -132,7 +166,7 @@ public class ClientActivity extends AppCompatActivity {
                     }
                     intent.setClassName(packageName, className);
                     startActivity(intent);
-                }
+                }*/
 
             }
         });
@@ -232,7 +266,7 @@ public class ClientActivity extends AppCompatActivity {
 
     private void sendMessage(String msg) {
         //Comprobamos que estamos conectados antes de enviar
-        if (mService.getState() != BTSharedPlayService.STATE_CONNECTED) {
+        if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
             Toast.makeText(getApplicationContext(), "No es posible enviar sin una conexion", Toast.LENGTH_LONG).show();
             return;
         }
@@ -249,7 +283,7 @@ public class ClientActivity extends AppCompatActivity {
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         //Obtenemos el objeto de dispositivo
-        BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        device = btAdapter.getRemoteDevice(address);
         //Intentamos conectar
         mService.connect(device);
     }
