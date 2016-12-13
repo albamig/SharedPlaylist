@@ -19,10 +19,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
+
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
@@ -38,6 +38,8 @@ public class ClientActivity extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
     private static final String TYPE = "Client";
+    private static final int SELECT_VIDEO = 1;
+
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;
     private FloatingActionButton addVideoButton;
@@ -45,6 +47,11 @@ public class ClientActivity extends AppCompatActivity {
     private BluetoothAdapter btAdapter;
     private BTSharedPlayService mService;
     private BluetoothDevice device;
+
+    //Interfaz
+    public SearchBox search;
+    private FloatingActionsMenu fab;
+    private com.getbase.floatingactionbutton.FloatingActionButton fab_yt;
 
 
     //Manejador para devolver información al servicio
@@ -64,10 +71,7 @@ public class ClientActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    adapter.add(new ShpVideo(writeMessage));
+                    Toast.makeText(getApplicationContext(), "Enviado", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_VIDEO_READ:
                     byte[] readBuf = (byte[]) msg.obj;
@@ -94,7 +98,20 @@ public class ClientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.client);
         btAdapter = BluetoothAdapter.getDefaultAdapter();
-        addVideoButton =(FloatingActionButton)findViewById(R.id.addVideo);
+
+        search = (SearchBox) findViewById(R.id.searchbox);
+        fab = (FloatingActionsMenu) findViewById(R.id.menu_fab);
+        fab_yt = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_yt);
+        fab_yt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSearchbox();
+            }
+        });
+        //Colocamos los escuchadores de la barra de busqueda de youtube
+        setSearchBoxListeners();
+
+        /**addVideoButton =(FloatingActionButton)findViewById(R.id.addVideo);
         addVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,7 +124,7 @@ public class ClientActivity extends AppCompatActivity {
                 songArray[0] = (byte) (tam >> 24);
                 songArray[1] = (byte) (tam >> 16);
                 songArray[2] = (byte) (tam >> 8);
-                songArray[3] = (byte) (tam /*>> 0*/);
+                songArray[3] = (byte) (tam /*>> 0);
                 try {
                     //Escribimos sobre el array de bytes los datos del fichero a traves de un inputStream
                     FileInputStream fis = new FileInputStream(song);
@@ -127,39 +144,8 @@ public class ClientActivity extends AppCompatActivity {
                 }
 
 
-                /**  File song = new File("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3");
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND);
-                intent.setType("music/*");
-
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(song));
-                intent.putExtra(BluetoothDevice.EXTRA_NAME, device.getName());
-                PackageManager pm = getPackageManager();
-
-                List<ResolveInfo> appsList = pm.queryIntentActivities( intent, 0);
-
-                if(appsList.size() > 0 ){
-                    String packageName = null;
-                    String className = null;
-                    boolean found = false;
-                    for(ResolveInfo info: appsList) {
-
-                        packageName = info.activityInfo.packageName;
-
-                        if( packageName.equals("com.android.bluetooth")){
-                            className = info.activityInfo.name;
-                            found = true;
-                            break;
-
-                        }
-
-                    }
-                    intent.setClassName(packageName, className);
-                    startActivity(intent);
-                }*/
-
             }
-        });
+        });*/
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
 
@@ -202,7 +188,7 @@ public class ClientActivity extends AppCompatActivity {
 
         });
 
-
+        //Ponemos el servicio en funcionamiento
         setupService();
 
     }
@@ -264,17 +250,20 @@ public class ClientActivity extends AppCompatActivity {
         if (msg.length() > 0) {
             //Creamos un array de bytes para enviar el cual tiene 4 bytes mas para el tamaño
             // que en el caso de los videos es 0.
+
+
+            byte[] message = msg.getBytes();
             byte[] video = new byte[msg.length()+4];
             video[0] = (byte) (0 >> 24);
             video[1] = (byte) (0 >> 16);
             video[2] = (byte) (0 >> 8);
             video[3] = (byte) (0 /*>> 0*/);
-            byte[] message = msg.getBytes();
+
             //Copiamos los datos del ID del video al array y lo enviamos
-            for (int i = 0; i < msg.length(); i++) {
+            for (int i = 0; i < message.length; i++) {
                 video[i+4] = message[i];
             }
-            mService.write(message);
+            mService.write(video);
         }
     }
     private void connectDevice(Intent data) {
@@ -285,24 +274,87 @@ public class ClientActivity extends AppCompatActivity {
         device = btAdapter.getRemoteDevice(address);
         //Intentamos conectar
         mService.connect(device);
+        Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_LONG).show();
     }
 
+    //Metodos para la barra de busqueda de YT
+    private void showSearchbox () {
+        search.revealFromMenuItem(R.id.action_yt, this);
+    }
+
+    private void setSearchBoxListeners() {
+
+        search.setSearchListener(new SearchBox.SearchListener() {
+
+            @Override
+            public void onSearchOpened() {
+                fab.collapse();
+            }
+
+            @Override
+            public void onSearchClosed() {
+                closeSearch();
+            }
+
+            @Override
+            public void onSearchTermChanged(final String term) {
+            }
+
+            @Override
+            public void onSearch(final String searchTerm) {
+                SearchResult result = new SearchResult(searchTerm);
+                search.addSearchable(result);
+                startYoutubeResultsActivity(searchTerm);
+            }
+
+            @Override
+            public void onResultClick(SearchResult result) {
+                //React to result being clicked
+                Log.d("ytSearch", "Result");
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
+    }
+
+    private void startYoutubeResultsActivity(final String searchTerm) {
+        Intent intent = new Intent(this, YoutubeResultsActivity.class);
+        intent.putExtra("term" ,searchTerm);
+
+        startActivityForResult(intent, SELECT_VIDEO);
+    }
+
+    protected void closeSearch() {
+        search.hideCircularly(this);
+    }
+
+    /**
+     * Metodo que gestiona los resultados devueltos por los intent que lanza la actividad.
+     *
+     * @param requestCode Código de la petición
+     * @param resultCode  Código del resultado de la petición
+     * @param data        Datos devueltos por la petición.
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_INSECURE:
-                // When DeviceListActivity returns with a device to connect
+                // Cuando vuelve con el dispositivo al que desea conectarse
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data);
                 }
                 break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
+            case SELECT_VIDEO:
+                // Cuando la peticion de seleccionar un video de la lista vuelve
                 if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a chat session
-                    setupService();
+                    String msg = data.getStringExtra("videoID");
+                    sendVideo(msg);
                 } else {
-                    // User did not enable Bluetooth or an error occurred
-                    finish();
+                    // Ha ocurrido un error con el video
+                    Toast.makeText(getApplicationContext(), "El video seleccionado no esta disponible", Toast.LENGTH_LONG).show();
                 }
         }
     }

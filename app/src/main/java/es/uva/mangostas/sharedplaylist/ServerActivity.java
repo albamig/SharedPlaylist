@@ -2,37 +2,25 @@ package es.uva.mangostas.sharedplaylist;
 
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.MediaController;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,10 +40,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private static final int REQUEST_ENABLE_BT = 3;
 
     private ListView listView;
-    public SearchBox search;
     private Toolbar toolbar;
-    private FloatingActionsMenu fab;
-    private FloatingActionButton fab_yt;
     //Nombre del dispositivo conectado
     String mConnectedDevice = null;
 
@@ -64,11 +49,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     //Servicio de envio de texto
     private BTSharedPlayService mSendService = null;
-    /**
-     * Define a global instance of a Youtube object, which will be used
-     * to make YouTube Data API requests.
-     */
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
     private static final String TYPE = "Server";
     private MediaPlayer myMediaPlayer;
     private Handler handler;
@@ -78,7 +58,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private ArrayList<ShpMediaObject> playList;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
-    private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
+    private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
 
     //Manejador para devolver información al servicio
@@ -158,21 +138,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             finish();
         }
 
-        search = (SearchBox) findViewById(R.id.searchbox);
         toolbar = (Toolbar) findViewById(R.id.appBarLayout);
         this.setSupportActionBar(toolbar);
-
-        fab = (FloatingActionsMenu) findViewById(R.id.menu_fab);
-        fab_yt = (FloatingActionButton) findViewById(R.id.action_yt);
-        fab_yt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSearchbox();
-            }
-        });
-
-
-        setSearchBoxListeners();
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
@@ -217,9 +184,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
 
         //Añadimos elementos a la lista de manera estática
-        //adapter.add(new ShpVideo("OBXRJgSd-aU"));
-        //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-        //adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+        adapter.add(new ShpVideo("OBXRJgSd-aU"));
+        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+        adapter.add(new ShpVideo("xQTuhEA-TsM"));
 
         //Metodo para encender el servicio de Bluetooth
         setupService();
@@ -229,7 +196,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         prepMediaPlayer();
 
     }
-  
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -248,60 +215,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mSendService.start();
 
-    }
-
-
-    private void showSearchbox () {
-        search.revealFromMenuItem(R.id.action_yt, this);
-    }
-
-    private void setSearchBoxListeners() {
-
-        search.setSearchListener(new SearchBox.SearchListener() {
-
-            @Override
-            public void onSearchOpened() {
-                fab.collapse();
-            }
-
-            @Override
-            public void onSearchClosed() {
-                closeSearch();
-            }
-
-            @Override
-            public void onSearchTermChanged(final String term) {
-            }
-
-            @Override
-            public void onSearch(final String searchTerm) {
-                SearchResult result = new SearchResult(searchTerm);
-                search.addSearchable(result);
-                startYoutubeResultsActivity(searchTerm);
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-                //React to result being clicked
-                Log.d("ytSearch", "Result");
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
-        });
-    }
-
-    private void startYoutubeResultsActivity(final String searchTerm) {
-        Intent intent = new Intent(this, YoutubeResultsActivity.class);
-        intent.putExtra("term" ,searchTerm);
-        startActivity(intent);
-    }
-
-    protected void closeSearch() {
-        search.hideCircularly(this);
     }
 
     /**
@@ -423,6 +336,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             adapter.remove(adapter.getItem(0));
         }
     }
+
 
 
     @Override

@@ -1,5 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Handler;
 
 
 public class YoutubeResultsActivity extends AppCompatActivity {
@@ -34,6 +36,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     private ListView listViewRes;
     //TextView yt_title, yt_chan;
     private ArrayList<Bitmap> yt_img_array;
+    private Handler handler;
     List<SearchResult> searchResultList;
 
     private static final long NUMBER_OF_VIDEOS_RETURNED = 10;
@@ -49,6 +52,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         term = intent.getStringExtra("term");
+
 
     }
 
@@ -147,9 +151,11 @@ public class YoutubeResultsActivity extends AppCompatActivity {
             listViewRes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    // TODO AQUI PICH METE EL BLUETOOTH
-                    // searchResultList.get(i).getId().getVideoId() Para conseguir el id del video
-                    // Está comprobado que ese es el id
+                    String videoId = searchResultList.get(i).getId().getVideoId();
+                    Intent intent = new Intent();
+                    intent.putExtra("videoID", videoId);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
                 }
             });
 

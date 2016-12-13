@@ -408,19 +408,23 @@ public class BTSharedPlayService {
                         mmInStream.read(buffer, 0, 4);
 
                         //Pasamos el valor de los bytes a un entero
-                        size =(buffer[0]<<24)&0xff000000|
+                        size = (buffer[0]<<24)&0xff000000|
                                 (buffer[1]<<16)&0x00ff0000|
                                 (buffer[2]<< 8)&0x0000ff00|
                                 (buffer[3]<< 0)&0x000000ff;
 
                         //Si la condicion se cumple se trata de un video por lo tanto lo tratamos como tal.
-                        if (size == 0) {
-                            bytes=mmInStream.read(buffer);
+                        if (size == 0 ) {
+                            Log.d("TAM", "Tamaño igual a 0");
+                            bytes = mmInStream.read(buffer);
+                            Log.d("Leido", "Leido el resto");
                             mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
                                     .sendToTarget();
+                        } else {
+                            //Definimos el array que almacenara la cancion con el tamaño de esta
+                            fin = new byte[size];
                         }
-                        //Definimos el array que almacenara la cancion con el tamaño de esta
-                        fin = new byte[size];
+
                     }
 
 
@@ -471,8 +475,8 @@ public class BTSharedPlayService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-               // mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
-                 //       .sendToTarget();
+               mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
+                       .sendToTarget();
             } catch (IOException e) {
             }
         }
