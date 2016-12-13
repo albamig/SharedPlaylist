@@ -1,5 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -7,11 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -28,16 +27,11 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchListResponse;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
@@ -46,9 +40,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
@@ -195,108 +186,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         fab_yt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                browseOnYoutubeByTerm();
+                showSearchbox();
             }
         });
 
-        search.setSearchListener(new SearchBox.SearchListener() {
 
-            @Override
-            public void onSearchOpened() {
-                fab.collapse();
-            }
-
-            @Override
-            public void onSearchClosed() {
-                closeSearch();
-            }
-
-            @Override
-            public void onSearchTermChanged(final String term) {
-                // React to the search term changing
-                // Called after it has updated results
-
-                Log.d("ytSearch", "Empiezo la busqueda");
-
-                try {
-                    SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
-                        @Override
-                        protected SearchListResponse doInBackground(Void... voids) {
-
-                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-                                    new HttpRequestInitializer() {
-                                        public void initialize(HttpRequest request) throws IOException {
-                                        }
-                                    }).setApplicationName("ytst-150316")
-                                    .build();
-
-                            Log.d("testYT", "Inicializado el YouTube");
-
-                            try {
-                                YouTube.Search.List searchYt = youtube.search().list("id,snippet");
-                                searchYt.setKey(APIKEY);
-                                searchYt.setQ(term);
-                                searchYt.setType("video");
-                                searchYt.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-                                searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-
-                                Log.d("testYT", "Metida la info al objeto de consulta");
-                                SearchListResponse searchResponse = searchYt.execute();
-                                Log.d("testYT", "He realizado la consulta con exito");
-
-                                /*List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
-                                Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();*/
-
-                                Log.d("testYT", "Procesada la petición. ¡Tengo la info!");
-
-                                return searchResponse;
-
-                            } catch (IOException e) {
-                                Log.d("testYT", "Estoy tirando la IOException");
-                            }
-
-                            return null;
-                        }
-
-                    }.execute((Void) null).get();
-
-                    List<com.google.api.services.youtube.model.SearchResult> searchResultList = searchResponse.getItems();
-                    Iterator<com.google.api.services.youtube.model.SearchResult> iteratorSearchResults = searchResultList.iterator();
-
-                    while (iteratorSearchResults.hasNext()) {
-                        com.google.api.services.youtube.model.SearchResult singleVideo = iteratorSearchResults.next();
-                        //ResourceId rId = singleVideo.getId();
-
-                        SearchResult result = new SearchResult(singleVideo.getSnippet().getTitle());
-                        search.addSearchable(result);
-
-                        Log.d("testYT", "Titulo: " + singleVideo.getSnippet().getTitle());
-                    }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onSearch(final String searchTerm) {
-
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-                //React to result being clicked
-                Log.d("ytSearch", "Result");
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
-        });
+        setSearchBoxListeners();
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
@@ -359,9 +254,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //Comenzamos a reproducir los elementos de la lista
         nextSong();
 
-
     }
-
+  
     @Override
     protected void onStart() {
         super.onStart();
@@ -383,8 +277,53 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
 
 
-    private void browseOnYoutubeByTerm() {
+    private void showSearchbox () {
         search.revealFromMenuItem(R.id.action_yt, this);
+    }
+
+    private void setSearchBoxListeners() {
+
+        search.setSearchListener(new SearchBox.SearchListener() {
+
+            @Override
+            public void onSearchOpened() {
+                fab.collapse();
+            }
+
+            @Override
+            public void onSearchClosed() {
+                closeSearch();
+            }
+
+            @Override
+            public void onSearchTermChanged(final String term) {
+            }
+
+            @Override
+            public void onSearch(final String searchTerm) {
+                SearchResult result = new SearchResult(searchTerm);
+                search.addSearchable(result);
+                startYoutubeResultsActivity(searchTerm);
+            }
+
+            @Override
+            public void onResultClick(SearchResult result) {
+                //React to result being clicked
+                Log.d("ytSearch", "Result");
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
+    }
+
+    private void startYoutubeResultsActivity(final String searchTerm) {
+        Intent intent = new Intent(this, YoutubeResultsActivity.class);
+        intent.putExtra("term" ,searchTerm);
+        startActivity(intent);
     }
 
     protected void closeSearch() {
