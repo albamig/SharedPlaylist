@@ -27,7 +27,6 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -50,7 +49,6 @@ import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
 
     //Codigos de los Intent
-    private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
 
     private ListView listView;
@@ -70,7 +68,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      * Define a global instance of a Youtube object, which will be used
      * to make YouTube Data API requests.
      */
-    private static YouTube youtube;
     private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
     private static final String TYPE = "Server";
     private MediaPlayer myMediaPlayer;
@@ -82,22 +79,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
-
-    private BroadcastReceiver mBroadcastReciever = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            switch (action){
-                case BluetoothDevice.ACTION_ACL_CONNECTED:
-                    Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_LONG).show();
-                    break;
-                case BluetoothDevice.ACTION_ACL_DISCONNECTED:
-                    Toast.makeText(getApplicationContext(), "Recibido", Toast.LENGTH_LONG).show();
-                    adapter.add(new ShpSong("/storage/sdcard0/bluetooth/1 C.H.I.T.O..mp3"));
-                    break;
-            }
-        }
-    };
 
 
     //Manejador para devolver información al servicio
@@ -198,9 +179,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
 
-        //Prep the media player
-        prepMediaPlayer();
-
 
         // Define a new Adapter
         // First parameter - Context
@@ -239,20 +217,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
 
         //Añadimos elementos a la lista de manera estática
-        adapter.add(new ShpVideo("OBXRJgSd-aU"));
+        //adapter.add(new ShpVideo("OBXRJgSd-aU"));
         //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-        adapter.add(new ShpVideo("0rEVwwB3Iw0"));
+        //adapter.add(new ShpVideo("0rEVwwB3Iw0"));
 
-        //Registramos el escuchador de eventos para el bluetooth con el filtro para que
-        // detecte los eventos que deseamos.
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        registerReceiver(mBroadcastReciever, filter);
         //Metodo para encender el servicio de Bluetooth
         setupService();
         //Comenzamos a reproducir los elementos de la lista
         nextSong();
+        //Prep the media player
+        prepMediaPlayer();
 
     }
   
@@ -338,6 +312,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         myMediaController = new MediaController(this);
         myMediaController.setMediaPlayer(this);
         myMediaController.setAnchorView(findViewById(R.id.mediaPlayer));
+        myMediaController.hide();
         handler = new Handler();
 
         myMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -539,10 +514,5 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         return 0;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        myMediaController.show(0);
-        return true;
-    }
 }
 
