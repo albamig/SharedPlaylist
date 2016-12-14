@@ -56,6 +56,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private ArrayAdapter<ShpMediaObject> adapter;
     private YouTubePlayer yTPlayer;
     private ArrayList<ShpMediaObject> playList;
+    private ArrayList<String> playListShowed;
+    private ArrayAdapter<String > adapterShowed;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
     private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
@@ -85,10 +87,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     break;
                 case Constants.MESSAGE_VIDEO_READ:
                     byte[] videoBuf = (byte[]) msg.obj;
-                    Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
-                    // construct a string from the valid bytes in the buffer
                     String readMessage = new String(videoBuf, 0, msg.arg1);
                     adapter.add(new ShpVideo(readMessage));
+                    Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
+                    // construct a string from the valid bytes in the buffer
+
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
@@ -145,6 +148,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         listView = (ListView) findViewById(R.id.listView);
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
+        playListShowed = new ArrayList<>();
 
 
         // Define a new Adapter
@@ -153,12 +157,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
 
+        adapterShowed = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,
+                android.R.id.text1, playListShowed );
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 android.R.id.text1, playList);
 
 
         // Assign adapter to ListView
-        listView.setAdapter(adapter);
+        listView.setAdapter(adapterShowed);
 
         // ListView Item Click Listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -185,8 +191,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         //Añadimos elementos a la lista de manera estática
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
+        adapterShowed.add("Boney-M: Resputin");
         adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+        adapterShowed.add("C-TANGANA: C.H.I.T.O");
         adapter.add(new ShpVideo("xQTuhEA-TsM"));
+        adapterShowed.add("Canserbero: Muerte-Es épico");
 
         //Metodo para encender el servicio de Bluetooth
         setupService();
@@ -225,7 +234,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         myMediaController = new MediaController(this);
         myMediaController.setMediaPlayer(this);
         myMediaController.setAnchorView(findViewById(R.id.mediaPlayer));
-        myMediaController.hide();
         handler = new Handler();
 
         myMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

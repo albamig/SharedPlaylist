@@ -23,6 +23,10 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
@@ -31,18 +35,18 @@ import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
+import static android.R.attr.name;
+
 public class ClientActivity extends AppCompatActivity {
 
 
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    private static final int REQUEST_ENABLE_BT = 3;
     private static final String TYPE = "Client";
     private static final int SELECT_VIDEO = 1;
 
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;
-    private FloatingActionButton addVideoButton;
     private ArrayAdapter<ShpMediaObject> adapter;
     private BluetoothAdapter btAdapter;
     private BTSharedPlayService mService;
@@ -52,6 +56,7 @@ public class ClientActivity extends AppCompatActivity {
     public SearchBox search;
     private FloatingActionsMenu fab;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_yt;
+    private com.getbase.floatingactionbutton.FloatingActionButton fab_local;
 
 
     //Manejador para devolver información al servicio
@@ -81,7 +86,7 @@ public class ClientActivity extends AppCompatActivity {
                     adapter.add(new ShpVideo(readMessage));
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
-
+                    Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getApplicationContext()) {
@@ -102,21 +107,19 @@ public class ClientActivity extends AppCompatActivity {
         search = (SearchBox) findViewById(R.id.searchbox);
         fab = (FloatingActionsMenu) findViewById(R.id.menu_fab);
         fab_yt = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_yt);
+        fab_local = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_fs);
         fab_yt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showSearchbox();
             }
         });
-        //Colocamos los escuchadores de la barra de busqueda de youtube
-        setSearchBoxListeners();
 
-        /**addVideoButton =(FloatingActionButton)findViewById(R.id.addVideo);
-        addVideoButton.setOnClickListener(new View.OnClickListener() {
+        fab_local.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 //Definimos el archivo que se va  enviar a traves de su path de almacenamiento
-                File song = new File("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3");
+                File song = new File("/storage/emulated/0/Music/Ready To Die [1994]/02 Things Done Changed.mp3");
                 //Declaramos un array de bytes el cual tiene el tamaño del archivo mas cuatro bytes para el tamaño del mismo
                 byte[] songArray = new byte[(int) song.length()+4];
                 //Guardamos y casteamos el tamaño del archivo al array de bytes
@@ -124,28 +127,40 @@ public class ClientActivity extends AppCompatActivity {
                 songArray[0] = (byte) (tam >> 24);
                 songArray[1] = (byte) (tam >> 16);
                 songArray[2] = (byte) (tam >> 8);
-                songArray[3] = (byte) (tam /*>> 0);
+                songArray[3] = (byte) (tam);
                 try {
                     //Escribimos sobre el array de bytes los datos del fichero a traves de un inputStream
                     FileInputStream fis = new FileInputStream(song);
                     fis.read(songArray, 4, (int)song.length());
-                    fis.close();
+                    //En la segunda lectura buscamos los ultimos 128 bytes en los cuales estan los metadatos
+                    // en los archivos MP3.
+                    fis.skip(song.length()-128);
+                    byte[] last128 = new byte[128];
+                    //Leemos los 128 ultimos
+                    fis.read(last128);
+                    String metaData = new String(last128);
+                    //Creamos el substring con el nombre de la canción
+                    String name = metaData.substring(3, 32);
+                    Toast.makeText(getApplicationContext(), name, Toast.LENGTH_LONG).show();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
-                if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
+                /**if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
                     Toast.makeText(getApplicationContext(), "No se puede enviar sin conexion", Toast.LENGTH_LONG).show();
 
                 } else {
                     mService.write(songArray);
-                }
-
-
+                }*/
             }
-        });*/
+
+        });
+
+        //Colocamos los escuchadores de la barra de busqueda de youtube
+        setSearchBoxListeners();
+
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
 
@@ -274,7 +289,6 @@ public class ClientActivity extends AppCompatActivity {
         device = btAdapter.getRemoteDevice(address);
         //Intentamos conectar
         mService.connect(device);
-        Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_LONG).show();
     }
 
     //Metodos para la barra de busqueda de YT
