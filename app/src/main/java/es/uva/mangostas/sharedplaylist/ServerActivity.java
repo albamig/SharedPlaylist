@@ -23,6 +23,7 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -119,13 +120,27 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         FileOutputStream fos = new FileOutputStream(song);
                         fos.write(songBuf);
                         fos.close();
+                        FileInputStream fis = new FileInputStream(song);
+                        //En la segunda lectura buscamos los ultimos 128 bytes en los cuales estan los metadatos
+                        // en los archivos MP3.
+                        fis.skip(song.length() - 128);
+                        byte[] last128 = new byte[128];
+
+                        //Leemos los 128 ultimos
+                        fis.read(last128);
+                        String metaData = new String(last128);
+                        //Creamos el substring con el nombre de la canción
+                        String name = metaData.substring(3, 32);;
+                        File finalSong = new File(getFilesDir(), name);
+                        song.renameTo(finalSong);
+                        adapterShowed.add(name);
+                        adapter.add(new ShpSong(finalSong.getPath()));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     Toast.makeText(getApplicationContext(), "Cancion añadida a la lista", Toast.LENGTH_LONG).show();
-                    adapter.add(new ShpSong(song.getPath()));
             }
         }
     };
@@ -319,9 +334,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                /*Intent intent = new Intent(ServerActivity.this, SongActivity.class);
-                startActivity(intent);
-                adapter.remove(adapter.getItem(0));*/
             }
         } else {
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
