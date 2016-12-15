@@ -96,8 +96,10 @@ public class BTSharedPlayService {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
+        if (mtype.equals("Server")) {
+            setState(STATE_LISTEN);
+        }
 
-        setState(STATE_LISTEN);
 
         //Lanzamos el hilo que se encarga de escuchar peticiones
         if (mAcceptThread == null) {
@@ -144,9 +146,12 @@ public class BTSharedPlayService {
         if (mtype.equals("Server")) {
             myConnections.add(new ConnectedThread(socket));
             myConnections.get(myConnections.size()-1).start();
+            setState(STATE_CONNECTED_AND_LISTEN);
         } else if (mtype.equals("Client")) {
+            Log.d("CREANDO HILO", "CONEXION");
             mConnectedThread = new ConnectedThread(socket);
             mConnectedThread.start();
+            setState(STATE_CONNECTED_AND_LISTEN);
             }
         //Enviamos el nombre del dispositivo que se ha conectado de vuelta a la Actividad
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
@@ -155,7 +160,7 @@ public class BTSharedPlayService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
-        setState(STATE_CONNECTED_AND_LISTEN);
+
     }
 
     /**
@@ -420,6 +425,7 @@ public class BTSharedPlayService {
                             Log.d("Leido", "Leido el resto");
                             mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
                                     .sendToTarget();
+                            continue;
                         } else {
                             //Definimos el array que almacenara la cancion con el tamaño de esta
                             fin = new byte[size];
@@ -447,8 +453,9 @@ public class BTSharedPlayService {
                         }
                         mHandler.obtainMessage(Constants.MESSAGE_SONG_READ, totalBytes, -1, fin)
                                 .sendToTarget();
+                        fin = null;
                         totalBytes = 0;
-                    } else {
+                    } else if (totalBytes > 0) {
                         //Si no se cumple la condición copiamos los bytes leidos en el buffer final.
                         for (int i = 0; i < bytes; i++) {
                             fin[totalBytes-bytes+i] = buffer[i];

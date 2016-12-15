@@ -152,8 +152,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     String videoId = searchResultList.get(i).getId().getVideoId();
+                    String videoName = searchResultList.get(i).getSnippet().getTitle();
                     Intent intent = new Intent();
                     intent.putExtra("videoID", videoId);
+                    intent.putExtra("videoName", videoName);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 }

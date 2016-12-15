@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -23,10 +22,6 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
@@ -35,15 +30,14 @@ import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-import static android.R.attr.name;
-
 public class ClientActivity extends AppCompatActivity {
 
 
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
-    private static final int SELECT_VIDEO = 1;
+    private static final int VIDEO_SELECTED = 1;
+    private static final int SONG_SELECTED = 3;
 
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;
@@ -118,6 +112,9 @@ public class ClientActivity extends AppCompatActivity {
         fab_local.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO Aqui mete Santos lo del intent
+
+                /**
                 //Definimos el archivo que se va  enviar a traves de su path de almacenamiento
                 File song = new File("/storage/emulated/0/Music/Ready To Die [1994]/02 Things Done Changed.mp3");
                 //Declaramos un array de bytes el cual tiene el tamaño del archivo mas cuatro bytes para el tamaño del mismo
@@ -148,7 +145,7 @@ public class ClientActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
-                /**if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
+                if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
                     Toast.makeText(getApplicationContext(), "No se puede enviar sin conexion", Toast.LENGTH_LONG).show();
 
                 } else {
@@ -255,8 +252,9 @@ public class ClientActivity extends AppCompatActivity {
     }
 
 
-    private void sendVideo(String msg) {
+    private void sendVideo(String msg, String name) {
         //Comprobamos que estamos conectados antes de enviar
+        Log.d("ESTADO CLIENTE", ""+mService.getState());
         if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
             Toast.makeText(getApplicationContext(), "No es posible enviar sin una conexion", Toast.LENGTH_LONG).show();
             return;
@@ -268,15 +266,20 @@ public class ClientActivity extends AppCompatActivity {
 
 
             byte[] message = msg.getBytes();
-            byte[] video = new byte[msg.length()+4];
+            byte[] videoName = name.substring(0,29).getBytes();
+            byte[] video = new byte[msg.length()+34];
             video[0] = (byte) (0 >> 24);
             video[1] = (byte) (0 >> 16);
             video[2] = (byte) (0 >> 8);
             video[3] = (byte) (0 /*>> 0*/);
 
+            //Añadimos el nombre de la cancion en los 30 bytes despues del tamaño
+            for (int i = 0; i < videoName.length; i++) {
+                video[i+4] = videoName[i];
+            }
             //Copiamos los datos del ID del video al array y lo enviamos
             for (int i = 0; i < message.length; i++) {
-                video[i+4] = message[i];
+                video[i+34] = message[i];
             }
             mService.write(video);
         }
@@ -289,6 +292,7 @@ public class ClientActivity extends AppCompatActivity {
         device = btAdapter.getRemoteDevice(address);
         //Intentamos conectar
         mService.connect(device);
+        Log.w("ESTADO CLIENTE CON", ""+mService.getState());
     }
 
     //Metodos para la barra de busqueda de YT
@@ -339,7 +343,7 @@ public class ClientActivity extends AppCompatActivity {
         Intent intent = new Intent(this, YoutubeResultsActivity.class);
         intent.putExtra("term" ,searchTerm);
 
-        startActivityForResult(intent, SELECT_VIDEO);
+        startActivityForResult(intent, VIDEO_SELECTED);
     }
 
     protected void closeSearch() {
@@ -361,11 +365,12 @@ public class ClientActivity extends AppCompatActivity {
                     connectDevice(data);
                 }
                 break;
-            case SELECT_VIDEO:
+            case VIDEO_SELECTED:
                 // Cuando la peticion de seleccionar un video de la lista vuelve
                 if (resultCode == Activity.RESULT_OK) {
-                    String msg = data.getStringExtra("videoID");
-                    sendVideo(msg);
+                    String video = data.getStringExtra("videoID");
+                    String name = data.getStringExtra("videoName");
+                    sendVideo(video, name);
                 } else {
                     // Ha ocurrido un error con el video
                     Toast.makeText(getApplicationContext(), "El video seleccionado no esta disponible", Toast.LENGTH_LONG).show();

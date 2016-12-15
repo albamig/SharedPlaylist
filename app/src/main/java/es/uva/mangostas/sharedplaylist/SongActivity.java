@@ -168,7 +168,8 @@ public class SongActivity extends AppCompatActivity {
     //Lanza un intent a una actividad contenida ya en el dispositivo móvil. Abre un explorador de archivos.
     private void PickFiler(){
 
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("file/*");
         startActivityForResult(intent, PICKER);
 
     }

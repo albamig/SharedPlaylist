@@ -88,7 +88,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 case Constants.MESSAGE_VIDEO_READ:
                     byte[] videoBuf = (byte[]) msg.obj;
                     String readMessage = new String(videoBuf, 0, msg.arg1);
-                    adapter.add(new ShpVideo(readMessage));
+                    String videoName = readMessage.substring(0,29);
+                    adapterShowed.add(videoName);
+                    adapter.add(new ShpVideo(readMessage.substring(30, readMessage.length()-1)));
                     Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
 
@@ -192,8 +194,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //Añadimos elementos a la lista de manera estática
         adapter.add(new ShpVideo("OBXRJgSd-aU"));
         adapterShowed.add("Boney-M: Resputin");
-        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-        adapterShowed.add("C-TANGANA: C.H.I.T.O");
+        //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+        //adapterShowed.add("C-TANGANA: C.H.I.T.O");
         adapter.add(new ShpVideo("xQTuhEA-TsM"));
         adapterShowed.add("Canserbero: Muerte-Es épico");
 
