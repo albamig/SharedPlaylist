@@ -37,11 +37,6 @@
 
             android:theme="@style/AppTheme"></activity>
         <activity
-            android:name=".Reproductive"
-            android:label="Reproductor">
-
-        </activity>
-        <activity
             android:name=".BluetoothService.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="select_device"

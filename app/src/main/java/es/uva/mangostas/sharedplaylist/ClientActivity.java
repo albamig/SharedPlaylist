@@ -491,6 +491,7 @@ public class ClientActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     String video = data.getStringExtra("videoID");
                     String name = data.getStringExtra("videoName");
+                    Log.d("VIDEOID", video);
                     sendVideo(video, name);
                 } else {
 
