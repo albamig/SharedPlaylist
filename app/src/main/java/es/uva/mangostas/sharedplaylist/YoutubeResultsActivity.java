@@ -16,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -67,7 +68,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                         @Override
                         protected SearchListResponse doInBackground(Void... voids) {
 
-                             YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                                     new HttpRequestInitializer() {
                                         public void initialize(HttpRequest request) throws IOException {
                                         }
@@ -81,7 +82,8 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 searchYt.setKey(APIKEY);
                                 searchYt.setQ(term);
                                 searchYt.setType("video");
-                                searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, snippet/thumbnails/default/url)");
+                                searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, " +
+                                        "snippet/thumbnails/default/url)");
                                 searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
 
                                 Log.d("testYT", "Metida la info al objeto de consulta");
@@ -93,17 +95,22 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
                                 return searchResponse;
 
+                            } catch (GoogleJsonResponseException e) {
+                                return null;
                             } catch (IOException e) {
-                                Log.d("testYT", "Estoy tirando la IOException");
+                                return null;
                             }
-
-                            return null;
                         }
-
                     }.execute((Void) null).get();
 
-                    searchResultList = searchResponse.getItems();
-
+                    if (searchResponse == null) {
+                        Log.d("except", "salgo de la actividad");
+                        setResult(Activity.RESULT_CANCELED);
+                        finish();
+                        return;
+                    } else {
+                        searchResultList = searchResponse.getItems();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -125,7 +132,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         @Override
         public int getCount(){
-            return (int) NUMBER_OF_VIDEOS_RETURNED;
+            return (int) searchResultList.size();
         }
 
         @Override

@@ -9,4 +9,5 @@
     <string name="search_list">Buscar lista</string>
     <string name="youTube">youTube</string>
     <string name="local">lcal</string>
+    <string name="serviceErrorYt">Se ha producido un error en el servicio de YouTube</string>
 </resources>

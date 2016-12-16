@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -34,8 +33,6 @@ import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
-
-import static android.R.attr.name;
 
 public class ClientActivity extends AppCompatActivity {
 
@@ -366,10 +363,15 @@ public class ClientActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     String msg = data.getStringExtra("videoID");
                     sendVideo(msg);
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.serviceErrorYt),
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     // Ha ocurrido un error con el video
-                    Toast.makeText(getApplicationContext(), "El video seleccionado no esta disponible", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "El video seleccionado no esta disponible",
+                            Toast.LENGTH_LONG).show();
                 }
+                break;
         }
     }
 
