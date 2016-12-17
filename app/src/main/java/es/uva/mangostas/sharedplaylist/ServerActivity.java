@@ -1,5 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,7 +49,8 @@ import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
+public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
+        YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
     private ListView listView;
     public SearchBox search;
     private Toolbar toolbar;
@@ -167,7 +169,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     protected void onDestroy(){
         super.onDestroy();
 
-        deleteState();
+        Log.d("OSCAR","onDestroy: "+ deleteState());
     }
 
     /**
@@ -502,6 +504,20 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         return true;
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if(isIni){
+                yTPlayer.setFullscreen(true);
+            }
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
 
