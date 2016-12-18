@@ -363,8 +363,11 @@ public class ClientActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     String msg = data.getStringExtra("videoID");
                     sendVideo(msg);
-                } else if (resultCode == Activity.RESULT_CANCELED) {
+                } else if (resultCode == YoutubeResultsActivity.RESULT_GJEXCPT) {
                     Toast.makeText(getApplicationContext(), getString(R.string.serviceErrorYt),
+                            Toast.LENGTH_SHORT).show();
+                } else if (resultCode == YoutubeResultsActivity.RESULT_IOEXCPT) {
+                    Toast.makeText(getApplicationContext(), R.string.jsonExcpt,
                             Toast.LENGTH_SHORT).show();
                 } else {
                     // Ha ocurrido un error con el video

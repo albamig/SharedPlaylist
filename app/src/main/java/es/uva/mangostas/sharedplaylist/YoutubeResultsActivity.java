@@ -33,6 +33,9 @@ import java.util.logging.Handler;
 
 
 public class YoutubeResultsActivity extends AppCompatActivity {
+    public static final int RESULT_GJEXCPT = 0;
+    public static final int RESULT_IOEXCPT = 1;
+
     private String term;
     private ListView listViewRes;
     //TextView yt_title, yt_chan;
@@ -96,21 +99,25 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 return searchResponse;
 
                             } catch (GoogleJsonResponseException e) {
+                                Log.d("except", "salgo de la actividad");
+                                setResult(RESULT_GJEXCPT);
+                                finish();
                                 return null;
                             } catch (IOException e) {
+                                Log.d("except", "salgo de la actividad");
+                                setResult(RESULT_IOEXCPT);
+                                finish();
                                 return null;
                             }
                         }
                     }.execute((Void) null).get();
 
                     if (searchResponse == null) {
-                        Log.d("except", "salgo de la actividad");
-                        setResult(Activity.RESULT_CANCELED);
-                        finish();
                         return;
                     } else {
                         searchResultList = searchResponse.getItems();
                     }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

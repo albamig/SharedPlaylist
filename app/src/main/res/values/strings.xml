@@ -13,4 +13,6 @@
     <string name="menu_yt_tit">YouTube</string>
     <string name="menu_fs_tit">Local</string>
     <string name="serviceErrorYt">There was an error on Youtube service</string>
+    <string name="ytbExcpt">There was an while trying to connect to YouTube</string>
+
 </resources>
