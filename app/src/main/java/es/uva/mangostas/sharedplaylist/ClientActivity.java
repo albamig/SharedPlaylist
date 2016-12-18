@@ -86,7 +86,6 @@ public class ClientActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Cancion Añadida", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    adapter.add(new ShpVideo(readMessage));
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_SHORT).show();

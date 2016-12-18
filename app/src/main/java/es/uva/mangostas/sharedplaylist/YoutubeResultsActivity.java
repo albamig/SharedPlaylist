@@ -101,9 +101,14 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                         }
 
                     }.execute((Void) null).get();
+                    if (searchResponse == null) {
+                        Intent intent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, intent);
+                        this.finish();
+                    } else {
 
-                    searchResultList = searchResponse.getItems();
-
+                        searchResultList = searchResponse.getItems();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

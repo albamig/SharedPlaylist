@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -59,11 +58,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private MediaPlayer myMediaPlayer;
     private Handler handler;
     private MediaController myMediaController;
-    private ArrayAdapter<ShpMediaObject> adapter;
     private YouTubePlayer yTPlayer;
     private ArrayList<ShpMediaObject> playList;
-    private ArrayList<String> songTitles;
-    private ArrayList<String> songArtists;
     private TrackListAdapter tladapter;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
@@ -93,8 +89,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     //Extraemos el nombre del video
                     String videoName = readMessage.substring(0,29);
                     //Lo añadimos a la lista
-                    songTitles.add(videoName);
-                    adapter.add(new ShpVideo(readMessage.substring(30)));
+                    playList.add(new ShpVideo(readMessage.substring(30), videoName));
                     tladapter.notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
@@ -124,12 +119,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         FileOutputStream fos = new FileOutputStream(song);
                         fos.write(songBuf);
                         fos.close();
-                        String name = getTitle(songBuf);
-                        File finalSong = new File(getFilesDir(), name);
+                        ShpSong newSong = new ShpSong(songBuf, "");
+                        File finalSong = new File(getFilesDir(), newSong.getTitle());
                         song.renameTo(finalSong);
-                        songTitles.add(name);
-                        songArtists.add(getArtist(songBuf));
-                        adapter.add(new ShpSong(finalSong.getPath()));
+                        newSong.setPath(finalSong.getPath());
+                        playList.add(newSong);
                         tladapter.notifyDataSetChanged();
 
                     } catch (FileNotFoundException e) {
@@ -162,17 +156,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         listView = (ListView) findViewById(R.id.listView);
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
-        songTitles = new ArrayList<>();
-        songArtists = new ArrayList<>();
-
-
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written
-        // Forth - the Array of data
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-                android.R.id.text1, playList);
 
 
         // ListView Item Click Listener
@@ -199,13 +182,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
 
         //Añadimos elementos a la lista de manera estática
-        adapter.add(new ShpVideo("OBXRJgSd-aU"));
-        songTitles.add("Rasputin");
-        adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-        songTitles.add("C.H.I.T.O");
-        songArtists.add("C-Tangana");
-        adapter.add(new ShpVideo("cytK7Nl0U60"));
-        songTitles.add("Pura droga sin cortar");
+        playList.add(new ShpVideo("OBXRJgSd-aU", "Rasputin"));
+        playList.add(new ShpVideo("cytK7Nl0U60", "Es Épico"));
 
         //Metodo para encender el servicio de Bluetooth
         setupService();
@@ -295,16 +273,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     public void nextSong() {
         //Comprobamos que la lista no esta vacia
-        if(!adapter.isEmpty()) {
+        if(!playList.isEmpty()) {
             //Si el elemento es de tipo video lanzamos el youtube
-            if(adapter.getItem(0) instanceof ShpVideo) {
+            if(playList.get(0) instanceof ShpVideo) {
                 if(!isIni) {
                     getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
                     youTubePlayerFragmen.initialize(APIKEY, this);
                     isIni = true;
                 } else {
-                    yTPlayer.loadVideo(((ShpVideo) adapter.getItem(0)).getYtCode());
-                    adapter.remove(adapter.getItem(0));
+                    yTPlayer.loadVideo(((ShpVideo) playList.get(0)).getYtCode());
+                    playList.remove(playList.get(0));
                 }
                 //Si no es un video lanzamos el reproductor propio y liberamos los recursoso del yt
             } else {
@@ -312,7 +290,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 yTPlayer.release();
                 isIni = false;
                 ShpSong song;
-                song = (ShpSong)adapter.getItem(0);
+                song = (ShpSong)playList.get(0);
                 try{
                     myMediaPlayer.setDataSource(song.getPath());
                     myMediaPlayer.prepare();
@@ -323,7 +301,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         public void onCompletion(MediaPlayer mp) {
                             myMediaPlayer.reset();
                             myMediaController.hide();
-                            adapter.remove(adapter.getItem(0));
+                            playList.remove(playList.get(0));
                             nextSong();
 
                         }
@@ -350,9 +328,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             yTPlayer.setPlayerStateChangeListener(this);
             //reproducimos el primer video
             ShpVideo video;
-            video = (ShpVideo)adapter.getItem(0);
+            video = (ShpVideo)playList.get(0);
             yTPlayer.loadVideo(video.getYtCode());
-            adapter.remove(adapter.getItem(0));
+            playList.remove(playList.get(0));
         }
     }
 
@@ -478,38 +456,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             TextView songTitle = (TextView)view.findViewById(R.id.textView_Title);
             TextView songArtist = (TextView)view.findViewById(R.id.textView_Artis);
             ImageView songType = (ImageView)view.findViewById(R.id.songType);
-            songTitle.setText(songTitles.get(i));
-            if (adapter.getItem(i) instanceof ShpVideo) {
+            songTitle.setText(playList.get(i).getTitle());
+            if (playList.get(i) instanceof ShpVideo) {
                 songType.setImageResource(R.drawable.ic_yt);
-                songArtist.setText("YouTube");
+                songArtist.setText(playList.get(i).getArtist());
             } else {
                 songType.setImageResource(R.mipmap.auriculares);
-                songArtist.setText(songArtists.get(i % songArtists.size()));
+                songArtist.setText(playList.get(i).getArtist());
             }
             return view;
         }
-    }
-
-    /**
-     * Obtiene el titulo de los meta datos de la canción que se pasa como parametro
-     * @param song
-     * @return
-     */
-    public String getTitle(byte[] song) {
-        String data = new String(song);
-        String title = data.substring(data.length()-128, data.length()-1).substring(3, 32);
-        return title;
-    }
-
-    /**
-     * Obtiene el artista de los meta datos de la canción que recibe como parametro
-     * @param song
-     * @return
-     */
-    public String getArtist(byte[] song) {
-        String data = new String(song);
-        String artist = data.substring(data.length()-128, data.length()-1).substring(33, 62);
-        return artist;
     }
 }
 
