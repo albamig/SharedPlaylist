@@ -2,10 +2,8 @@ package es.uva.mangostas.sharedplaylist;
 
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,21 +17,11 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -41,9 +29,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
@@ -52,18 +37,11 @@ import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
         YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
     private ListView listView;
-    public SearchBox search;
     private Toolbar toolbar;
-    private FloatingActionsMenu fab;
-    private FloatingActionButton fab_yt;
-    private ShpPlayer shpPlayerFragment;
-    private ShpMediaObject now;
     /**
      * Define a global instance of a Youtube object, which will be used
      * to make YouTube Data API requests.
      */
-    private static YouTube youtube;
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
     private MediaPlayer myMediaPlayer;
     private Handler handler;
     private MediaController myMediaController;
@@ -90,8 +68,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
 
-        //Prep the media player
-        prepMediaPlayer();
+
 
 
         // Define a new Adapter
@@ -155,6 +132,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         loadState();
 
+        //Prep the media player
+        prepMediaPlayer();
+
         nextSong();
     }
 
@@ -163,6 +143,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         super.onPause();
 
         saveState();
+
+        myMediaPlayer.release();
     }
 
     @Override
@@ -292,8 +274,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 //Si no es un video lanzamos el reproductor propio y liberamos los recursoso del yt
             } else {
                 getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-                yTPlayer.release();
-                isIni = false;
+
+                if(isIni) {
+                    yTPlayer.release();
+                    isIni = false;
+                }
                 ShpSong song;
                 song = (ShpSong)adapter.getItem(0);
                 try{
@@ -384,9 +369,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     //se llama a este metodo al inicializar el reproductor con exito
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-        Log.d("OSCAR","inicializando");
+
         if (!b) {
-            Log.d("OSCAR","!b");
+
             if(youTubePlayer != null) {
                 this.yTPlayer=youTubePlayer;
             }
@@ -513,11 +498,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             if(isIni){
                 yTPlayer.setFullscreen(true);
             }
-            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
 
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
-        }
+        }/* else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+                CAMBIOS AL PONER LA PANTALLA VERTICAL
+        }*/
     }
 }
 
