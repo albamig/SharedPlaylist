@@ -1,16 +1,13 @@
 package es.uva.mangostas.sharedplaylist;
 
 
-import android.content.res.Configuration;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,18 +25,21 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
@@ -206,22 +206,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         if(!appState.exists()) {
             Log.d("OSCAR", "no existe");
             //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
-            adapter.add(new ShpVideo("OBXRJgSd-aU","mojo","yoyo"));
-            adapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+            playList.add(new ShpVideo("OBXRJgSd-aU","mojoyoyo"));
+            playList.add(new ShpVideo("0rEVwwB3Iw0", "topo el topor"));
             //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-            adapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
-            adapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+            //playList.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
 
             //Añadimos elementos a la lista de manera estática
-            adapter.add(new ShpVideo("OBXRJgSd-aU"));
-            adapterShowed.add("Boney-M: Resputin");
-            adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-            adapterShowed.add("C-TANGANA: C.H.I.T.O");
-            adapter.add(new ShpVideo("xQTuhEA-TsM"));
-            adapterShowed.add("Canserbero: Muerte-Es épico");
-          //Añadimos elementos a la lista de manera estática
-          playList.add(new ShpVideo("OBXRJgSd-aU", "Rasputin"));
-          playList.add(new ShpVideo("cytK7Nl0U60", "Es Épico"));
+            playList.add(new ShpVideo("OBXRJgSd-aU", "Rasputin"));
+            playList.add(new ShpVideo("cytK7Nl0U60", "Es Épico"));
         }
 
         loadState();
@@ -290,15 +282,15 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             }
 
             //recorremos la lista de reproduccion guardando el codigo de las canciones en la cache.
-            while(!adapter.isEmpty()){
+            while(!playList.isEmpty()){
 
-                if(adapter.getItem(0) instanceof ShpVideo){
-                    pw.print("V"+((ShpVideo) adapter.getItem(0)).getYtCode()+'\n');
-                    Log.d("OSCAR","save: "+((ShpVideo) adapter.getItem(0)).getYtCode());
-                    adapter.remove(adapter.getItem(0));
+                if(playList.get(0) instanceof ShpVideo){
+                    pw.print("V"+((ShpVideo) playList.get(0)).getYtCode()+'\n');
+                    Log.d("OSCAR","save: "+((ShpVideo) playList.get(0)).getYtCode());
+                    playList.remove(playList.get(0));
                 } else {
-                    pw.print(((ShpSong) adapter.getItem(0)).getPath()+'\n');
-                    adapter.remove(adapter.getItem(0));
+                    pw.print(((ShpSong) playList.get(0)).getPath()+'\n');
+                    playList.remove(playList.get(0));
                 }
             }
             fw.close();
@@ -340,9 +332,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 while ((linea = br.readLine()) != null) {
                     Log.d("OSCAR","load");
                     if (linea.substring(0, 1).equals("V")) {
-                        adapter.add(new ShpVideo(linea.substring(1)));
+                        //playList.add(new ShpVideo(linea.substring(1)));
                     } else {
-                        adapter.add(new ShpSong(linea));
+                        //playList.add(new ShpSong(linea));
                     }
                 }
 
@@ -383,7 +375,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     isIni = true;
                 } else {
                     yTPlayer.loadVideo(((ShpVideo) playList.get(0)).getYtCode());
-                    playList.remove(playList.get(0));
                 }
                 //Si no es un video lanzamos el reproductor propio y liberamos los recursoso del yt
             } else {
@@ -407,7 +398,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             myMediaPlayer.reset();
                             myMediaController.hide();
                             currentTime = 0;
-                            playList.remove(playList.get(0));
+                            playList.remove(0);
                             nextSong();
 
                         }
@@ -492,7 +483,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             ShpVideo video;
             video = (ShpVideo)playList.get(0);
             yTPlayer.loadVideo(video.getYtCode());
-            playList.remove(playList.get(0));
         }
     }
 
@@ -526,7 +516,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public void onVideoEnded() {
 
-        adapter.remove(adapter.getItem(0));
+        playList.remove(0);
         currentTime = 0;
         nextSong();
     }

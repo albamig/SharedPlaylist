@@ -10,6 +10,7 @@ public class ShpSong extends ShpMediaObject {
 
     private String path;
     private byte[] data;
+
     public ShpSong(byte[] song, String path) {
         data = new byte[song.length];
         for (int i = 0; i < song.length; i++) {
@@ -17,10 +18,10 @@ public class ShpSong extends ShpMediaObject {
         }
         this.path = path;
     }
-
-    public String getPath(){
-
-        return path;
+    public ShpSong(String path, String title, String artist) {
+        this.path = path;
+        this.setArtist(artist);
+        this.setTitle(title);
     }
 
     public void setPath(String path) {
