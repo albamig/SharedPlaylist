@@ -12,7 +12,6 @@ public abstract class ShpMediaObject {
     public ShpMediaObject() {
 
     }
-
     public String getTitle() {
         return title;
     }

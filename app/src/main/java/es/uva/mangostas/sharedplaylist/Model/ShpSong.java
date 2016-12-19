@@ -27,6 +27,10 @@ public class ShpSong extends ShpMediaObject {
         this.path = path;
     }
 
+    public String getPath(){
+        return path;
+    }
+
     /**
      * Obtiene el titulo de los meta datos de la canción
      * @return Titulo de la canción

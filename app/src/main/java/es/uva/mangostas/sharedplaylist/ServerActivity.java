@@ -1,18 +1,24 @@
 package es.uva.mangostas.sharedplaylist;
 
 
+import android.content.res.Configuration;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,24 +28,27 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
+
+public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
+        YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
 
     //Codigos de los Intent
     private static final int REQUEST_ENABLE_BT = 3;
@@ -55,6 +64,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     //Servicio de envio de texto
     private BTSharedPlayService mSendService = null;
     private static final String TYPE = "Server";
+
     private MediaPlayer myMediaPlayer;
     private Handler handler;
     private MediaController myMediaController;
@@ -63,6 +73,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private TrackListAdapter tladapter;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
+
+    private int currentTime = 0;
+
     private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
     //Manejador para devolver información al servicio
@@ -152,11 +165,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         toolbar = (Toolbar) findViewById(R.id.appBarLayout);
         this.setSupportActionBar(toolbar);
 
+
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
-
+        //Assign adapter to ListView
+        tladapter = new TrackListAdapter();
+        listView.setAdapter(tladapter);
 
         // ListView Item Click Listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -180,25 +196,60 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //Inicializamos el fragmento
         youTubePlayerFragmen = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtubeFragment);
 
+    }
 
-        //Añadimos elementos a la lista de manera estática
-        playList.add(new ShpVideo("OBXRJgSd-aU", "Rasputin"));
-        playList.add(new ShpVideo("cytK7Nl0U60", "Es Épico"));
+    @Override
+    protected void onResume(){
+        super.onResume();
 
+        File appState = new File(getApplicationContext().getCacheDir(),"appState");
+        if(!appState.exists()) {
+            Log.d("OSCAR", "no existe");
+            //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
+            adapter.add(new ShpVideo("OBXRJgSd-aU","mojo","yoyo"));
+            adapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+            //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+            adapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
+            adapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+
+            //Añadimos elementos a la lista de manera estática
+            adapter.add(new ShpVideo("OBXRJgSd-aU"));
+            adapterShowed.add("Boney-M: Resputin");
+            adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+            adapterShowed.add("C-TANGANA: C.H.I.T.O");
+            adapter.add(new ShpVideo("xQTuhEA-TsM"));
+            adapterShowed.add("Canserbero: Muerte-Es épico");
+          //Añadimos elementos a la lista de manera estática
+          playList.add(new ShpVideo("OBXRJgSd-aU", "Rasputin"));
+          playList.add(new ShpVideo("cytK7Nl0U60", "Es Épico"));
+        }
+
+        loadState();
         //Metodo para encender el servicio de Bluetooth
         setupService();
-        //Comenzamos a reproducir los elementos de la lista
-        nextSong();
         //Prep the media player
         prepMediaPlayer();
-
-        // Assign adapter to ListView
-        tladapter = new TrackListAdapter();
-        listView.setAdapter(tladapter);
+        nextSong();
+        
 
     }
 
     @Override
+    protected void onPause(){
+        super.onPause();
+
+        saveState();
+
+        myMediaPlayer.release();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Log.d("OSCAR", "onDestroy: " + deleteState());
+    }
+
     protected void onStart() {
         super.onStart();
         //Si el Bluetooth no esta activado, lanzamos un intent para activarlo
@@ -217,6 +268,161 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         mSendService.start();
 
     }
+
+    /**
+     * Guardamos el estado de la aplicacion en la cache.
+     */
+    private void saveState(){
+        //Apuntamos al fichero en el que vamos a guardar el estado
+        File appState = new File(getApplicationContext().getCacheDir(),"appState");
+        Log.d("OSCAR",getApplicationContext().getCacheDir().toString());
+        try {
+            FileWriter fw = new FileWriter(appState);
+            PrintWriter pw = new PrintWriter(fw);
+            //Anotamos en que punto de la reproduccion se encuentra la cancion en este momento.
+            if(playList.get(0) instanceof ShpVideo){
+
+                pw.print(((yTPlayer.getCurrentTimeMillis() == -1) ? 0 : yTPlayer.getCurrentTimeMillis())+"\n");
+
+                Log.d("OSCAR","save: "+yTPlayer.getCurrentTimeMillis());
+            } else {
+                pw.print(myMediaPlayer.getCurrentPosition()+"\n");
+            }
+
+            //recorremos la lista de reproduccion guardando el codigo de las canciones en la cache.
+            while(!adapter.isEmpty()){
+
+                if(adapter.getItem(0) instanceof ShpVideo){
+                    pw.print("V"+((ShpVideo) adapter.getItem(0)).getYtCode()+'\n');
+                    Log.d("OSCAR","save: "+((ShpVideo) adapter.getItem(0)).getYtCode());
+                    adapter.remove(adapter.getItem(0));
+                } else {
+                    pw.print(((ShpSong) adapter.getItem(0)).getPath()+'\n');
+                    adapter.remove(adapter.getItem(0));
+                }
+            }
+            fw.close();
+        } catch (IOException e) {
+            Log.e("ERROR","error reading file", e);
+        }
+    }
+
+    /**
+     * Cargamos el estado de la aplicacion almacenado en la cache.
+     */
+    private void loadState(){
+
+        File appState = new File(getApplicationContext().getCacheDir(),"appState");
+        Log.d("OSCAR","Comprobar si existe (onResume)"+appState.toString()+": "+appState.exists());
+        Log.d("OSCAR",getApplicationContext().getCacheDir().toString());
+
+        //Comprobamos que hay un estado guardado en la cache
+        if(appState.exists()) {
+            Log.d("OSCAR","existe");
+
+
+            try {
+                FileReader fr = new FileReader(appState);
+                Log.d("OSCAR","fr");
+                BufferedReader br = new BufferedReader(fr);
+                Log.d("OSCAR","br");
+
+                //recuperamos el tiempo por el que se llegaba la priemra cancion.
+                String linea;
+                Log.d("OSCAR","1");
+                linea=br.readLine();
+                Log.d("OSCAR","2"+linea);
+                currentTime = Integer.parseInt(linea);
+                Log.d("OSCAR","current");
+
+                //recuperamos la lista de reproduccion completa
+
+                while ((linea = br.readLine()) != null) {
+                    Log.d("OSCAR","load");
+                    if (linea.substring(0, 1).equals("V")) {
+                        adapter.add(new ShpVideo(linea.substring(1)));
+                    } else {
+                        adapter.add(new ShpSong(linea));
+                    }
+                }
+
+                fr.close();
+            } catch (FileNotFoundException e) {
+                Log.e("ERROR", "file not found", e);
+            } catch (IOException e) {
+                Log.e("ERROR", "error writing file", e);
+            }
+
+            //Borramos el fichero de la cache.
+            appState.delete();
+
+        }
+    }
+
+    /**
+     * Eliminamos de la cache el fichero que almacena el estado de la aplicacion.
+     * @return resultado del borrado del fichero.
+     */
+    private boolean deleteState(){
+        File appState = new File(getApplicationContext().getCacheDir(),"appState");
+        return appState.delete();
+    }
+
+    /**
+     * Este metodo llama a los reprouctores depoendiendo del tipo
+     * de cancion que hay en la primera posicion de la lista.
+     */
+    public void nextSong() {
+        //Comprobamos que la lista no esta vacia
+        if(!playList.isEmpty()) {
+            //Si el elemento es de tipo video lanzamos el youtube
+            if(playList.get(0) instanceof ShpVideo) {
+                if(!isIni) {
+                    getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
+                    youTubePlayerFragmen.initialize(APIKEY, this);
+                    isIni = true;
+                } else {
+                    yTPlayer.loadVideo(((ShpVideo) playList.get(0)).getYtCode());
+                    playList.remove(playList.get(0));
+                }
+                //Si no es un video lanzamos el reproductor propio y liberamos los recursoso del yt
+            } else {
+                getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+
+                if(isIni) {
+                    yTPlayer.release();
+                    isIni = false;
+                }
+                ShpSong song;
+                song = (ShpSong)playList.get(0);
+                try{
+                    myMediaPlayer.setDataSource(song.getPath());
+                    myMediaPlayer.prepare();
+                    seekTo(currentTime);
+                    myMediaPlayer.start();
+
+                    myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            myMediaPlayer.reset();
+                            myMediaController.hide();
+                            currentTime = 0;
+                            playList.remove(playList.get(0));
+                            nextSong();
+
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
+            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
 
     /**
      * Metodo para preparar el media player para reproducir canciones
@@ -267,65 +473,21 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
 
 
-    /**
-     * Este metodo llama a los reprouctores depoendiendo del tipo
-     * de cancion que hay en la primera posicion de la lista.
-     */
-    public void nextSong() {
-        //Comprobamos que la lista no esta vacia
-        if(!playList.isEmpty()) {
-            //Si el elemento es de tipo video lanzamos el youtube
-            if(playList.get(0) instanceof ShpVideo) {
-                if(!isIni) {
-                    getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
-                    youTubePlayerFragmen.initialize(APIKEY, this);
-                    isIni = true;
-                } else {
-                    yTPlayer.loadVideo(((ShpVideo) playList.get(0)).getYtCode());
-                    playList.remove(playList.get(0));
-                }
-                //Si no es un video lanzamos el reproductor propio y liberamos los recursoso del yt
-            } else {
-                getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-                yTPlayer.release();
-                isIni = false;
-                ShpSong song;
-                song = (ShpSong)playList.get(0);
-                try{
-                    myMediaPlayer.setDataSource(song.getPath());
-                    myMediaPlayer.prepare();
-                    myMediaPlayer.start();
 
-                    myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            myMediaPlayer.reset();
-                            myMediaController.hide();
-                            playList.remove(playList.get(0));
-                            nextSong();
-
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción.", Toast.LENGTH_LONG).show();
-        }
-    }
 
     //se llama a este metodo al inicializar el reproductor con exito
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+
         if (!b) {
+
             if(youTubePlayer != null) {
                 this.yTPlayer=youTubePlayer;
             }
 
             //le ponemos un controlador de cambios de estado al reproductor
             yTPlayer.setPlayerStateChangeListener(this);
+
             //reproducimos el primer video
             ShpVideo video;
             video = (ShpVideo)playList.get(0);
@@ -356,10 +518,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     public void onVideoStarted() {
 
     }
+
+    /**
+     * Se ejecuta cuando finaliza un video de youTube. Se borra la cancion que se estaba
+     * reproduciendo, se pone el tiempo de reproduccion a cero y se inicia la siguiente cancion.
+     */
     @Override
     public void onVideoEnded() {
-        //cuando se acaba un video reproducimos el siguiente
-        //Toast.makeText(getApplicationContext(), "Cambiando de tema...", Toast.LENGTH_LONG).show();
+
+        adapter.remove(adapter.getItem(0));
+        currentTime = 0;
         nextSong();
     }
     @Override
@@ -425,6 +593,27 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         return 0;
     }
 
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        myMediaController.show(0);
+        return true;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if(isIni){
+                yTPlayer.setFullscreen(true);
+            }
+
+        }/* else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+                CAMBIOS AL PONER LA PANTALLA VERTICAL
+        }*/
+    }
 
 
     //Clase del adaptador de la lista de reproduccion
