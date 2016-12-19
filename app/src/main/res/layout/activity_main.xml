@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/buttonServer" />
 
+
     <Button
         android:text="@string/search_list"
         android:layout_width="match_parent"

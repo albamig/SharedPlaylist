@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,7 +26,6 @@
         app:layout_constraintHorizontal_bias="1.0" />
 
 
-    <!-- http://www.hermosaprogramacion.com/2016/02/floating-action-button-android/ -->
     <fragment
         android:name="com.google.android.youtube.player.YouTubePlayerFragment"
         tools:layout_constraintRight_creator="1"
@@ -43,6 +41,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintVertical_bias="0.0" />
 
+
     <ListView
         tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="parent"
@@ -54,7 +53,8 @@
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:layout_constraintBottom_toTopOf="@+id/youtubeFragment"
         android:layout_marginBottom="16dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0" />
 
     <!-- Fragmento del reproductor de Youtube -->
 

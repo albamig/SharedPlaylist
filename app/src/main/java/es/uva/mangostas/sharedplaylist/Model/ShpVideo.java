@@ -11,10 +11,11 @@ public class ShpVideo extends ShpMediaObject {
     public ShpVideo(String ytCode) {
         this.ytCode = ytCode;
     }
-    @Override
-    public void play(String s) {
 
-
+    public ShpVideo(String path, String name, String author){
+        this.ytCode = path;
+        this.setName(name);
+        this.setAuthor(author);
     }
 
     public String getYtCode() {return ytCode;}

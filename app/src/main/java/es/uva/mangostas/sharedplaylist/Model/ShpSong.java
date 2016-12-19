@@ -10,10 +10,13 @@ public class ShpSong extends ShpMediaObject {
     public ShpSong(String path) {
         this.path = path;
     }
-    @Override
-    public void play(String s) {
 
+    public ShpSong(String path, String name, String author){
+        this.path = path;
+        this.setName(name);
+        this.setAuthor(author);
     }
+
 
     public String getPath(){
         return path;

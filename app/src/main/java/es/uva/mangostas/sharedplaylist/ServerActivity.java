@@ -1,9 +1,13 @@
 package es.uva.mangostas.sharedplaylist;
 
+
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,48 +20,136 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.Toast;
-
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
+import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
+import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
+
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
         YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
+
+    //Codigos de los Intent
+    private static final int REQUEST_ENABLE_BT = 3;
+
     private ListView listView;
     private Toolbar toolbar;
-    /**
-     * Define a global instance of a Youtube object, which will be used
-     * to make YouTube Data API requests.
-     */
+    //Nombre del dispositivo conectado
+    String mConnectedDevice = null;
+
+    //Adaptador para BT
+    private BluetoothAdapter btAdapter = null;
+
+    //Servicio de envio de texto
+    private BTSharedPlayService mSendService = null;
+    private static final String TYPE = "Server";
+
     private MediaPlayer myMediaPlayer;
     private Handler handler;
     private MediaController myMediaController;
     private ArrayAdapter<ShpMediaObject> adapter;
     private YouTubePlayer yTPlayer;
     private ArrayList<ShpMediaObject> playList;
+    private ArrayList<String> playListShowed;
+    private ArrayAdapter<String > adapterShowed;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
-    private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
+
     private int currentTime = 0;
 
+    private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
+
+
+    //Manejador para devolver información al servicio
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BTSharedPlayService.STATE_CONNECTED:
+                            break;
+                        case BTSharedPlayService.STATE_CONNECTING:
+                            break;
+                        case BTSharedPlayService.STATE_LISTEN:
+                        case BTSharedPlayService.STATE_NONE:
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    adapter.add(new ShpVideo(writeMessage));
+                    break;
+                case Constants.MESSAGE_VIDEO_READ:
+                    byte[] videoBuf = (byte[]) msg.obj;
+                    String readMessage = new String(videoBuf, 0, msg.arg1);
+                    adapter.add(new ShpVideo(readMessage));
+                    Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
+                    // construct a string from the valid bytes in the buffer
+
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != getApplicationContext()) {
+                        Toast.makeText(getApplicationContext(), "Connected to "
+                                + mConnectedDevice, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    if (null != getApplicationContext()) {
+                        Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Constants.MESSAGE_SONG_READ:
+                    byte[] songBuf = (byte[]) msg.obj;
+                    File song=new File(getFilesDir(), "CHITO.mp3");
+                    if (song.exists()) {
+                        song.delete();
+                    }
+                    try {
+                        FileOutputStream fos = new FileOutputStream(song);
+                        fos.write(songBuf);
+                        fos.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(), "Cancion añadida a la lista", Toast.LENGTH_LONG).show();
+                    adapter.add(new ShpSong(song.getPath()));
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server);
+        //Obtener el adaptador bluetooth
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        //Si es null, el dispositivo no soporta el bluetooth
+        if(btAdapter == null) {
+            Toast.makeText(getApplicationContext(), "El dispositivo no soporta Bluetooth", Toast.LENGTH_LONG).show();
+            finish();
+        }
 
         toolbar = (Toolbar) findViewById(R.id.appBarLayout);
         this.setSupportActionBar(toolbar);
@@ -68,6 +160,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
 
+        playListShowed = new ArrayList<>();
 
 
 
@@ -77,12 +170,15 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
 
+        adapterShowed = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,
+                android.R.id.text1, playListShowed );
+
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 android.R.id.text1, playList);
 
 
         // Assign adapter to ListView
-        listView.setAdapter(adapter);
+        listView.setAdapter(adapterShowed);
 
         // ListView Item Click Listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,13 +186,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
                 // ListView Clicked item index
                 int itemPosition = position;
-
                 // ListView Clicked item value
                 String itemValue = (String) listView.getItemAtPosition(position);
-
                 // Show Alert
                 Toast.makeText(getApplicationContext(),
                         "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
@@ -109,33 +202,42 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //Inicializamos el fragmento
         youTubePlayerFragmen = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtubeFragment);
 
-
-        File appState = new File(getApplicationContext().getCacheDir(),"appState");
-        Log.d("OSCAR","Comprobar si existe: "+appState.exists());
-        if(!appState.exists()) {
-            Log.d("OSCAR","no existe");
-            //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
-            adapter.add(new ShpVideo("OBXRJgSd-aU"));
-            adapter.add(new ShpVideo("0rEVwwB3Iw0"));
-            //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-            adapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3"));
-            adapter.add(new ShpVideo("0rEVwwB3Iw0"));
-        }
-
-
-
     }
 
     @Override
     protected void onResume(){
         super.onResume();
 
+        File appState = new File(getApplicationContext().getCacheDir(),"appState");
+        if(!appState.exists()) {
+            Log.d("OSCAR", "no existe");
+            //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
+            adapter.add(new ShpVideo("OBXRJgSd-aU","mojo","yoyo"));
+            adapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+            //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+            adapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
+            adapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+
+            //Añadimos elementos a la lista de manera estática
+            adapter.add(new ShpVideo("OBXRJgSd-aU"));
+            adapterShowed.add("Boney-M: Resputin");
+            adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
+            adapterShowed.add("C-TANGANA: C.H.I.T.O");
+            adapter.add(new ShpVideo("xQTuhEA-TsM"));
+            adapterShowed.add("Canserbero: Muerte-Es épico");
+        }
+
         loadState();
+
+        //Metodo para encender el servicio de Bluetooth
+        setupService();
 
         //Prep the media player
         prepMediaPlayer();
 
+        //Comenzamos a reproducir los elementos de la lista
         nextSong();
+
     }
 
     @Override
@@ -148,10 +250,29 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
 
-        Log.d("OSCAR","onDestroy: "+ deleteState());
+        Log.d("OSCAR", "onDestroy: " + deleteState());
+    }
+
+    protected void onStart() {
+        super.onStart();
+        //Si el Bluetooth no esta activado, lanzamos un intent para activarlo
+        if(!btAdapter.isEnabled()) {
+            Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBT, REQUEST_ENABLE_BT);
+        }else if (mSendService == null) {
+            setupService();
+            mSendService.start();
+        }
+    }
+
+    private void setupService() {
+        //Inicializamos el servicio de Envio.
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
+        mSendService.start();
+
     }
 
     /**
@@ -381,11 +502,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
             //reproducimos el primer video
             ShpVideo video;
+
             video = (ShpVideo) adapter.getItem(0);
             yTPlayer.cueVideo(video.getYtCode(),currentTime);
             yTPlayer.play();
+
         }
     }
+
 
 
     @Override
@@ -415,9 +539,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     @Override
     public void onVideoEnded() {
+
         adapter.remove(adapter.getItem(0));
         currentTime = 0;
-
         nextSong();
     }
     @Override
@@ -483,6 +607,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         return 0;
     }
 
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         myMediaController.show(0);
@@ -503,5 +628,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 CAMBIOS AL PONER LA PANTALLA VERTICAL
         }*/
     }
+
 }
 
