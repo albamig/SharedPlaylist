@@ -7,15 +7,27 @@ package es.uva.mangostas.sharedplaylist.Model;
 public class ShpVideo extends ShpMediaObject {
 
     private String ytCode;
+    private String title;
+    private String artist;
 
-    public ShpVideo(String ytCode) {
+    public ShpVideo(String ytCode, String title) {;
         this.ytCode = ytCode;
+        this.title = title;
+        this.artist = "YouTube";
     }
+
+
+    public String getYtCode() {
+        return ytCode;
+    }
+
     @Override
-    public void play(String s) {
-
-
+    public String getTitle() {
+        return title;
     }
 
-    public String getYtCode() {return ytCode;}
+    @Override
+    public String getArtist() {
+        return artist;
+    }
 }

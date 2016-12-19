@@ -39,6 +39,7 @@ public class BTSharedPlayService {
     private AcceptThread mAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
+    private SendThread mSendThread;
     private int state;
     private String mtype;
     private ArrayList<ConnectedThread> myConnections;
@@ -96,8 +97,10 @@ public class BTSharedPlayService {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
+        if (mtype.equals("Server")) {
+            setState(STATE_LISTEN);
+        }
 
-        setState(STATE_LISTEN);
 
         //Lanzamos el hilo que se encarga de escuchar peticiones
         if (mAcceptThread == null) {
@@ -144,9 +147,12 @@ public class BTSharedPlayService {
         if (mtype.equals("Server")) {
             myConnections.add(new ConnectedThread(socket));
             myConnections.get(myConnections.size()-1).start();
+            setState(STATE_CONNECTED_AND_LISTEN);
         } else if (mtype.equals("Client")) {
+            Log.d("CREANDO HILO", "CONEXION");
             mConnectedThread = new ConnectedThread(socket);
             mConnectedThread.start();
+            setState(STATE_CONNECTED_AND_LISTEN);
             }
         //Enviamos el nombre del dispositivo que se ha conectado de vuelta a la Actividad
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
@@ -155,7 +161,7 @@ public class BTSharedPlayService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
-        setState(STATE_CONNECTED_AND_LISTEN);
+
     }
 
     /**
@@ -191,16 +197,20 @@ public class BTSharedPlayService {
      * @param out
      */
     public void write(byte[] out) {
-
+        /**
         //Copia temporal del hilo para realizar el envio del mensaje
         ConnectedThread r;
         //Sincronizamos la copia con el original para enviar el mesnaje.
         synchronized (this) {
             if (state != STATE_CONNECTED_AND_LISTEN) return;
             r = mConnectedThread;
+        }*/
+        if (mSendThread != null) {
+            mSendThread = null;
         }
+        mSendThread = new SendThread(mConnectedThread.mmOutStream, out);
+        mSendThread.start();
 
-        r.write(out);
     }
 
     /**
@@ -365,6 +375,29 @@ public class BTSharedPlayService {
         }
     }
 
+    private class SendThread extends Thread {
+        private OutputStream mmOutStream;
+        private byte[] songToSend;
+
+        private SendThread(OutputStream mmOutStream, byte[] song) {
+            songToSend = new byte[song.length];
+            this.mmOutStream = mmOutStream;
+            for (int i = 0; i < song.length; i++) {
+                songToSend[i] = song[i];
+            }
+        }
+
+        public void run() {
+            try {
+                mmOutStream.write(songToSend);
+                // Share the sent message back to the UI Activity
+                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, songToSend)
+                        .sendToTarget();
+            } catch (IOException e) {
+            }
+        }
+    }
+
     /**
      * This thread runs during a connection with a remote device.
      * It handles all incoming and outgoing transmissions.
@@ -420,6 +453,7 @@ public class BTSharedPlayService {
                             Log.d("Leido", "Leido el resto");
                             mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
                                     .sendToTarget();
+                            continue;
                         } else {
                             //Definimos el array que almacenara la cancion con el tamaño de esta
                             fin = new byte[size];
@@ -447,8 +481,9 @@ public class BTSharedPlayService {
                         }
                         mHandler.obtainMessage(Constants.MESSAGE_SONG_READ, totalBytes, -1, fin)
                                 .sendToTarget();
+                        fin = null;
                         totalBytes = 0;
-                    } else {
+                    } else if (totalBytes > 0) {
                         //Si no se cumple la condición copiamos los bytes leidos en el buffer final.
                         for (int i = 0; i < bytes; i++) {
                             fin[totalBytes-bytes+i] = buffer[i];
