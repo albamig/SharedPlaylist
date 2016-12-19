@@ -1,8 +1,11 @@
 package es.uva.mangostas.sharedplaylist;
 
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
@@ -12,6 +15,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -101,8 +105,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     String readMessage = new String(videoBuf, 0, msg.arg1);
                     //Extraemos el nombre del video
                     String videoName = readMessage.substring(0,29);
+                    //Extraemos el canal del video
+                    String videoChannel = readMessage.substring(30, 59);
                     //Lo añadimos a la lista
-                    playList.add(new ShpVideo(readMessage.substring(30), videoName));
+                    playList.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
                     tladapter.notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
@@ -173,24 +179,30 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         //Assign adapter to ListView
         tladapter = new TrackListAdapter(playList);
         listView.setAdapter(tladapter);
-
-        // ListView Item Click Listener
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                // ListView Clicked item index
-                int itemPosition = position;
-                // ListView Clicked item value
-                String itemValue = (String) listView.getItemAtPosition(position);
-                // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                        .show();
-
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ServerActivity.this);
+                builder.setMessage("¿Desea eliminar este elemento de la lista?")
+                        .setTitle("Eliminar elemento")
+                        .setCancelable(false)
+                        .setNegativeButton("No",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setPositiveButton("Sí",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        tladapter.remove(position);
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return true;
             }
-
         });
 
         //Inicializamos el fragmento
@@ -652,6 +664,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 songType.setImageResource(R.mipmap.auriculares);
                 songArtist.setText(playList.get(i).getArtist());
             }
+
             return view;
         }
     }
