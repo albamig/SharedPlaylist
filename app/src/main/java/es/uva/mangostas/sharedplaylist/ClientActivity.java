@@ -288,6 +288,7 @@ public class ClientActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No se puede enviar sin conexion", Toast.LENGTH_LONG).show();
 
         } else {
+            Toast.makeText(getApplicationContext(), "Enviando...", Toast.LENGTH_LONG).show();
             mService.write(songArray);
         }
     }

@@ -197,20 +197,13 @@ public class BTSharedPlayService {
      * @param out
      */
     public void write(byte[] out) {
-        /**
-        //Copia temporal del hilo para realizar el envio del mensaje
-        ConnectedThread r;
-        //Sincronizamos la copia con el original para enviar el mesnaje.
-        synchronized (this) {
-            if (state != STATE_CONNECTED_AND_LISTEN) return;
-            r = mConnectedThread;
-        }*/
+        
         if (mSendThread != null) {
             mSendThread = null;
         }
         mSendThread = new SendThread(mConnectedThread.mmOutStream, out);
-        mSendThread.start();
 
+            mSendThread.start();
     }
 
     /**
