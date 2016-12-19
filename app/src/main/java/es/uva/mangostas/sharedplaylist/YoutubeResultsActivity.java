@@ -101,9 +101,14 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                         }
 
                     }.execute((Void) null).get();
+                    if (searchResponse == null) {
+                        Intent intent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, intent);
+                        this.finish();
+                    } else {
 
-                    searchResultList = searchResponse.getItems();
-
+                        searchResultList = searchResponse.getItems();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -152,8 +157,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     String videoId = searchResultList.get(i).getId().getVideoId();
+                    String videoName = searchResultList.get(i).getSnippet().getTitle();
                     Intent intent = new Intent();
                     intent.putExtra("videoID", videoId);
+                    intent.putExtra("videoName", videoName);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 }

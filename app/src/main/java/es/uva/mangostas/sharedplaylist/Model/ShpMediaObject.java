@@ -6,22 +6,18 @@ package es.uva.mangostas.sharedplaylist.Model;
 
 public abstract class ShpMediaObject {
 
-    private String name;
-    private String author;
+    private String title;
+    private String artist;
 
-    public void setName(String name) {
-        this.name = name;
+    public ShpMediaObject() {
+
+    }
+    public String getTitle() {
+        return title;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAuthor() {
-        return author;
+    public String getArtist() {
+        return artist;
     }
 }
+
