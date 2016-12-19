@@ -101,8 +101,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     String readMessage = new String(videoBuf, 0, msg.arg1);
                     //Extraemos el nombre del video
                     String videoName = readMessage.substring(0,29);
+                    //Extraemos el canal del video
+                    String videoChannel = readMessage.substring(30, 59);
                     //Lo añadimos a la lista
-                    playList.add(new ShpVideo(readMessage.substring(30), videoName));
+                    playList.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
                     tladapter.notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer

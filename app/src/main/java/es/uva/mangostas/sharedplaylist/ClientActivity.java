@@ -220,7 +220,7 @@ public class ClientActivity extends AppCompatActivity {
      * @param msg Codigo del video
      * @param name Nombre del video de YouTube
      */
-    private void sendVideo(String msg, String name) {
+    private void sendVideo(String msg, String name, String channel) {
         //Comprobamos que estamos conectados antes de enviar
         Log.d("ESTADO CLIENTE", ""+mService.getState());
         if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
@@ -234,7 +234,8 @@ public class ClientActivity extends AppCompatActivity {
             // que en el caso de los videos es 0.
             byte[] message = msg.getBytes();
             byte[] videoName = name.getBytes();
-            byte[] video = new byte[msg.length()+34];
+            byte[] videoChannel = channel.getBytes();
+            byte[] video = new byte[msg.length()+64];
             video[0] = (byte) (0 >> 24);
             video[1] = (byte) (0 >> 16);
             video[2] = (byte) (0 >> 8);
@@ -244,9 +245,13 @@ public class ClientActivity extends AppCompatActivity {
             for (int i = 0; i < videoName.length; i++) {
                 video[i+4] = videoName[i];
             }
+            //Añadimos el canal del video en los 30 bytes siguientes al nombre
+            for (int i = 0; i < videoChannel.length; i++) {
+                video[i+34] = videoChannel[i];
+            }
             //Copiamos los datos del ID del video al array y lo enviamos
             for (int i = 0; i < message.length; i++) {
-                video[i+34] = message[i];
+                video[i+64] = message[i];
             }
             mService.write(video);
         }
@@ -478,8 +483,9 @@ public class ClientActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     String video = data.getStringExtra("videoID");
                     String name = data.getStringExtra("videoName");
+                    String channel = data.getStringExtra("videoChannel");
                     Log.d("VIDEOID", video);
-                    sendVideo(video, name);
+                    sendVideo(video, name, channel);
                 } else {
 
                 }
