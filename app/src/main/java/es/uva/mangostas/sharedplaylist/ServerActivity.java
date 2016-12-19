@@ -102,10 +102,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     //Extraemos el nombre del video
                     String videoName = readMessage.substring(0,29);
                     //Lo añadimos a la lista
-                    playList.add(new ShpVideo(readMessage.substring(30), videoName));
-                    tladapter.notifyDataSetChanged();
+                    tladapter.add(new ShpVideo(readMessage.substring(30), videoName));
+
                     Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
                     // construct a string from the valid bytes in the buffer
+
+                    if(tladapter.getCount()==1){
+                        nextSong();
+                    }
 
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
@@ -136,8 +140,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         File finalSong = new File(getFilesDir(), newSong.getTitle());
                         song.renameTo(finalSong);
                         newSong.setPath(finalSong.getPath());
-                        playList.add(newSong);
-                        tladapter.notifyDataSetChanged();
+                        tladapter.add(newSong);
+                        if(tladapter.getCount()==1){
+                            nextSong();
+                        }
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -206,9 +212,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         if(!appState.exists()) {
             Log.d("OSCAR", "no existe");
             //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
-            tladapter.add(new ShpVideo("OBXRJgSd-aU","mojoy", "oyo"));
-            tladapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
-            tladapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3","espinaca","caranchoa"));
+            //tladapter.add(new ShpVideo("OBXRJgSd-aU","mojoy", "oyo"));
+            //tladapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+            //tladapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3","espinaca","caranchoa"));
             //tladapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
 
             //Añadimos elementos a la lista de manera estática
@@ -520,7 +526,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-
+        tladapter.remove(0);
+        nextSong();
     }
 
 
@@ -654,6 +661,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             }
             return view;
         }
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        if(!isIni) {
+            myMediaController.show(0);
+        }
+        return true;
     }
 }
 
