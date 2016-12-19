@@ -264,6 +264,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      * Guardamos el estado de la aplicacion en la cache.
      */
     private void saveState(){
+
+        if(tladapter.isEmpty()){
+            return;
+        }
+        
         //Apuntamos al fichero en el que vamos a guardar el estado
         File appState = new File(getApplicationContext().getCacheDir(),"appState");
         Log.d("OSCAR",getApplicationContext().getCacheDir().toString());
