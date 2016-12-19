@@ -12,6 +12,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -526,6 +527,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
+        Toast toast = Toast.makeText(getApplicationContext(), "Error al reproducir "+tladapter.getItem(0).getTitle()+
+                ".\nReproduciendo siguiente cancion",Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.TOP,0, 0);
+        toast.show();
         tladapter.remove(0);
         nextSong();
     }
@@ -622,7 +627,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         }
 
         @Override
-        public Object getItem(int i) {
+        public ShpMediaObject getItem(int i) {
             return playList.get(i);
         }
 
