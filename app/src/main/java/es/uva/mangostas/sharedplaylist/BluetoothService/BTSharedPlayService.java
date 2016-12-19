@@ -39,6 +39,7 @@ public class BTSharedPlayService {
     private AcceptThread mAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
+    private SendThread mSendThread;
     private int state;
     private String mtype;
     private ArrayList<ConnectedThread> myConnections;
@@ -196,16 +197,20 @@ public class BTSharedPlayService {
      * @param out
      */
     public void write(byte[] out) {
-
+        /**
         //Copia temporal del hilo para realizar el envio del mensaje
         ConnectedThread r;
         //Sincronizamos la copia con el original para enviar el mesnaje.
         synchronized (this) {
             if (state != STATE_CONNECTED_AND_LISTEN) return;
             r = mConnectedThread;
+        }*/
+        if (mSendThread != null) {
+            mSendThread = null;
         }
+        mSendThread = new SendThread(mConnectedThread.mmOutStream, out);
+        mSendThread.start();
 
-        r.write(out);
     }
 
     /**
@@ -366,6 +371,29 @@ public class BTSharedPlayService {
                 mmSocket.close();
             } catch (IOException e) {
 
+            }
+        }
+    }
+
+    private class SendThread extends Thread {
+        private OutputStream mmOutStream;
+        private byte[] songToSend;
+
+        private SendThread(OutputStream mmOutStream, byte[] song) {
+            songToSend = new byte[song.length];
+            this.mmOutStream = mmOutStream;
+            for (int i = 0; i < song.length; i++) {
+                songToSend[i] = song[i];
+            }
+        }
+
+        public void run() {
+            try {
+                mmOutStream.write(songToSend);
+                // Share the sent message back to the UI Activity
+                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, songToSend)
+                        .sendToTarget();
+            } catch (IOException e) {
             }
         }
     }

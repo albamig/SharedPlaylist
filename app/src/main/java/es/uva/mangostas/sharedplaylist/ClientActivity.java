@@ -30,14 +30,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import android.net.Uri;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
-import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 public class ClientActivity extends AppCompatActivity {
 
@@ -79,13 +77,7 @@ public class ClientActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
-                    Toast.makeText(getApplicationContext(), "Enviado", Toast.LENGTH_SHORT).show();
-                    break;
-                case Constants.MESSAGE_VIDEO_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    Toast.makeText(getApplicationContext(), "Cancion Añadida", Toast.LENGTH_LONG).show();
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Toast.makeText(getApplicationContext(), "Canción enviada", Toast.LENGTH_LONG).show();
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_SHORT).show();
@@ -123,10 +115,6 @@ public class ClientActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("audio/*");
                 startActivityForResult(intent, SONG_SELECTED);
-
-                /**
-
-                }*/
             }
 
         });
@@ -301,7 +289,6 @@ public class ClientActivity extends AppCompatActivity {
 
         } else {
             mService.write(songArray);
-            Toast.makeText(getApplicationContext(), "Canción enviada", Toast.LENGTH_LONG).show();
         }
     }
 
