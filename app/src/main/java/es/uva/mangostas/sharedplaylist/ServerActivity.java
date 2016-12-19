@@ -171,7 +171,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
         //Assign adapter to ListView
-        tladapter = new TrackListAdapter();
+        tladapter = new TrackListAdapter(playList);
         listView.setAdapter(tladapter);
 
         // ListView Item Click Listener
@@ -206,14 +206,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         if(!appState.exists()) {
             Log.d("OSCAR", "no existe");
             //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
-            playList.add(new ShpVideo("OBXRJgSd-aU","mojoyoyo"));
-            playList.add(new ShpVideo("0rEVwwB3Iw0", "topo el topor"));
-            //adapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3"));
-            //playList.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
+            tladapter.add(new ShpVideo("OBXRJgSd-aU","mojoy", "oyo"));
+            tladapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
+            tladapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3","espinaca","caranchoa"));
+            //tladapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
 
             //Añadimos elementos a la lista de manera estática
-            playList.add(new ShpVideo("OBXRJgSd-aU", "Rasputin"));
-            playList.add(new ShpVideo("cytK7Nl0U60", "Es Épico"));
+            tladapter.add(new ShpVideo("OBXRJgSd-aU", "Rasputin","Boney M"));
+            tladapter.add(new ShpVideo("cytK7Nl0U60", "Es Épico", "Un mono"));
         }
 
         loadState();
@@ -233,13 +233,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         saveState();
 
         myMediaPlayer.release();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Log.d("OSCAR", "onDestroy: " + deleteState());
     }
 
     protected void onStart() {
@@ -272,7 +265,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             FileWriter fw = new FileWriter(appState);
             PrintWriter pw = new PrintWriter(fw);
             //Anotamos en que punto de la reproduccion se encuentra la cancion en este momento.
-            if(playList.get(0) instanceof ShpVideo){
+            if(tladapter.getItem(0) instanceof ShpVideo){
 
                 pw.print(((yTPlayer.getCurrentTimeMillis() == -1) ? 0 : yTPlayer.getCurrentTimeMillis())+"\n");
 
@@ -282,15 +275,20 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             }
 
             //recorremos la lista de reproduccion guardando el codigo de las canciones en la cache.
-            while(!playList.isEmpty()){
+            while(!tladapter.isEmpty()){
 
-                if(playList.get(0) instanceof ShpVideo){
-                    pw.print("V"+((ShpVideo) playList.get(0)).getYtCode()+'\n');
-                    Log.d("OSCAR","save: "+((ShpVideo) playList.get(0)).getYtCode());
-                    playList.remove(playList.get(0));
+                if(tladapter.getItem(0) instanceof ShpVideo){
+                    ShpVideo video = ((ShpVideo) tladapter.getItem(0));
+                    pw.print("V"+video.getYtCode()+'\n'+video.getTitle()+'\n'+video.getArtist()+'\n');
+
+                    //Log.d("OSCAR","save: "+((ShpVideo) playList.get(0)).getYtCode());
+
+                    tladapter.remove(0);
                 } else {
-                    pw.print(((ShpSong) playList.get(0)).getPath()+'\n');
-                    playList.remove(playList.get(0));
+                    ShpSong song = ((ShpSong) tladapter.getItem(0));
+                    pw.print(song.getPath()+'\n'+song.getTitle()+'\n'+song.getArtist()+'\n');
+
+                    tladapter.remove(0);
                 }
             }
             fw.close();
@@ -320,21 +318,22 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 Log.d("OSCAR","br");
 
                 //recuperamos el tiempo por el que se llegaba la priemra cancion.
-                String linea;
-                Log.d("OSCAR","1");
-                linea=br.readLine();
-                Log.d("OSCAR","2"+linea);
-                currentTime = Integer.parseInt(linea);
+
+
+                currentTime = Integer.parseInt(br.readLine());
                 Log.d("OSCAR","current");
 
                 //recuperamos la lista de reproduccion completa
 
-                while ((linea = br.readLine()) != null) {
-                    Log.d("OSCAR","load");
-                    if (linea.substring(0, 1).equals("V")) {
-                        //playList.add(new ShpVideo(linea.substring(1)));
+                String data, title, artist;
+                while ((data = br.readLine()) != null) {
+                    title = br.readLine();
+                    artist = br.readLine();
+
+                    if (data.substring(0, 1).equals("V")) {
+                        tladapter.add(new ShpVideo(data.substring(1), title, artist));
                     } else {
-                        //playList.add(new ShpSong(linea));
+                        tladapter.add(new ShpSong(data, title, artist));
                     }
                 }
 
@@ -366,15 +365,15 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     public void nextSong() {
         //Comprobamos que la lista no esta vacia
-        if(!playList.isEmpty()) {
+        if(!tladapter.isEmpty()) {
             //Si el elemento es de tipo video lanzamos el youtube
-            if(playList.get(0) instanceof ShpVideo) {
+            if(tladapter.getItem(0) instanceof ShpVideo) {
                 if(!isIni) {
                     getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
                     youTubePlayerFragmen.initialize(APIKEY, this);
                     isIni = true;
                 } else {
-                    yTPlayer.loadVideo(((ShpVideo) playList.get(0)).getYtCode());
+                    yTPlayer.loadVideo(((ShpVideo) tladapter.getItem(0)).getYtCode(),currentTime);
                 }
                 //Si no es un video lanzamos el reproductor propio y liberamos los recursoso del yt
             } else {
@@ -385,11 +384,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     isIni = false;
                 }
                 ShpSong song;
-                song = (ShpSong)playList.get(0);
+                song = (ShpSong)tladapter.getItem(0);
                 try{
                     myMediaPlayer.setDataSource(song.getPath());
                     myMediaPlayer.prepare();
-                    seekTo(currentTime);
+                    myMediaPlayer.seekTo(currentTime);
                     myMediaPlayer.start();
 
                     myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -398,7 +397,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             myMediaPlayer.reset();
                             myMediaController.hide();
                             currentTime = 0;
-                            playList.remove(0);
+                            tladapter.remove(0);
                             nextSong();
 
                         }
@@ -481,8 +480,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
             //reproducimos el primer video
             ShpVideo video;
-            video = (ShpVideo)playList.get(0);
-            yTPlayer.loadVideo(video.getYtCode());
+            video = (ShpVideo)tladapter.getItem(0);
+            yTPlayer.loadVideo(video.getYtCode(),currentTime);
         }
     }
 
@@ -516,7 +515,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public void onVideoEnded() {
 
-        playList.remove(0);
+        tladapter.remove(0);
         currentTime = 0;
         nextSong();
     }
@@ -609,8 +608,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     //Clase del adaptador de la lista de reproduccion
     public class TrackListAdapter extends BaseAdapter {
         private LayoutInflater inflater;
+        private ArrayList<ShpMediaObject> playList;
 
-        public TrackListAdapter() {
+        public TrackListAdapter(ArrayList<ShpMediaObject> playList) {
+            this.playList = playList;
             inflater= (LayoutInflater) getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -621,12 +622,26 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         @Override
         public Object getItem(int i) {
-            return i;
+            return playList.get(i);
         }
 
         @Override
         public long getItemId(int i) {
             return i;
+        }
+
+        public boolean isEmpty(){
+            return playList.isEmpty();
+        }
+
+        public void remove(int i){
+            playList.remove(i);
+            this.notifyDataSetChanged();
+        }
+
+        public void add(ShpMediaObject object){
+            playList.add(object);
+            this.notifyDataSetChanged();
         }
 
         @Override

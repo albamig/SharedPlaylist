@@ -10,6 +10,12 @@ public class ShpVideo extends ShpMediaObject {
     private String title;
     private String artist;
 
+    public ShpVideo(String ytCode, String title, String artist) {;
+        this.ytCode = ytCode;
+        this.title = title;
+        this.artist = artist;
+    }
+
     public ShpVideo(String ytCode, String title) {;
         this.ytCode = ytCode;
         this.title = title;
