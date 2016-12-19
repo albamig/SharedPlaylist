@@ -229,9 +229,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     protected void onPause(){
         super.onPause();
-
+        myMediaController.hide();
         saveState();
-
         myMediaPlayer.release();
     }
 
@@ -291,6 +290,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     tladapter.remove(0);
                 }
             }
+            pw.close();
             fw.close();
         } catch (IOException e) {
             Log.e("ERROR","error reading file", e);
@@ -336,7 +336,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         tladapter.add(new ShpSong(data, title, artist));
                     }
                 }
-
+                br.close();
                 fr.close();
             } catch (FileNotFoundException e) {
                 Log.e("ERROR", "file not found", e);
@@ -432,7 +432,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     public void run() {
                         myMediaController.setEnabled(true);
                         myMediaController.show(0);
-                        myMediaPlayer.start();
                     }
                 });
             }
@@ -583,11 +582,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
 
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        myMediaController.show(0);
-        return true;
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
