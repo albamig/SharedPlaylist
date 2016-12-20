@@ -60,8 +60,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Log.d("ytSearch", "Empiezo la busqueda");
-
                 try {
                     SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
                         @Override
@@ -74,8 +72,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                     }).setApplicationName("SharedPlaylist")
                                     .build();
 
-                            Log.d("testYT", "Inicializado el YouTube");
-
                             try {
                                 YouTube.Search.List searchYt = youtube.search().list("id,snippet");
                                 searchYt.setKey(APIKEY);
@@ -84,17 +80,13 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, snippet/thumbnails/default/url)");
                                 searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
 
-                                Log.d("testYT", "Metida la info al objeto de consulta");
                                 SearchListResponse searchResponse = searchYt.execute();
-                                Log.d("testYT", "He realizado la consulta con exito");
 
-
-                                Log.d("testYT", "Procesada la petición. ¡Tengo la info!");
 
                                 return searchResponse;
 
                             } catch (IOException e) {
-                                Log.d("testYT", "Estoy tirando la IOException");
+                                Log.e("ERROR", "Estoy tirando la IOException", e);
                             }
 
                             return null;
@@ -145,7 +137,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup){
-            Log.d("ytImg", "Lanzo una row "+ i);
             view = inflater.inflate(R.layout.row_yt,null);
 
             TextView yt_title = (TextView) view.findViewById(R.id.textView_ytTit);

@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,14 +20,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
@@ -219,7 +221,6 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void sendVideo(String msg, String name, String channel) {
         //Comprobamos que estamos conectados antes de enviar
-        Log.d("ESTADO CLIENTE", ""+mService.getState());
         if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
             Toast.makeText(getApplicationContext(), "No es posible enviar sin una conexion", Toast.LENGTH_LONG).show();
             return;
@@ -307,7 +308,6 @@ public class ClientActivity extends AppCompatActivity {
         device = btAdapter.getRemoteDevice(address);
         //Intentamos conectar
         mService.connect(device);
-        Log.w("ESTADO CLIENTE CON", ""+mService.getState());
     }
 
     /**
@@ -349,7 +349,6 @@ public class ClientActivity extends AppCompatActivity {
             @Override
             public void onResultClick(SearchResult result) {
                 //React to result being clicked
-                Log.d("ytSearch", "Result");
             }
 
             @Override
@@ -481,7 +480,6 @@ public class ClientActivity extends AppCompatActivity {
                     String video = data.getStringExtra("videoID");
                     String name = data.getStringExtra("videoName");
                     String channel = data.getStringExtra("videoChannel");
-                    Log.d("VIDEOID", video);
                     sendVideo(video, name, channel);
                 } else {
 
@@ -492,7 +490,6 @@ public class ClientActivity extends AppCompatActivity {
                 //Cuando recibimos la seleccion de una cancion
                 if (resultCode == Activity.RESULT_OK) {
                     String path=getRealPathFromURI(getApplicationContext(), data.getData(), data.getData().getPath());
-                    Log.d("PATH", path);
                     sendSong(path);
 
                 } else {

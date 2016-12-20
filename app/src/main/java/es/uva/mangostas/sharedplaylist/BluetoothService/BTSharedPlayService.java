@@ -149,7 +149,6 @@ public class BTSharedPlayService {
             myConnections.get(myConnections.size()-1).start();
             setState(STATE_CONNECTED_AND_LISTEN);
         } else if (mtype.equals("Client")) {
-            Log.d("CREANDO HILO", "CONEXION");
             mConnectedThread = new ConnectedThread(socket);
             mConnectedThread.start();
             setState(STATE_CONNECTED_AND_LISTEN);
@@ -411,7 +410,7 @@ public class BTSharedPlayService {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.d("EXCEPTION: ", "Socket get streams exception");
+                Log.e("ERROR: ", "Socket get streams exception", e);
             }
 
             mmInStream = tmpIn;
@@ -441,9 +440,7 @@ public class BTSharedPlayService {
 
                         //Si la condicion se cumple se trata de un video por lo tanto lo tratamos como tal.
                         if (size == 0 ) {
-                            Log.d("TAM", "Tamaño igual a 0");
                             bytes = mmInStream.read(buffer);
-                            Log.d("Leido", "Leido el resto");
                             mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
                                     .sendToTarget();
                             continue;
@@ -463,7 +460,6 @@ public class BTSharedPlayService {
                     //Guardamos en totalBytes el numero de bytes leidos para poder comprobar si ya hemos
                     //terminado de leer los datos
                     totalBytes += bytes;
-                    Log.d("Bytes", ""+totalBytes);
 
                     if (totalBytes == size) {
                         //Si se cumple la condicion ya hemos leido los ultimos bytes de infomación
