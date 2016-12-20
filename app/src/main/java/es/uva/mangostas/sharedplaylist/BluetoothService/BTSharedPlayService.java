@@ -3,6 +3,7 @@ package es.uva.mangostas.sharedplaylist.BluetoothService;
 /**
  * Created by root on 1/12/16.
  */
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -18,6 +19,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import es.uva.mangostas.sharedplaylist.R;
 
 /**
  * Esta clase hace el trabajo para las conexiones
@@ -212,7 +215,7 @@ public class BTSharedPlayService {
         // Envia mensaje de fallo
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, "Unable to connect device");
+        bundle.putString(Constants.TOAST, String.valueOf(R.string.imposibleconectdevice));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -227,7 +230,7 @@ public class BTSharedPlayService {
         // Enviar mensaje de fallo
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, "Device connection was lost");
+        bundle.putString(Constants.TOAST, String.valueOf(R.string.conectionlost));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 

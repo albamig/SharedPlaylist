@@ -9,4 +9,32 @@
     <string name="search_list">Buscar lista</string>
     <string name="youTube">youTube</string>
     <string name="local">lcal</string>
+    <string name="createlist">¿Desea recuperar la lista o crear una nueva?></string>
+    <string name="copyfound">Copia de seguridad encontrada</string>
+    <string name="neww">Nueva</string>
+    <string name="restore">Recuperar</string>
+    <string name="videoadded">Video añadido a la lista.</string>
+    <string name="conectedto">Conectado a</string>
+    <string name="songaddedlist">Canción añadida a la lista.</string>
+    <string name="bluetoothnotsuported">El dispositivo no soporta bluetooth.</string>
+    <string name="deletelistelement">¿Desea eliminar el elemento de la lista?</string>
+    <string name="deleteelement">Eliminar elemento</string>
+    <string name="no">No</string>
+    <string name="yes">Sí</string>
+    <string name="endreproductionlist">Fin de la lista de reproducción.</string>
+    <string name="reproductionerror">Error al reproducir.</string>
+    <string name="reproductingnextsong">Reproduciendo siguiente canción.</string>
+    <string name="songsended">Canción enviada.</string>
+    <string name="conected">Conectado</string>
+    <string name="notavaliablesendwithoutconection">Imposible enviar sin una conexión.</string>
+    <string name="sending">Enviando...</string>
+    <string name="songnotavaliable">La canción no está disponible.</string>
+    <string name="imposibleconectdevice">Impsible contectar el dispositivo.</string>
+    <string name="conectionlost">Conexión perdida.</string>
+    <string name="notvinculateddispositives">No hay dispositivos vinculados.</string>
+    <string name="iamconectedto">Me conectado a </string>
+    <string name="notfound">No se han encontrado dispositivos.</string>
+
+
+
 </resources>

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SharedPlaylist.iml" filepath="$PROJECT_DIR$/SharedPlaylist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SharedPlaylist-traduccion.iml" filepath="$PROJECT_DIR$/SharedPlaylist-traduccion.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

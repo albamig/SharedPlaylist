@@ -1,7 +1,6 @@
 package es.uva.mangostas.sharedplaylist;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -111,8 +110,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     //Lo añadimos a la lista
 
                     tladapter.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
-                    Toast.makeText(getApplicationContext(), "Video añadido a la lista", Toast.LENGTH_LONG).show();
-                    // construct a string from the valid bytes in the buffer
+                    Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
 
                     if(tladapter.getCount()==1){
                         nextSong();
@@ -123,7 +121,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     // save the connected device's name
                     mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
                     if (null != getApplicationContext()) {
-                        Toast.makeText(getApplicationContext(), "Connected to "
+                        Toast.makeText(getApplicationContext(), R.string.conectedto
                                 + mConnectedDevice, Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -157,7 +155,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(getApplicationContext(), "Cancion añadida a la lista", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.songaddedlist, Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -171,7 +169,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         //Si es null, el dispositivo no soporta el bluetooth
         if(btAdapter == null) {
-            Toast.makeText(getApplicationContext(), "El dispositivo no soporta Bluetooth", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.bluetoothnotsuported, Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -190,16 +188,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ServerActivity.this);
-                builder.setMessage("¿Desea eliminar este elemento de la lista?")
-                        .setTitle("Eliminar elemento")
+                builder.setMessage(R.string.deletelistelement)
+                        .setTitle(R.string.deleteelement)
                         .setCancelable(false)
-                        .setNegativeButton("No",
+                        .setNegativeButton(R.string.no,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
                                     }
                                 })
-                        .setPositiveButton("Sí",
+                        .setPositiveButton(R.string.yes,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         tladapter.remove(position);
@@ -418,7 +416,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             }
         } else {
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-            Toast.makeText(getApplicationContext(), "Fin de la lista de reproducción.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.endreproductionlist, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -531,13 +529,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
         if(!errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Error al reproducir " + tladapter.getItem(0).getTitle() +
-                    ".\nReproduciendo siguiente cancion", Toast.LENGTH_LONG);
-            Log.e("ERROR", "Fallo en fragmento de YT: " + errorReason);
-            toast.setGravity(Gravity.TOP, 0, 0);
-            toast.show();
-            tladapter.remove(0);
-            nextSong();
+          Toast toast = Toast.makeText(getApplicationContext(), R.string.reproductionerror +tladapter.getItem(0).getTitle()+
+                  ".\n "+R.string.reproductingnextsong  ,Toast.LENGTH_LONG);
+          toast.setGravity(Gravity.TOP,0, 0);
+          toast.show();
+          tladapter.remove(0);
+          nextSong();
         }
     }
 
