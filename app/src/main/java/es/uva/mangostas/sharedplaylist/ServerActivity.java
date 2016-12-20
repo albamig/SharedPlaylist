@@ -78,6 +78,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private Boolean isIni = false;
 
     private int currentTime = 0;
+    private static int unknownCount = 1;
 
     private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
@@ -108,9 +109,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     String videoChannel = readMessage.substring(30, 59);
                     //Lo añadimos a la lista
 
-                    tladapter.add(new ShpVideo(readMessage.substring(30), videoName, videoChannel));
+                    tladapter.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
                     Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
-                    // construct a string from the valid bytes in the buffer
 
                     if(tladapter.getCount()==1){
                         nextSong();
@@ -221,7 +221,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         File appState = new File(getApplicationContext().getCacheDir(),"appState");
         if(!appState.exists()) {
-            Log.d("OSCAR", "no existe");
             //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
             //tladapter.add(new ShpVideo("OBXRJgSd-aU","mojoy", "oyo"));
             //tladapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
@@ -281,7 +280,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         
         //Apuntamos al fichero en el que vamos a guardar el estado
         File appState = new File(getApplicationContext().getCacheDir(),"appState");
-        Log.d("OSCAR",getApplicationContext().getCacheDir().toString());
         try {
             FileWriter fw = new FileWriter(appState);
             PrintWriter pw = new PrintWriter(fw);
@@ -290,7 +288,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
                 pw.print(((yTPlayer.getCurrentTimeMillis() == -1) ? 0 : yTPlayer.getCurrentTimeMillis())+"\n");
 
-                Log.d("OSCAR","save: "+yTPlayer.getCurrentTimeMillis());
             } else {
                 pw.print(myMediaPlayer.getCurrentPosition()+"\n");
             }
@@ -302,7 +299,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     ShpVideo video = ((ShpVideo) tladapter.getItem(0));
                     pw.print("V"+video.getYtCode()+'\n'+video.getTitle()+'\n'+video.getArtist()+'\n');
 
-                    //Log.d("OSCAR","save: "+((ShpVideo) playList.get(0)).getYtCode());
 
                     tladapter.remove(0);
                 } else {
@@ -325,26 +321,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private void loadState(){
 
         File appState = new File(getApplicationContext().getCacheDir(),"appState");
-        Log.d("OSCAR","Comprobar si existe (onResume)"+appState.toString()+": "+appState.exists());
-        Log.d("OSCAR",getApplicationContext().getCacheDir().toString());
 
         //Comprobamos que hay un estado guardado en la cache
         if(appState.exists()) {
-            Log.d("OSCAR","existe");
 
 
             try {
                 FileReader fr = new FileReader(appState);
-                Log.d("OSCAR","fr");
                 BufferedReader br = new BufferedReader(fr);
-                Log.d("OSCAR","br");
-
                 //recuperamos el tiempo por el que se llegaba la priemra cancion.
-
-
                 currentTime = Integer.parseInt(br.readLine());
-                Log.d("OSCAR","current");
-
                 //recuperamos la lista de reproduccion completa
 
                 String data, title, artist;
@@ -542,12 +528,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-        Toast toast = Toast.makeText(getApplicationContext(), R.string.reproductionerror +tladapter.getItem(0).getTitle()+
-                ".\n "+R.string.reproductingnextsong  ,Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP,0, 0);
-        toast.show();
-        tladapter.remove(0);
-        nextSong();
+        if(!errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)) {
+          Toast toast = Toast.makeText(getApplicationContext(), R.string.reproductionerror +tladapter.getItem(0).getTitle()+
+                  ".\n "+R.string.reproductingnextsong  ,Toast.LENGTH_LONG);
+          toast.setGravity(Gravity.TOP,0, 0);
+          toast.show();
+          tladapter.remove(0);
+          nextSong();
+        }
     }
 
 
@@ -689,6 +677,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             myMediaController.show(0);
         }
         return true;
+    }
+
+    public static int getUnknownCount(){
+        return unknownCount;
+    }
+
+    public static void incrementUnknownCount(){
+        unknownCount++;
     }
 }
 

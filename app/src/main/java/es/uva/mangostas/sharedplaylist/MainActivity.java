@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivityForResult(enableBT, REQUEST_ENABLE_BT);
         }
     }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
