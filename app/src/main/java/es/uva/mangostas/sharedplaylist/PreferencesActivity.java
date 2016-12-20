@@ -11,14 +11,17 @@ public class PreferencesActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
 
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new MiFragmento()).commit();
+                .replace(android.R.id.content, new PreferencesFrag()).commit();
     }
 
-    public static class MiFragmento extends PreferenceFragment {
+    public static class PreferencesFrag extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.layout.activity_preferences); }
+            addPreferencesFromResource(R.xml.activity_preferences);
+
+
+        }
     }
 
 }

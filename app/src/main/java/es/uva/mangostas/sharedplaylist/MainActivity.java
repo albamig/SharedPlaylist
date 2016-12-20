@@ -8,12 +8,16 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
         setContentView(R.layout.activity_main);
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -23,6 +27,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button clientButton = (Button) findViewById(R.id.buttonClient);
         clientButton.setOnClickListener(this);
+
+        Button preferencesButton = (Button) findViewById(R.id.buttonPreferences);
+        preferencesButton.setOnClickListener(this);
     }
 
     @Override
@@ -39,9 +46,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonServer :
                 startActivity(new Intent(this, ServerActivity.class));
                 break;
-
             case R.id.buttonClient :
                 startActivity(new Intent(this, ClientActivity.class));
+                break;
+            case R.id.buttonPreferences:
+                startActivity(new Intent(this, PreferencesActivity.class));
                 break;
         }
 

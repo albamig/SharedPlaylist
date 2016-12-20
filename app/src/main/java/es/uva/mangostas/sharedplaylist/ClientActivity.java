@@ -40,7 +40,7 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
-    private static final int SELECT_VIDEO = 1;
+    private static final int SELECT_VIDEO = 99;
 
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;

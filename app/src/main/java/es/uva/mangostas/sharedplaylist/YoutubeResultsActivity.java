@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,8 +34,8 @@ import java.util.logging.Handler;
 
 
 public class YoutubeResultsActivity extends AppCompatActivity {
-    public static final int RESULT_GJEXCPT = 0;
-    public static final int RESULT_IOEXCPT = 1;
+    public static final int RESULT_GJEXCPT = 99;
+    public static final int RESULT_IOEXCPT = 98;
 
     private String term;
     private ListView listViewRes;
@@ -43,7 +44,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     private Handler handler;
     List<SearchResult> searchResultList;
 
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 10;
+    private long number_of_videos_returned;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
 
@@ -57,7 +58,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         term = intent.getStringExtra("term");
 
-
+        String num_str = PreferenceManager
+                .getDefaultSharedPreferences(this.getApplicationContext())
+                .getString("amount", "20");
+        number_of_videos_returned = new Long(num_str);
     }
 
     @Override
@@ -87,7 +91,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 searchYt.setType("video");
                                 searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, " +
                                         "snippet/thumbnails/default/url)");
-                                searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+                                searchYt.setMaxResults(number_of_videos_returned);
 
                                 Log.d("testYT", "Metida la info al objeto de consulta");
                                 SearchListResponse searchResponse = searchYt.execute();

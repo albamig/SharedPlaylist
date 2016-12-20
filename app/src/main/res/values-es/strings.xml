@@ -11,4 +11,14 @@
     <string name="local">lcal</string>
     <string name="serviceErrorYt">Se ha producido un error en el servicio de YouTube</string>
     <string name="jsonExcpt">Surgió un problema al tratar de conectarse a Youtube</string>
+    <string name="preferencesButton">Preferencias</string>
+    <string name="namePref">Tu nombre</string>
+    <string name="nameSufPref">Por favor, introduce tu nombre</string>
+    <string name="langPref">Idioma</string>
+    <string name="langSubPref">Selecciona el idioma de la aplicación</string>
+    <string name="langEsListPref">Español</string>
+    <string name="langEnListPref">Inlés</string>
+    <string name="amountPref">YouTube videos</string>
+    <string name="amountSubPref">Inserta el número de videos de YouTube a mostrar</string>
+
 </resources>
