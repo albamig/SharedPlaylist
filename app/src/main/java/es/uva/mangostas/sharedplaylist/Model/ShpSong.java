@@ -1,6 +1,9 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import es.uva.mangostas.sharedplaylist.ServerActivity;
 
 /**
  * Created by root on 18/11/16.
@@ -19,8 +22,15 @@ public class ShpSong extends ShpMediaObject {
         }
         this.path = path;
         String aux = new String(data);
-        this.setTitle(aux.substring(aux.length()-128, aux.length()-1).substring(3, 32));
-        this.setArtist(aux.substring(aux.length()-128, aux.length()-1).substring(33, 62));
+        Log.d("OSCAR",aux.substring(aux.length() - 128, aux.length() - 1).substring(4, 5));
+        if (aux.substring(aux.length() - 128, aux.length() - 1).substring(4, 7).equals("UUU")) {
+            this.setTitle("Unknown" + ServerActivity.getUnknownCount());
+            this.setArtist("Unknown" + ServerActivity.getUnknownCount());
+            ServerActivity.incrementUnknownCount();
+        } else {
+            this.setTitle(aux.substring(aux.length() - 128, aux.length() - 1).substring(3, 32));
+            this.setArtist(aux.substring(aux.length() - 128, aux.length() - 1).substring(33, 62));
+        }
     }
     public ShpSong(String path, String title, String artist) {
         this.path = path;
