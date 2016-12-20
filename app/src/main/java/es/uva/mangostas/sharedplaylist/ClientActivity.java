@@ -74,10 +74,10 @@ public class ClientActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
-                    Toast.makeText(getApplicationContext(), "Canción enviada", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.songsended, Toast.LENGTH_LONG).show();
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
-                    Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.conected, Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getApplicationContext()) {
@@ -221,7 +221,7 @@ public class ClientActivity extends AppCompatActivity {
         //Comprobamos que estamos conectados antes de enviar
         Log.d("ESTADO CLIENTE", ""+mService.getState());
         if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
-            Toast.makeText(getApplicationContext(), "No es posible enviar sin una conexion", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.notavaliablesendwithoutconection, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -287,10 +287,10 @@ public class ClientActivity extends AppCompatActivity {
 
         //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
         if (mService.getState() != BTSharedPlayService.STATE_CONNECTED_AND_LISTEN) {
-            Toast.makeText(getApplicationContext(), "No se puede enviar sin conexion", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.notavaliablesendwithoutconection, Toast.LENGTH_LONG).show();
 
         } else {
-            Toast.makeText(getApplicationContext(), "Enviando...", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.sending, Toast.LENGTH_LONG).show();
             mService.write(songArray);
         }
     }
@@ -497,7 +497,7 @@ public class ClientActivity extends AppCompatActivity {
 
                 } else {
                     // Ha ocurrido un error con la canción seleccionada
-                    Toast.makeText(getApplicationContext(), "La canción seleccionada no esta disponible", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.songnotavaliable, Toast.LENGTH_LONG).show();
                 }
                 break;
         }

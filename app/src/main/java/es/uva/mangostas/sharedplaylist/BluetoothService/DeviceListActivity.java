@@ -88,7 +88,7 @@ public class DeviceListActivity extends Activity {
                 pairedDevicesAdapter.add(device.getName() + "\n" + device.getAddress());
             }
         }else {
-            String noDevices = "No hay dispositivos vinculados".toString();
+            String noDevices = String.valueOf(R.string.notvinculateddispositives);
             pairedDevicesAdapter.add(noDevices);
         }
 
@@ -139,7 +139,7 @@ public class DeviceListActivity extends Activity {
             // ultimos 17 caracteres del string
             String info = ((TextView) view).getText().toString();
             String address = info.substring(info.length()-17);
-            Toast.makeText(getApplicationContext(), "Me conecto a: " + address, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.iamconectedto + address, Toast.LENGTH_LONG).show();
             //Lanzamos ahora un Intent pàra conectarnos a ese dispositivo
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
@@ -168,7 +168,7 @@ public class DeviceListActivity extends Activity {
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 if(mNewDevicesAdapter.getCount() == 0) {
-                    String noDevices = "No se han encontrado dispositivos".toString();
+                    String noDevices = String.valueOf(R.string.notfound);
                     mNewDevicesAdapter.add(noDevices);
                 }
             }

@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(appState.exists()){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage("¿Desea recuperar la lista o crear una nueva?")
-                            .setTitle("Copia de seguridad encontrada")
+                    builder.setMessage(R.string.createlist)
+                            .setTitle(R.string.copyfound)
                             .setCancelable(false)
-                            .setNegativeButton("Nueva",
+                            .setNegativeButton(R.string.neww,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             appState.delete();
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             //dialog.cancel
                                         }
                                     })
-                            .setPositiveButton("Recuperar",
+                            .setPositiveButton(R.string.restore,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             startActivity(intentServidor);
