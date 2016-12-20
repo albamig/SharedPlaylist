@@ -79,6 +79,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private Boolean isIni = false;
 
     private int currentTime = 0;
+    private static int unknownCount = 1;
 
     private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
@@ -543,12 +544,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     }
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-        Toast toast = Toast.makeText(getApplicationContext(), "Error al reproducir "+tladapter.getItem(0).getTitle()+
-                ".\nReproduciendo siguiente cancion",Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP,0, 0);
-        toast.show();
-        tladapter.remove(0);
-        nextSong();
+        if(!errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Error al reproducir " + tladapter.getItem(0).getTitle() +
+                    ".\nReproduciendo siguiente cancion", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP, 0, 0);
+            toast.show();
+            tladapter.remove(0);
+            nextSong();
+        }
     }
 
 
@@ -690,6 +693,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             myMediaController.show(0);
         }
         return true;
+    }
+
+    public static int getUnknownCount(){
+        return unknownCount;
+    }
+
+    public static void incrementUnknownCount(){
+        unknownCount++;
     }
 }
 
