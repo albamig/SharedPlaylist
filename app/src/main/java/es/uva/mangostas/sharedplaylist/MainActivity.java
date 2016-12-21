@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setMessage(R.string.createlist)
                             .setTitle(R.string.copyfound)
-                            .setCancelable(false)
+                            .setCancelable(true)
                             .setNegativeButton(R.string.neww,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
