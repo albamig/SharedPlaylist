@@ -86,8 +86,9 @@ public class ClientActivity extends AppCompatActivity {
                     break;
                 case Constants.MESSAGE_WRITE:
                     //FIN DEL ENVIO
-                    myPd_ring.dismiss();
-
+                    if (msg.arg1 > 1024) {
+                        myPd_ring.dismiss();
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(getApplicationContext(), R.string.conected, Toast.LENGTH_SHORT).show();

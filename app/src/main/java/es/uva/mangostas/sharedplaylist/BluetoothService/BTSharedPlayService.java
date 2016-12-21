@@ -394,7 +394,7 @@ public class BTSharedPlayService {
             try {
                 mmOutStream.write(songToSend);
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, songToSend)
+                mHandler.obtainMessage(Constants.MESSAGE_WRITE, songToSend.length, -1, songToSend)
                         .sendToTarget();
             } catch (IOException e) {
             }
