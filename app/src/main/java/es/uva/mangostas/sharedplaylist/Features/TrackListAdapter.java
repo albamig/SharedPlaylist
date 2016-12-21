@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist;
+package es.uva.mangostas.sharedplaylist.Features;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
+import es.uva.mangostas.sharedplaylist.R;
 
 /**
  * Created by root on 21/12/16.

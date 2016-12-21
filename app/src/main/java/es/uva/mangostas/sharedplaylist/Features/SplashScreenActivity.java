@@ -1,13 +1,15 @@
-package es.uva.mangostas.sharedplaylist;
+package es.uva.mangostas.sharedplaylist.Features;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import es.uva.mangostas.sharedplaylist.MainActivity;
+import es.uva.mangostas.sharedplaylist.R;
 
 /**
  * Created by oscar on 21/12/16.

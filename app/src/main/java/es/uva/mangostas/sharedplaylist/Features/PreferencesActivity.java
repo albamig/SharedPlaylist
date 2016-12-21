@@ -1,9 +1,11 @@
-package es.uva.mangostas.sharedplaylist;
+package es.uva.mangostas.sharedplaylist.Features;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatDelegate;
+
+import es.uva.mangostas.sharedplaylist.R;
 
 public class PreferencesActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
