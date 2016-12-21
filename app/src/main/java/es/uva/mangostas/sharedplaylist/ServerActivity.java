@@ -276,6 +276,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         .setPositiveButton(R.string.yes,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
+                                        if (tladapter.getItem(position) instanceof ShpSong) {
+                                            File song = new File(((ShpSong) tladapter.getItem(position)).getPath());
+                                            song.delete();
+                                        }
                                         tladapter.remove(position);
                                         if(position==0){
                                             nextSong();
@@ -504,6 +508,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             if(reproduccionCiclica){
                                 tladapter.add(tladapter.getItem(0));
                             }
+                            //Si no hay reproducción ciclica eliminamos el archivo de la memoria
+                            File song = new File(((ShpSong) tladapter.getItem(0)).getPath());
+                            song.delete();
                             tladapter.remove(0);
                             nextSong();
 
