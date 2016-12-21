@@ -367,12 +367,8 @@ public class ClientActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getString(R.string.serviceErrorYt),
                             Toast.LENGTH_SHORT).show();
                 } else if (resultCode == YoutubeResultsActivity.RESULT_IOEXCPT) {
-                    Toast.makeText(getApplicationContext(), R.string.jsonExcpt,
+                    Toast.makeText(getApplicationContext(), getString(R.string.jsonExcpt),
                             Toast.LENGTH_SHORT).show();
-                } else {
-                    // Ha ocurrido un error con el video
-                    Toast.makeText(getApplicationContext(), "El video seleccionado no esta disponible",
-                            Toast.LENGTH_LONG).show();
                 }
                 break;
         }

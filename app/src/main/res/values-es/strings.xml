@@ -18,7 +18,16 @@
     <string name="langSubPref">Selecciona el idioma de la aplicación</string>
     <string name="langEsListPref">Español</string>
     <string name="langEnListPref">Inlés</string>
-    <string name="amountPref">YouTube videos</string>
+    <string name="amountPref">Numero de videos </string>
     <string name="amountSubPref">Inserta el número de videos de YouTube a mostrar</string>
+    <string name="server_setting">Como servidor</string>
+    <string name="client_settings">Como cliente</string>
+    <string name="bt_act">Seleccionar dispositivo</string>
+    <string name="conn_settings">Cantidad de conexiones</string>
+    <string name="connSufPref">Establece al cantidad de conexiones que el servidor aceptará</string>
+    <string name="reproTit">Reproducción ciclica</string>
+    <string name="reprSufPred">Marcalo si los items deben ir al final de la lista cuando finalicen</string>
+    <string name="checkPref">Verificar items recibidos</string>
+    <string name="checkSufPref">Marcalo si quieres verificar todos los items entrantes</string>
 
 </resources>

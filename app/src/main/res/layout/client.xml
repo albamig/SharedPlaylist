@@ -43,7 +43,7 @@
             android:id="@+id/action_yt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="?attr/colorAccent"
+            fab:fab_colorNormal="@color/colorAccent"
             fab:fab_icon="@drawable/ic_yt"
             fab:fab_size="mini"
             fab:fab_title="Youtube" />
@@ -52,7 +52,7 @@
             android:id="@+id/action_fs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="?attr/colorAccent"
+            fab:fab_colorNormal="@color/colorAccent"
             fab:fab_icon="@drawable/ic_fs"
             fab:fab_size="mini"
             fab:fab_title="Local" />

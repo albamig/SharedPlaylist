@@ -24,4 +24,13 @@
     <string name="langEnListPref">English</string>
     <string name="amountPref">YouTube videos</string>
     <string name="amountSubPref">Insert the amount of YouTube videos to show</string>
+    <string name="server_setting">As a server</string>
+    <string name="client_settings">As a client</string>
+    <string name="bt_act">Select device</string>
+    <string name="conn_settings">Connections amount</string>
+    <string name="connSufPref">Set the amount of connections the server will accept</string>
+    <string name="reproTit">Cyclical playing</string>
+    <string name="reprSufPred">Set whether an item must be set below the list after finished</string>
+    <string name="checkPref">Check received item</string>
+    <string name="checkSufPref">Set whether you want to confirm all the incoming items</string>
 </resources>

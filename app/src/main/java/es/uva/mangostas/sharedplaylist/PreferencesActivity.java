@@ -3,8 +3,10 @@ package es.uva.mangostas.sharedplaylist;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.AppCompatDelegate;
 
 public class PreferencesActivity extends PreferenceActivity {
+    private AppCompatDelegate mDelegate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
