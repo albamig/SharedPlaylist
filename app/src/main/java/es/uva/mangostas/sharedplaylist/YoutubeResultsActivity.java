@@ -68,8 +68,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Log.d("ytSearch", "Empiezo la busqueda");
-
                 try {
                     SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
                         @Override
@@ -82,8 +80,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                     }).setApplicationName("SharedPlaylist")
                                     .build();
 
-                            Log.d("testYT", "Inicializado el YouTube");
-
                             try {
                                 YouTube.Search.List searchYt = youtube.search().list("id,snippet");
                                 searchYt.setKey(APIKEY);
@@ -93,12 +89,8 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                         "snippet/thumbnails/default/url)");
                                 searchYt.setMaxResults(number_of_videos_returned);
 
-                                Log.d("testYT", "Metida la info al objeto de consulta");
                                 SearchListResponse searchResponse = searchYt.execute();
-                                Log.d("testYT", "He realizado la consulta con exito");
 
-
-                                Log.d("testYT", "Procesada la petición. ¡Tengo la info!");
 
                                 return searchResponse;
 
@@ -116,11 +108,11 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                         }
                     }.execute((Void) null).get();
 
-                    if (searchResponse == null) {
-                        return;
-                    } else {
-                        searchResultList = searchResponse.getItems();
-                    }
+                if (searchResponse == null) {
+                    return;
+                } else {
+                    searchResultList = searchResponse.getItems();
+                }
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -158,7 +150,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup){
-            Log.d("ytImg", "Lanzo una row "+ i);
             view = inflater.inflate(R.layout.row_yt,null);
 
             TextView yt_title = (TextView) view.findViewById(R.id.textView_ytTit);
@@ -169,9 +160,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
             listViewRes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String videoId = searchResultList.get(i).getId().getVideoId();
                     Intent intent = new Intent();
-                    intent.putExtra("videoID", videoId);
+                    intent.putExtra("videoID", searchResultList.get(i).getId().getVideoId());
+                    intent.putExtra("videoName", searchResultList.get(i).getSnippet().getTitle());
+                    intent.putExtra("videoChannel", searchResultList.get(i).getSnippet().getChannelTitle());
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 }
