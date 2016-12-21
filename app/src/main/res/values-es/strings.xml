@@ -55,5 +55,7 @@
     <string name="iamconectedto">Me conectado a </string>
     <string name="notfound">No se han encontrado dispositivos.</string>
     <string name="helpBut">Ayuda</string>
+    <string name="forward_song">¿Desea reenviar la canción?</string>
+    <string name="forward_element">Reenviar elemento</string>
 
 </resources>

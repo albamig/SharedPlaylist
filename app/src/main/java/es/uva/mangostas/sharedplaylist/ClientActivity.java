@@ -1,10 +1,12 @@
 package es.uva.mangostas.sharedplaylist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -37,6 +39,8 @@ import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.Model.ShpSong;
+import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 public class ClientActivity extends AppCompatActivity {
 
@@ -50,7 +54,7 @@ public class ClientActivity extends AppCompatActivity {
 
     private ListView listView;
     private ArrayList<ShpMediaObject> playList;
-    private ArrayAdapter<ShpMediaObject> adapter;
+    private TrackListAdapter tladapter;
     private BluetoothAdapter btAdapter;
     private BTSharedPlayService mService;
     private BluetoothDevice device;
@@ -81,11 +85,16 @@ public class ClientActivity extends AppCompatActivity {
                     break;
                 case Constants.MESSAGE_WRITE:
                     //FIN DEL ENVIO
-                    myPd_ring.dismiss();
-
+                    if (msg.arg1 > 1024) {
+                        myPd_ring.dismiss();
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(getApplicationContext(), R.string.conected, Toast.LENGTH_SHORT).show();
+                    break;
+                case Constants.MESSAGE_LIST_READ:
+                    byte[] listBuf = (byte[]) msg.obj;
+                    String listElement = new String(listBuf, 0, msg.arg1);
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getApplicationContext()) {
@@ -140,12 +149,44 @@ public class ClientActivity extends AppCompatActivity {
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-                android.R.id.text1, playList);
+        tladapter = new TrackListAdapter(playList, this);
 
 
         // Assign adapter to ListView
-        listView.setAdapter(adapter);
+        listView.setAdapter(tladapter);
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ClientActivity.this);
+                builder.setMessage(R.string.forward_song)
+                        .setTitle(R.string.forward_element)
+                        .setCancelable(false)
+                        .setNegativeButton(R.string.no,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setPositiveButton(R.string.yes,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        if (tladapter.getItem(position) instanceof ShpVideo) {
+                                            sendVideo(((ShpVideo) tladapter.getItem(position)).getYtCode(),
+                                                    tladapter.getItem(position).getTitle(),
+                                                    tladapter.getItem(position).getArtist());
+                                        } else {
+                                            ShpSong song = (ShpSong)tladapter.getItem(position);
+                                            sendSong(song.getPath());
+                                        }
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return true;
+            }
+        });
 
         // ListView Item Click Listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -183,7 +224,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
         mService.start();
     }
 
@@ -205,17 +246,6 @@ public class ClientActivity extends AppCompatActivity {
         return false;
     }
 
-    /**
-     * Metodo para hacer el dispositivo visible para los demas
-     */
-    private void ensureDiscoverable() {
-        if(btAdapter.getScanMode() !=
-                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
-        }
-    }
 
     /**
      * Metodo que envia el codigo de un video al dispositivo conectado
@@ -255,6 +285,7 @@ public class ClientActivity extends AppCompatActivity {
                 video[i+64] = message[i];
             }
             mService.write(video);
+            tladapter.add(new ShpVideo(msg, name, channel));
         }
     }
 
@@ -299,6 +330,7 @@ public class ClientActivity extends AppCompatActivity {
 
             mService.write(songArray);
         }
+        tladapter.add(new ShpSong(songArray, path));
     }
 
     /**

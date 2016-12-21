@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -82,8 +83,15 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
+    //Preferencias
+    private boolean verificarItems;
+    private boolean reproduccionCiclica;
+
     //Manejador para devolver información al servicio
     private final Handler mHandler = new Handler() {
+
+        private AlertDialog.Builder builder;
+        AlertDialog alert;
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -99,24 +107,51 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
+                    Toast.makeText(getApplicationContext(), "ELEMENTO ENVIADO", Toast.LENGTH_LONG).show();
                     break;
                 case Constants.MESSAGE_VIDEO_READ:
                     byte[] videoBuf = (byte[]) msg.obj;
-                    String readMessage = new String(videoBuf, 0, msg.arg1);
+                    final String readMessage = new String(videoBuf, 0, msg.arg1);
                     //Extraemos el nombre del video
-                    String videoName = readMessage.substring(0,29);
+                    final String videoName = readMessage.substring(0,29);
                     //Extraemos el canal del video
-                    String videoChannel = readMessage.substring(30, 59);
-                    //Lo añadimos a la lista
+                    final String videoChannel = readMessage.substring(30, 59);
 
-                    tladapter.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
-                    Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
-
-                    if(tladapter.getCount()==1){
-                        nextSong();
+                    if(verificarItems) {
+                        builder = new AlertDialog.Builder(ServerActivity.this);
+                        builder.setMessage("Desea añadir " + videoName)
+                                .setTitle("Video recibido")
+                                .setCancelable(false)
+                                .setNegativeButton("No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                .setPositiveButton("Sí",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                                //Lo añadimos a la lista
+                                                tladapter.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
+                                                if (tladapter.getCount() == 1) {
+                                                    nextSong();
+                                                }
+                                                Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                        alert = builder.create();
+                        alert.show();
+                    } else {
+                        //Lo añadimos a la lista
+                        tladapter.add(new ShpVideo(readMessage.substring(60), videoName, videoChannel));
+                        if (tladapter.getCount() == 1) {
+                            nextSong();
+                        }
+                        Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
                     }
-
                     break;
+
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
@@ -132,8 +167,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     }
                     break;
                 case Constants.MESSAGE_SONG_READ:
+                    ShpSong newSong = null;
                     byte[] songBuf = (byte[]) msg.obj;
-                    File song=new File(getFilesDir(), "CHITO.mp3");
+                    File song = new File(getFilesDir(), "cancion");
                     if (song.exists()) {
                         song.delete();
                     }
@@ -141,21 +177,56 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         FileOutputStream fos = new FileOutputStream(song);
                         fos.write(songBuf);
                         fos.close();
-                        ShpSong newSong = new ShpSong(songBuf, "");
+
+                        newSong = new ShpSong(songBuf, "");
                         File finalSong = new File(getFilesDir(), newSong.getTitle());
                         song.renameTo(finalSong);
                         newSong.setPath(finalSong.getPath());
-                        tladapter.add(newSong);
-                        if(tladapter.getCount()==1){
-                            nextSong();
-                        }
+
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(getApplicationContext(), R.string.songaddedlist, Toast.LENGTH_LONG).show();
+
+                    if(verificarItems) {
+                        builder = new AlertDialog.Builder(ServerActivity.this);
+                        final ShpSong finalNewSong = newSong;
+                        builder.setMessage("Desea añadir " + finalNewSong.getTitle() + " de " + finalNewSong.getArtist())
+                                .setTitle("Cancion recibida")
+                                .setCancelable(false)
+                                .setNegativeButton("No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                .setPositiveButton("Sí",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                                //Lo añadimos a la lista
+                                                tladapter.add(finalNewSong);
+                                                if (tladapter.getCount() == 1) {
+                                                    nextSong();
+                                                }
+                                                Toast.makeText(getApplicationContext(), R.string.songaddedlist, Toast.LENGTH_LONG).show();
+
+                                            }
+                                        });
+                        alert = builder.create();
+                        alert.show();
+                    } else {
+                        //Lo añadimos a la lista
+                        tladapter.add(newSong);
+                        if (tladapter.getCount() == 1) {
+                            nextSong();
+                        }
+                        Toast.makeText(getApplicationContext(), R.string.songaddedlist, Toast.LENGTH_LONG).show();
+                    }
+
+
             }
         }
     };
@@ -163,6 +234,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        //Obtenemos los valores de las preferencias
+        verificarItems = PreferenceManager
+                .getDefaultSharedPreferences(this.getApplicationContext())
+                .getBoolean("check_items", false);
+
+        reproduccionCiclica = PreferenceManager
+                .getDefaultSharedPreferences(this.getApplicationContext())
+                .getBoolean("cyclRep", false);
+
         setContentView(R.layout.server);
         //Obtener el adaptador bluetooth
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -182,7 +263,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
         //Assign adapter to ListView
-        tladapter = new TrackListAdapter(playList);
+        tladapter = new TrackListAdapter(playList, this);
         listView.setAdapter(tladapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -263,14 +344,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             startActivityForResult(enableBT, REQUEST_ENABLE_BT);
         }else if (mSendService == null) {
             setupService();
-            mSendService.start();
         }
 
     }
 
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
         mSendService.start();
 
     }
@@ -425,6 +505,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             myMediaPlayer.reset();
                             myMediaController.hide();
                             currentTime = 0;
+
+                            if(reproduccionCiclica){
+                                tladapter.add(tladapter.getItem(0));
+                            }
                             tladapter.remove(0);
                             nextSong();
 
@@ -439,9 +523,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             Toast.makeText(getApplicationContext(), R.string.endreproductionlist, Toast.LENGTH_LONG).show();
         }
     }
-
-
-
     /**
      * Metodo para preparar el media player para reproducir canciones
      */
@@ -539,6 +620,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public void onVideoEnded() {
 
+        if(reproduccionCiclica){
+            tladapter.add(tladapter.getItem(0));
+         }
         tladapter.remove(0);
         currentTime = 0;
         nextSong();
@@ -630,64 +714,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         }*/
     }
 
-
-    //Clase del adaptador de la lista de reproduccion
-    public class TrackListAdapter extends BaseAdapter {
-        private LayoutInflater inflater;
-        private ArrayList<ShpMediaObject> playList;
-
-        public TrackListAdapter(ArrayList<ShpMediaObject> playList) {
-            this.playList = playList;
-            inflater= (LayoutInflater) getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
-        }
-        @Override
-        public int getCount() {
-            return playList.size();
-        }
-
-        @Override
-        public ShpMediaObject getItem(int i) {
-            return playList.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        public boolean isEmpty(){
-            return playList.isEmpty();
-        }
-
-        public void remove(int i){
-            playList.remove(i);
-            this.notifyDataSetChanged();
-        }
-
-        public void add(ShpMediaObject object){
-            playList.add(object);
-            this.notifyDataSetChanged();
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            view = inflater.inflate(R.layout.rows,null);
-            TextView songTitle = (TextView)view.findViewById(R.id.textView_Title);
-            TextView songArtist = (TextView)view.findViewById(R.id.textView_Artis);
-            ImageView songType = (ImageView)view.findViewById(R.id.songType);
-            songTitle.setText(playList.get(i).getTitle());
-            if (playList.get(i) instanceof ShpVideo) {
-                songType.setImageResource(R.drawable.ic_yt);
-                songArtist.setText(playList.get(i).getArtist());
-            } else {
-                songType.setImageResource(R.mipmap.auriculares);
-                songArtist.setText(playList.get(i).getArtist());
-            }
-
-            return view;
-        }
-    }
     @Override
     public boolean onTouchEvent(MotionEvent event){
         if(!isIni) {
