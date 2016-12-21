@@ -34,5 +34,6 @@
     <string name="notvinculateddispositives">There are no linked devices.</string>
     <string name="iamconectedto">I connected to</string>
     <string name="notfound">No devices found.</string>
+    <string name="helpBut">Help</string>
 
 </resources>

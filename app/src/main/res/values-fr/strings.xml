@@ -34,5 +34,6 @@
     <string name="notvinculateddispositives">Aucun appareil jumelé.</string>
     <string name="iamconectedto">Aucun appareil jumelé</string>
     <string name="notfound">Aucun périphérique trouvé.</string>
+    <string name="helpBut">Help</string>
 
 </resources>

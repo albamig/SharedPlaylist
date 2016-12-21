@@ -54,5 +54,6 @@
     <string name="notvinculateddispositives">No hay dispositivos vinculados.</string>
     <string name="iamconectedto">Me conectado a </string>
     <string name="notfound">No se han encontrado dispositivos.</string>
+    <string name="helpBut">Ayuda</string>
 
 </resources>

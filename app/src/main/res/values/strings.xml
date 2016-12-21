@@ -5,7 +5,7 @@
     <string name="aceptar">Add</string>
     <string name="cancelar">Cancel</string>
     <string name="fruta">Fruit</string>
-    <string name="make_list">Make list</string>
+    <string name="make_list">Create list</string>
     <string name="search_list">Search list</string>
     <string name="youTube">youTube</string>
     <string name="local">lcal</string>
@@ -33,4 +33,5 @@
     <string name="reprSufPred">Set whether an item must be set below the list after finished</string>
     <string name="checkPref">Check received item</string>
     <string name="checkSufPref">Set whether you want to confirm all the incoming items</string>
+    <string name="helpBut">Help</string>
 </resources>
