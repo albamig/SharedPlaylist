@@ -22,9 +22,13 @@ public class ShpSong extends ShpMediaObject {
         }
         this.path = path;
         String aux = new String(data);
+<<<<<<< HEAD
         Log.d("OSCAR",aux.substring(aux.length() - 128, aux.length() - 1).substring(4, 5));
         if (aux.substring(aux.length() - 128, aux.length() - 1).substring(4, 7).equals("UUU") ||
                 aux.substring(aux.length() - 128, aux.length() - 1).substring(4, 7).equals("���")) {
+=======
+        if (aux.substring(aux.length() - 128, aux.length() - 1).substring(4, 7).equals("UUU")) {
+>>>>>>> 03c67b407b42eb5e492b3bd5eb227e53c4a439a4
             this.setTitle("Unknown" + ServerActivity.getUnknownCount());
             this.setArtist("Unknown" + ServerActivity.getUnknownCount());
             ServerActivity.incrementUnknownCount();
