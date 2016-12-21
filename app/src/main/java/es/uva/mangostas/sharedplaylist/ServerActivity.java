@@ -99,6 +99,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
+                    Toast.makeText(getApplicationContext(), "ELEMENTO ENVIADO", Toast.LENGTH_LONG).show();
                     break;
                 case Constants.MESSAGE_VIDEO_READ:
                     byte[] videoBuf = (byte[]) msg.obj;
@@ -182,7 +183,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         // Defined Array playList to show in ListView
         playList = new ArrayList<>();
         //Assign adapter to ListView
-        tladapter = new TrackListAdapter(playList);
+        tladapter = new TrackListAdapter(playList, this);
         listView.setAdapter(tladapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -260,14 +261,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             startActivityForResult(enableBT, REQUEST_ENABLE_BT);
         }else if (mSendService == null) {
             setupService();
-            mSendService.start();
         }
 
     }
 
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
         mSendService.start();
 
     }
@@ -436,9 +436,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             Toast.makeText(getApplicationContext(), R.string.endreproductionlist, Toast.LENGTH_LONG).show();
         }
     }
-
-
-
     /**
      * Metodo para preparar el media player para reproducir canciones
      */
@@ -627,64 +624,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
         }*/
     }
 
-
-    //Clase del adaptador de la lista de reproduccion
-    public class TrackListAdapter extends BaseAdapter {
-        private LayoutInflater inflater;
-        private ArrayList<ShpMediaObject> playList;
-
-        public TrackListAdapter(ArrayList<ShpMediaObject> playList) {
-            this.playList = playList;
-            inflater= (LayoutInflater) getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
-        }
-        @Override
-        public int getCount() {
-            return playList.size();
-        }
-
-        @Override
-        public ShpMediaObject getItem(int i) {
-            return playList.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        public boolean isEmpty(){
-            return playList.isEmpty();
-        }
-
-        public void remove(int i){
-            playList.remove(i);
-            this.notifyDataSetChanged();
-        }
-
-        public void add(ShpMediaObject object){
-            playList.add(object);
-            this.notifyDataSetChanged();
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            view = inflater.inflate(R.layout.rows,null);
-            TextView songTitle = (TextView)view.findViewById(R.id.textView_Title);
-            TextView songArtist = (TextView)view.findViewById(R.id.textView_Artis);
-            ImageView songType = (ImageView)view.findViewById(R.id.songType);
-            songTitle.setText(playList.get(i).getTitle());
-            if (playList.get(i) instanceof ShpVideo) {
-                songType.setImageResource(R.drawable.ic_yt);
-                songArtist.setText(playList.get(i).getArtist());
-            } else {
-                songType.setImageResource(R.mipmap.auriculares);
-                songArtist.setText(playList.get(i).getArtist());
-            }
-
-            return view;
-        }
-    }
     @Override
     public boolean onTouchEvent(MotionEvent event){
         if(!isIni) {

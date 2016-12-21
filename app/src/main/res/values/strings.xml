@@ -12,4 +12,6 @@
 
     <string name="menu_yt_tit">YouTube</string>
     <string name="menu_fs_tit">Local</string>
+    <string name="forward_song">Reenviar canción</string>
+    <string name="forward_element">Reenviar elemento</string>
 </resources>
