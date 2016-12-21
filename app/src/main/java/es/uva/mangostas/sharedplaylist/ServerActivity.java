@@ -232,11 +232,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             tladapter.add(new ShpVideo("cytK7Nl0U60", "Es Épico", "Un mono"));
         }
 
-        loadState();
-        //Metodo para encender el servicio de Bluetooth
+        //Ponemos en marcha el servicio
         setupService();
+        //Cargamos el estado anterior si es que existe
+        loadState();
         //Prep the media player
         prepMediaPlayer();
+        //Comenzamos a reproducir
         nextSong();
         
 
@@ -260,6 +262,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             setupService();
             mSendService.start();
         }
+
     }
 
     private void setupService() {
@@ -285,9 +288,11 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             PrintWriter pw = new PrintWriter(fw);
             //Anotamos en que punto de la reproduccion se encuentra la cancion en este momento.
             if(tladapter.getItem(0) instanceof ShpVideo){
-
-                pw.print(((yTPlayer.getCurrentTimeMillis() == -1) ? 0 : yTPlayer.getCurrentTimeMillis())+"\n");
-
+                if (isIni) {
+                    pw.print(((yTPlayer.getCurrentTimeMillis() == -1) ? 0 : yTPlayer.getCurrentTimeMillis()) + "\n");
+                } else  {
+                    pw.print(0 + "\n");
+                }
             } else {
                 pw.print(myMediaPlayer.getCurrentPosition()+"\n");
             }
@@ -355,6 +360,18 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             //Borramos el fichero de la cache.
             appState.delete();
 
+        }
+    }
+
+    /**
+     * Metodo para hacer el dispositivo visible para los demas
+     */
+    private void ensureDiscoverable() {
+        if(btAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
         }
     }
 
@@ -450,23 +467,20 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_server, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.discoverable: {
+                // Hacer el dispositivo visible
+                ensureDiscoverable();
+                return true;
+            }
         }
-
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
 

@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 import java.io.File;
@@ -79,7 +80,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             appState.delete();
-                                            startActivity(intentServidor);
+                                            if (!btAdapter.isEnabled()) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "Esta caracteristica requiere " +
+                                                                "activar el bluetooth",
+                                                        Toast.LENGTH_LONG).show();
+                                                Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                                                startActivityForResult(enableBT, REQUEST_ENABLE_BT);
+                                            } else {
+                                                startActivity(intentServidor);
+                                            }
                                             //dialog.cancel
                                         }
                                     })
@@ -92,7 +102,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     AlertDialog alert = builder.create();
                     alert.show();
                 } else {
-                    startActivity(intentServidor);
+                    if (!btAdapter.isEnabled()) {
+                        Toast.makeText(getApplicationContext(),
+                                "Esta caracteristica requiere " +
+                                        "activar el bluetooth",
+                                Toast.LENGTH_LONG).show();
+                        Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBT, REQUEST_ENABLE_BT);
+                    } else {
+                        startActivity(intentServidor);
+                    }
+
                 }
 
 
@@ -100,7 +120,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.buttonClient :
-                startActivity(new Intent(this, ClientActivity.class));
+                if (!btAdapter.isEnabled()) {
+                    Toast.makeText(getApplicationContext(),
+                            "Esta caracteristica requiere " +
+                                    "activar el bluetooth",
+                            Toast.LENGTH_LONG).show();
+                    Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBT, REQUEST_ENABLE_BT);
+                } else {
+                    startActivity(new Intent(this, ClientActivity.class));
+                }
                 break;
         }
 

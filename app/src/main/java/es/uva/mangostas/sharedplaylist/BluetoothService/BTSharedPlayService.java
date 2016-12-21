@@ -128,7 +128,7 @@ public class BTSharedPlayService {
 
         //Cancelamos los que ya estan conectados
         if (mtype.equals("Client") && mConnectedThread != null) {
-            mConnectThread.cancel();
+            mConnectedThread.cancel();
             mConnectedThread = null;
         }
 
