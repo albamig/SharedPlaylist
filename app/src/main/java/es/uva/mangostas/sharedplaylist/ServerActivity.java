@@ -201,6 +201,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         tladapter.remove(position);
+                                        if(position==0){
+                                            nextSong();
+                                        }
                                         dialog.cancel();
                                     }
                                 });
