@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -202,6 +203,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         tladapter.remove(position);
+                                        if(position==0){
+                                            nextSong();
+                                        }
                                         dialog.cancel();
                                     }
                                 });
@@ -422,6 +426,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             myMediaPlayer.reset();
                             myMediaController.hide();
                             currentTime = 0;
+                            boolean reproduccionCiclica = PreferenceManager
+                                    .getDefaultSharedPreferences(ServerActivity.this.getApplicationContext())
+                                    .getBoolean("cyclRep", false);
+                            if(reproduccionCiclica){
+                                tladapter.add(tladapter.getItem(0));
+                            }
                             tladapter.remove(0);
                             nextSong();
 
@@ -532,7 +542,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     @Override
     public void onVideoEnded() {
-
+        boolean reproduccionCiclica = PreferenceManager
+                .getDefaultSharedPreferences(this.getApplicationContext())
+                .getBoolean("cyclRep", false);
+        if(reproduccionCiclica){
+            tladapter.add(tladapter.getItem(0));
+         }
         tladapter.remove(0);
         currentTime = 0;
         nextSong();

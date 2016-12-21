@@ -2,6 +2,7 @@ package es.uva.mangostas.sharedplaylist;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -47,6 +49,7 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
+    private static final int SELECT_VIDEO = 99;
     private static final int VIDEO_SELECTED = 1;
     private static final int SONG_SELECTED = 3;
 
@@ -62,6 +65,7 @@ public class ClientActivity extends AppCompatActivity {
     private FloatingActionsMenu fab;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_yt;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_local;
+    private ProgressDialog myPd_ring;
 
 
     //Manejador para devolver información al servicio
@@ -81,7 +85,9 @@ public class ClientActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
-                    Toast.makeText(getApplicationContext(), R.string.songsended, Toast.LENGTH_LONG).show();
+                    //FIN DEL ENVIO
+                    myPd_ring.dismiss();
+
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(getApplicationContext(), R.string.conected, Toast.LENGTH_SHORT).show();
@@ -319,7 +325,9 @@ public class ClientActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.notavaliablesendwithoutconection, Toast.LENGTH_LONG).show();
 
         } else {
-            Toast.makeText(getApplicationContext(), R.string.sending, Toast.LENGTH_LONG).show();
+            //COMIENZO DEL ENVIO
+            myPd_ring = ProgressDialog.show(this, "Please wait", "Sending please wait..", true);
+
             mService.write(songArray);
         }
         tladapter.add(new ShpSong(songArray, path));
@@ -510,8 +518,13 @@ public class ClientActivity extends AppCompatActivity {
                     String name = data.getStringExtra("videoName");
                     String channel = data.getStringExtra("videoChannel");
                     sendVideo(video, name, channel);
-                } else {
-
+                  
+                } else if (resultCode == YoutubeResultsActivity.RESULT_GJEXCPT) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.serviceErrorYt),
+                            Toast.LENGTH_SHORT).show();
+                } else if (resultCode == YoutubeResultsActivity.RESULT_IOEXCPT) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.jsonExcpt),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             //Caso de la seleccion de cancion

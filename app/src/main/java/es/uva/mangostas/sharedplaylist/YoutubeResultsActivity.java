@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -32,6 +34,9 @@ import java.util.logging.Handler;
 
 
 public class YoutubeResultsActivity extends AppCompatActivity {
+    public static final int RESULT_GJEXCPT = 99;
+    public static final int RESULT_IOEXCPT = 98;
+
     private String term;
     private ListView listViewRes;
     //TextView yt_title, yt_chan;
@@ -39,7 +44,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     private Handler handler;
     List<SearchResult> searchResultList;
 
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 10;
+    private long number_of_videos_returned;
     private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
 
@@ -53,7 +58,10 @@ public class YoutubeResultsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         term = intent.getStringExtra("term");
 
-
+        String num_str = PreferenceManager
+                .getDefaultSharedPreferences(this.getApplicationContext())
+                .getString("amount", "20");
+        number_of_videos_returned = new Long(num_str);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                         @Override
                         protected SearchListResponse doInBackground(Void... voids) {
 
-                             YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                                     new HttpRequestInitializer() {
                                         public void initialize(HttpRequest request) throws IOException {
                                         }
@@ -77,30 +85,35 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 searchYt.setKey(APIKEY);
                                 searchYt.setQ(term);
                                 searchYt.setType("video");
-                                searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, snippet/thumbnails/default/url)");
-                                searchYt.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+                                searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, " +
+                                        "snippet/thumbnails/default/url)");
+                                searchYt.setMaxResults(number_of_videos_returned);
 
                                 SearchListResponse searchResponse = searchYt.execute();
 
 
                                 return searchResponse;
 
+                            } catch (GoogleJsonResponseException e) {
+                                Log.d("except", "salgo de la actividad");
+                                setResult(RESULT_GJEXCPT);
+                                finish();
+                                return null;
                             } catch (IOException e) {
-                                Log.e("ERROR", "Estoy tirando la IOException", e);
+                                Log.d("except", "salgo de la actividad");
+                                setResult(RESULT_IOEXCPT);
+                                finish();
+                                return null;
                             }
-
-                            return null;
                         }
-
                     }.execute((Void) null).get();
-                    if (searchResponse == null) {
-                        Intent intent = new Intent();
-                        setResult(Activity.RESULT_CANCELED, intent);
-                        this.finish();
-                    } else {
 
-                        searchResultList = searchResponse.getItems();
-                    }
+                if (searchResponse == null) {
+                    return;
+                } else {
+                    searchResultList = searchResponse.getItems();
+                }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -122,7 +135,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         @Override
         public int getCount(){
-            return (int) NUMBER_OF_VIDEOS_RETURNED;
+            return (int) searchResultList.size();
         }
 
         @Override

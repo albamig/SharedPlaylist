@@ -19,9 +19,9 @@ import android.widget.Toast;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,11 +31,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        setContentView(R.layout.activity_main);
+
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
         Button serverButton = (Button) findViewById(R.id.buttonServer);
         serverButton.setOnClickListener(this);
 
         Button clientButton = (Button) findViewById(R.id.buttonClient);
         clientButton.setOnClickListener(this);
+
+        Button preferencesButton = (Button) findViewById(R.id.buttonPreferences);
+        preferencesButton.setOnClickListener(this);
     }
 
     @Override
@@ -76,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setMessage(R.string.createlist)
                             .setTitle(R.string.copyfound)
-                            .setCancelable(false)
+                            .setCancelable(true)
                             .setNegativeButton(R.string.neww,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
@@ -119,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 break;
-
             case R.id.buttonClient :
                 if (!btAdapter.isEnabled()) {
                     Toast.makeText(getApplicationContext(),
@@ -131,6 +137,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     startActivity(new Intent(this, ClientActivity.class));
                 }
+                break;
+            case R.id.buttonPreferences:
+                startActivity(new Intent(this, PreferencesActivity.class));
                 break;
         }
 
