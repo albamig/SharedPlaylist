@@ -166,6 +166,10 @@ public class ClientActivity extends AppCompatActivity {
 
         //Ponemos el servicio en funcionamiento
         setupService();
+        //Buscamos el dispositivo al que nos conectaremos
+        Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+
 
     }
 
@@ -181,7 +185,7 @@ public class ClientActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_options, menu);
+        inflater.inflate(R.menu.menu_client, menu);
         return true;
     }
 
@@ -189,15 +193,8 @@ public class ClientActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.insecure_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-                return true;
-            }
-            case R.id.discoverable: {
-                // Hacer el dispositivo visible
-                ensureDiscoverable();
-                return true;
             }
         }
         return false;

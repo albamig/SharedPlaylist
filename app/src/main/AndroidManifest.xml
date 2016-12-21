@@ -48,7 +48,7 @@
             android:name=".BluetoothService.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="select_device"
-            android:theme="@android:style/Theme.Holo.Dialog">
+            android:theme="@android:style/Theme.Holo.Light.Dialog">
         </activity>
  
         <activity android:name=".YoutubeResultsActivity">
