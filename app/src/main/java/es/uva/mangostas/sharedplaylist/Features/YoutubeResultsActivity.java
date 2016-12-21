@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist;
+package es.uva.mangostas.sharedplaylist.Features;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Handler;
+
+import es.uva.mangostas.sharedplaylist.R;
 
 
 public class YoutubeResultsActivity extends AppCompatActivity {

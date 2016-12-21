@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
