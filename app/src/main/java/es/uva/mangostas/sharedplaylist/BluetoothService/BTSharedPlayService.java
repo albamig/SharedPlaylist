@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +47,8 @@ public class BTSharedPlayService {
     private int state;
     private String mtype;
     private ArrayList<ConnectedThread> myConnections;
+    private static final String SERVER_TYPE = "Server";
+    private static final String CLIENT_TYPE = "Client";
 
     //Constantes para el estado
     public static final int STATE_NONE = 0;       // Nada
@@ -100,17 +103,19 @@ public class BTSharedPlayService {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
-        if (mtype.equals("Server")) {
+        if (mtype.equals(SERVER_TYPE)) {
             setState(STATE_LISTEN);
         }
 
 
         //Lanzamos el hilo que se encarga de escuchar peticiones
-        if (mAcceptThread == null) {
-            mAcceptThread = new AcceptThread();
-            mAcceptThread.start();
+        if (mtype.equals(SERVER_TYPE)) {
+            if (mAcceptThread == null) {
+                mAcceptThread = new AcceptThread();
+                mAcceptThread.start();
+            }
+            myConnections = new ArrayList<>();
         }
-        myConnections = new ArrayList<>();
     }
 
     /**
@@ -127,7 +132,7 @@ public class BTSharedPlayService {
         }
 
         //Cancelamos los que ya estan conectados
-        if (mtype.equals("Client") && mConnectedThread != null) {
+        if (mtype.equals(CLIENT_TYPE) && mConnectedThread != null) {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
@@ -146,12 +151,14 @@ public class BTSharedPlayService {
             mConnectThread = null;
 
         }
+
         //lanzamos el hilo que maneja la conexion
-        if (mtype.equals("Server")) {
+        if (mtype.equals(SERVER_TYPE)) {
             myConnections.add(new ConnectedThread(socket));
             myConnections.get(myConnections.size()-1).start();
+
             setState(STATE_CONNECTED_AND_LISTEN);
-        } else if (mtype.equals("Client")) {
+        } else if (mtype.equals(CLIENT_TYPE)) {
             mConnectedThread = new ConnectedThread(socket);
             mConnectedThread.start();
             setState(STATE_CONNECTED_AND_LISTEN);
@@ -176,10 +183,10 @@ public class BTSharedPlayService {
             mConnectThread = null;
         }
 
-        if (mtype.equals("Client") && mConnectedThread != null) {
+        if (mtype.equals(CLIENT_TYPE) && mConnectedThread != null) {
             mConnectedThread.cancel();
             mConnectedThread = null;
-        } else if (mtype.equals("Server") && myConnections.size() > 0) {
+        } else if (mtype.equals(SERVER_TYPE) && myConnections.size() > 0) {
             for (int i = 0; i < myConnections.size(); i++) {
                 myConnections.get(i).cancel();
                 myConnections.remove(myConnections.get(i));
@@ -199,13 +206,13 @@ public class BTSharedPlayService {
      * @param out
      */
     public void write(byte[] out) {
-        
-        if (mSendThread != null) {
-            mSendThread = null;
-        }
-        mSendThread = new SendThread(mConnectedThread.mmOutStream, out);
-
+        if (mtype.equals(CLIENT_TYPE)) {
+            if (mSendThread != null) {
+                mSendThread = null;
+            }
+            mSendThread = new SendThread(mConnectedThread.mmOutStream, out);
             mSendThread.start();
+        }
     }
 
     /**
@@ -233,9 +240,10 @@ public class BTSharedPlayService {
         bundle.putString(Constants.TOAST, String.valueOf(R.string.conectionlost));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-
         // Reiniciar el servicio
-        BTSharedPlayService.this.start();
+        if (mtype.equals(CLIENT_TYPE)) {
+            BTSharedPlayService.this.start();
+        }
     }
 
     private class AcceptThread extends Thread {
@@ -427,68 +435,67 @@ public class BTSharedPlayService {
             int bytes;
             int size = 0;
             int totalBytes = 0;
+            int listSize = 0;
 
             // Keep listening to the InputStream while connected
             while (true) {
-                try {
-                    if (totalBytes == 0) {
-                        //Leemos el tamaño de la canción en los 4 primeros bytes que se han escrito
-                        mmInStream.read(buffer, 0, 4);
+                    try {
+                        if (totalBytes == 0) {
+                            //Leemos el tamaño de la canción en los 4 primeros bytes que se han escrito
+                            mmInStream.read(buffer, 0, 4);
 
-                        //Pasamos el valor de los bytes a un entero
-                        size = (buffer[0]<<24)&0xff000000|
-                                (buffer[1]<<16)&0x00ff0000|
-                                (buffer[2]<< 8)&0x0000ff00|
-                                (buffer[3]<< 0)&0x000000ff;
+                            //Pasamos el valor de los bytes a un entero
+                            size = (buffer[0] << 24) & 0xff000000 |
+                                    (buffer[1] << 16) & 0x00ff0000 |
+                                    (buffer[2] << 8) & 0x0000ff00 |
+                                    (buffer[3] << 0) & 0x000000ff;
 
-                        //Si la condicion se cumple se trata de un video por lo tanto lo tratamos como tal.
-                        if (size == 0 ) {
-                            bytes = mmInStream.read(buffer);
-                            mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
+                            //Si la condicion se cumple se trata de un video por lo tanto lo tratamos como tal.
+                            if (size == 0) {
+                                bytes = mmInStream.read(buffer);
+                                mHandler.obtainMessage(Constants.MESSAGE_VIDEO_READ, bytes, -1, buffer)
+                                        .sendToTarget();
+                                continue;
+                            } else {
+                                //Definimos el array que almacenara la cancion con el tamaño de esta
+                                fin = new byte[size];
+                            }
+
+                        }
+
+
+                        //Pasamos a leer los datos de la canción
+                        bytes = mmInStream.read(buffer);
+
+                        //Guardamos en totalBytes el numero de bytes leidos para poder comprobar si ya hemos
+                        //terminado de leer los datos
+                        totalBytes += bytes;
+
+                        if (totalBytes == size) {
+                            //Si se cumple la condicion ya hemos leido los ultimos bytes de infomación
+                            // por lo tanto los copiamos al buffer y enviamos los datos a la
+                            // actividad del servidor.
+                            for (int i = 0; i < bytes; i++) {
+                                fin[totalBytes - bytes + i] = buffer[i];
+                            }
+                            mHandler.obtainMessage(Constants.MESSAGE_SONG_READ, totalBytes, -1, fin)
                                     .sendToTarget();
-                            continue;
-                        } else {
-                            //Definimos el array que almacenara la cancion con el tamaño de esta
-                            fin = new byte[size];
+                            fin = null;
+                            totalBytes = 0;
+                        } else if (totalBytes > 0) {
+                            //Si no se cumple la condición copiamos los bytes leidos en el buffer final.
+                            for (int i = 0; i < bytes; i++) {
+                                fin[totalBytes - bytes + i] = buffer[i];
+                            }
                         }
 
+                    } catch (IOException e) {
+
+                        connectionLost();
+                        // Start the service over to restart listening mode
+                        BTSharedPlayService.this.start();
+                        break;
                     }
-
-
-
-
-                    //Pasamos a leer los datos de la canción
-                    bytes = mmInStream.read(buffer);
-
-                    //Guardamos en totalBytes el numero de bytes leidos para poder comprobar si ya hemos
-                    //terminado de leer los datos
-                    totalBytes += bytes;
-
-                    if (totalBytes == size) {
-                        //Si se cumple la condicion ya hemos leido los ultimos bytes de infomación
-                        // por lo tanto los copiamos al buffer y enviamos los datos a la
-                        // actividad del servidor.
-                        for (int i = 0; i < bytes; i++) {
-                            fin[totalBytes-bytes+i] = buffer[i];
-                        }
-                        mHandler.obtainMessage(Constants.MESSAGE_SONG_READ, totalBytes, -1, fin)
-                                .sendToTarget();
-                        fin = null;
-                        totalBytes = 0;
-                    } else if (totalBytes > 0) {
-                        //Si no se cumple la condición copiamos los bytes leidos en el buffer final.
-                        for (int i = 0; i < bytes; i++) {
-                            fin[totalBytes-bytes+i] = buffer[i];
-                        }
-                    }
-
-                } catch (IOException e) {
-
-                    connectionLost();
-                    // Start the service over to restart listening mode
-                    BTSharedPlayService.this.start();
-                    break;
-                }
             }
         }
 
