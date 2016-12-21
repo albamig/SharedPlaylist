@@ -38,6 +38,7 @@ import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
 import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 public class ClientActivity extends AppCompatActivity {
 
@@ -45,6 +46,7 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
+    private static final int SELECT_VIDEO = 99;
     private static final int VIDEO_SELECTED = 1;
     private static final int SONG_SELECTED = 3;
 
@@ -486,8 +488,13 @@ public class ClientActivity extends AppCompatActivity {
                     String name = data.getStringExtra("videoName");
                     String channel = data.getStringExtra("videoChannel");
                     sendVideo(video, name, channel);
-                } else {
-
+                  
+                } else if (resultCode == YoutubeResultsActivity.RESULT_GJEXCPT) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.serviceErrorYt),
+                            Toast.LENGTH_SHORT).show();
+                } else if (resultCode == YoutubeResultsActivity.RESULT_IOEXCPT) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.jsonExcpt),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             //Caso de la seleccion de cancion

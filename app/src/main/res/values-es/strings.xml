@@ -9,6 +9,26 @@
     <string name="search_list">Buscar lista</string>
     <string name="youTube">youTube</string>
     <string name="local">lcal</string>
+    <string name="serviceErrorYt">Se ha producido un error en el servicio de YouTube</string>
+    <string name="jsonExcpt">Surgió un problema al tratar de conectarse a Youtube</string>
+    <string name="preferencesButton">Preferencias</string>
+    <string name="namePref">Tu nombre</string>
+    <string name="nameSufPref">Por favor, introduce tu nombre</string>
+    <string name="langPref">Idioma</string>
+    <string name="langSubPref">Selecciona el idioma de la aplicación</string>
+    <string name="langEsListPref">Español</string>
+    <string name="langEnListPref">Inlés</string>
+    <string name="amountPref">Numero de videos </string>
+    <string name="amountSubPref">Inserta el número de videos de YouTube a mostrar</string>
+    <string name="server_setting">Como servidor</string>
+    <string name="client_settings">Como cliente</string>
+    <string name="bt_act">Seleccionar dispositivo</string>
+    <string name="conn_settings">Cantidad de conexiones</string>
+    <string name="connSufPref">Establece al cantidad de conexiones que el servidor aceptará</string>
+    <string name="reproTit">Reproducción ciclica</string>
+    <string name="reprSufPred">Marcalo si los items deben ir al final de la lista cuando finalicen</string>
+    <string name="checkPref">Verificar items recibidos</string>
+    <string name="checkSufPref">Marcalo si quieres verificar todos los items entrantes</string>
     <string name="createlist">¿Desea recuperar la lista o crear una nueva?</string>
     <string name="copyfound">Copia de seguridad encontrada</string>
     <string name="neww">Nueva</string>
@@ -34,7 +54,5 @@
     <string name="notvinculateddispositives">No hay dispositivos vinculados.</string>
     <string name="iamconectedto">Me conectado a </string>
     <string name="notfound">No se han encontrado dispositivos.</string>
-
-
 
 </resources>
