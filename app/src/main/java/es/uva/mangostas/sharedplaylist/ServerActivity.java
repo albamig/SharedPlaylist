@@ -347,6 +347,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     }
 
+    /**
+     * Metodo que inicializa el servicio de envio y recepción.
+     */
     private void setupService() {
         //Inicializamos el servicio de Envio.
         mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
@@ -615,10 +618,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     }
 
-    /**
-     * Se ejecuta cuando finaliza un video de youTube. Se borra la cancion que se estaba
-     * reproduciendo, se pone el tiempo de reproduccion a cero y se inicia la siguiente cancion.
-     */
+
     @Override
     public void onVideoEnded() {
 

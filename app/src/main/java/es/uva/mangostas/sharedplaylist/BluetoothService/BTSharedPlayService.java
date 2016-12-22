@@ -27,9 +27,10 @@ import es.uva.mangostas.sharedplaylist.R;
  * Esta clase hace el trabajo para las conexiones
  * bluetooth se encarga de conectar los dispositivos,
  *  aceptar peticiones y manejar el envio de mensajes.
- *  Tiene 3 hilos uno que acepta las peticiones, otro
- *  que maneja la conexion y un ultimo hilo que se
- *  encarga de la transmision de informacion.
+ *  Tiene 3 hilos diferentes dependiendo del rol en el caso del servidor
+ *  un hilo que acepta las peticiones de conexion, otro que realiza la conexion
+ *  y un último hilo que gestiona la recepción de datos. Por parte del cliente
+ *  se elimina el hilo para aceptar las peticiones y se añade uno para realizar los envios.
  */
 
 public class BTSharedPlayService {
@@ -59,8 +60,8 @@ public class BTSharedPlayService {
 
     /**
      * Constructor del servicio
-     * @param context
-     * @param handler
+     * @param context Contexto recibido desde la actividad que lo construye
+     * @param handler Manejador de mensajes para devolver información a la actividad
      */
     public BTSharedPlayService(Context context, Handler handler, String type) {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -71,7 +72,7 @@ public class BTSharedPlayService {
 
     /**
      * Setter para cambiar el estado
-     * @param state
+     * @param state Estado que se asignará al servicio.
      */
     private synchronized void setState(int state) {
         this.state = state;
@@ -82,13 +83,14 @@ public class BTSharedPlayService {
 
     /**
      * Getter para el estado
-     * @return
+     * @return Estado actual del servicio
      */
     public synchronized int getState() {return state;}
 
     /**
-     * Metodo con el que iniciamos el servicio cancelando cualquier conexion,
-     * en curso o ya establecida, despues lanzamos el hilo que espera peticiones.
+     * Realiza las funciones necesarias para poner el servicio
+     * en funcionamiento. Inicia los hilos y cancela aquellos
+     * que no sean necesarios.
      */
     public synchronized void start() {
 
@@ -119,8 +121,9 @@ public class BTSharedPlayService {
     }
 
     /**
-     * Lanzamos el hilo que conecta los dispositivos
-     * @param device
+     * Lanzamos el hilo que conecta los dispositivos.
+     *
+     * @param device Dispositivo al cual vamos a realizar la conexión
      */
     public synchronized void connect(BluetoothDevice device) {
         //Cancelamos los hilos que traten de conectarse
@@ -143,6 +146,11 @@ public class BTSharedPlayService {
         setState(STATE_CONNECTING);
     }
 
+    /**
+     * Lanza el hilo que gestiona la conexión entre dos dispositivos
+     * @param socket Socket de la conexión
+     * @param device Dispositivo remoto al que se realiza la conexión
+     */
     public synchronized void connected(BluetoothSocket socket,
                                        BluetoothDevice device) {
         //Cancelamos los hilos que estan conectando
@@ -174,7 +182,8 @@ public class BTSharedPlayService {
     }
 
     /**
-     * Detener todos los hilos
+     * Detiene la ejecución del servico, para ello detiene
+     * los hilos que estan en funcionamiento
      */
     public synchronized void stop() {
 
@@ -202,8 +211,9 @@ public class BTSharedPlayService {
     }
 
     /**
-     * Metodo para escribir al dispositivo conectado
-     * @param out
+     * Genera el hilo que realiza el envio de información por
+     * parte del cliente
+     * @param out Array de bytes con los datos a enviar
      */
     public void write(byte[] out) {
         if (mtype.equals(CLIENT_TYPE)) {
@@ -246,6 +256,10 @@ public class BTSharedPlayService {
         }
     }
 
+    /**
+     * Clase descendiente de Thread la cual mantiene una escucha
+     * y acepta las posibles peticiones de conexion
+     */
     private class AcceptThread extends Thread {
         // The local server socket
         private final BluetoothServerSocket mmServerSocket;
@@ -255,7 +269,7 @@ public class BTSharedPlayService {
             BluetoothServerSocket tmp = null;
             mSocketType = "Insecure";
 
-            // Create a new listening server socket
+            // Creacción de un nuevo socket de escucha para el servidor
             try {
                 tmp = btAdapter.listenUsingRfcommWithServiceRecord("Text",
                         MY_UUID);
@@ -270,29 +284,29 @@ public class BTSharedPlayService {
 
             BluetoothSocket socket = null;
 
-            // Listen to the server socket if we're not connected
+            //Esuchando posibles peticiones entrantes
             while (true) {
                 try {
-                    // This is a blocking call and will only return on a
-                    // successful connection or an exception
+                    // Llamada bloqueante la cual devuelve la aceptación de la petición o una
+                    // excepción
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
                     break;
                 }
 
-                // If a connection was accepted
+                // Si se ha aceptado la petición
                 if (socket != null) {
                     synchronized (BTSharedPlayService.this) {
                         switch (state) {
                             case STATE_CONNECTED_AND_LISTEN:
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
-                                // Situation normal. Start the connected thread.
+                                // Situación normal se lanza el hilo para la gestión de la conexión
                                 connected(socket, socket.getRemoteDevice());
                                 break;
                             case STATE_NONE:
                             case STATE_CONNECTED:
-                                // Either not ready or already connected. Terminate new socket.
+                                //No disponible en este momento, se cierra el socket
                                 try {
                                     socket.close();
                                 } catch (IOException e) {
@@ -305,6 +319,9 @@ public class BTSharedPlayService {
 
         }
 
+        /**
+         * Cancelar el hilo de conexión
+         */
         public void cancel() {
             try {
                 mmServerSocket.close();
@@ -315,9 +332,8 @@ public class BTSharedPlayService {
 
 
     /**
-     * This thread runs while attempting to make an outgoing connection
-     * with a device. It runs straight through; the connection either
-     * succeeds or fails.
+     * Clase descendiente de Thread que se inicia cuando hay una conexión
+     * saliente con un dispositivo.
      */
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
@@ -327,8 +343,7 @@ public class BTSharedPlayService {
             mmDevice = device;
             BluetoothSocket tmp = null;
 
-            // Get a BluetoothSocket for a connection with the
-            // given BluetoothDevice
+            // Obtenemos un socket bluetooth a partir del dispositivo remoto
             try {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
 
@@ -341,13 +356,11 @@ public class BTSharedPlayService {
 
             setName("ConnectThread");
 
-            // Always cancel discovery because it will slow down a connection
+            // Cancelamos el escaneo de dispositivos en caso de que se estuviera realizando
             btAdapter.cancelDiscovery();
 
-            // Make a connection to the BluetoothSocket
             try {
-                // This is a blocking call and will only return on a
-                // successful connection or an exception
+                // Llamada bloqueante que devuelve una conexión exitosa o una excepción
                 mmSocket.connect();
             } catch (IOException e) {
                 // Close the socket
@@ -360,15 +373,18 @@ public class BTSharedPlayService {
                 return;
             }
 
-            // Reset the ConnectThread because we're done
+            // Reiniciamos el hilo de conexion por que ya hemos terminado
             synchronized (BTSharedPlayService.this) {
                 mConnectThread = null;
             }
 
-            // Start the connected thread
+            // Lanzamos el hilo que gestiona la conexión
             connected(mmSocket, mmDevice);
         }
 
+        /**
+         * Cancelar el hilo de conexión
+         */
         public void cancel() {
             try {
                 mmSocket.close();
@@ -378,10 +394,19 @@ public class BTSharedPlayService {
         }
     }
 
+    /**
+     * Clase descendiente de Thread que se encarga de realizar
+     * el envio de información hacia el dispositivo vinculado
+     */
     private class SendThread extends Thread {
         private OutputStream mmOutStream;
         private byte[] songToSend;
 
+        /**
+         * Constructor principal
+         * @param mmOutStream Stream de salida sobre el que se escribira la información
+         * @param song Datos de la canción que se envia
+         */
         private SendThread(OutputStream mmOutStream, byte[] song) {
             songToSend = new byte[song.length];
             this.mmOutStream = mmOutStream;
@@ -393,7 +418,7 @@ public class BTSharedPlayService {
         public void run() {
             try {
                 mmOutStream.write(songToSend);
-                // Share the sent message back to the UI Activity
+                // Devolvemos a la actividad principal un mensaje de confirmación del envio
                 mHandler.obtainMessage(Constants.MESSAGE_WRITE, songToSend.length, -1, songToSend)
                         .sendToTarget();
             } catch (IOException e) {
@@ -402,21 +427,25 @@ public class BTSharedPlayService {
     }
 
     /**
-     * This thread runs during a connection with a remote device.
-     * It handles all incoming and outgoing transmissions.
+     * Clase descendiente de Thread la cual se mantiene durante
+     * el transcurso de una conexión, gestionando la recepción de información
      */
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
+        /**
+         * Constructor principal
+         * @param socket Socket de conexión
+         */
         public ConnectedThread(BluetoothSocket socket) {
 
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
-            // Get the BluetoothSocket input and output streams
+            // Obetenemos los sockets de entrada y de salida del socket
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
@@ -435,9 +464,8 @@ public class BTSharedPlayService {
             int bytes;
             int size = 0;
             int totalBytes = 0;
-            int listSize = 0;
 
-            // Keep listening to the InputStream while connected
+            // Espera activa para recibir información
             while (true) {
                     try {
                         if (totalBytes == 0) {
@@ -500,21 +528,8 @@ public class BTSharedPlayService {
         }
 
         /**
-         * Write to the connected OutStream.
-         *
-         * @param buffer The bytes to write
+         * Cancelar el hilo de conexión
          */
-        public void write(byte[] buffer) {
-            try {
-                mmOutStream.write(buffer);
-
-                // Share the sent message back to the UI Activity
-               mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
-                       .sendToTarget();
-            } catch (IOException e) {
-            }
-        }
-
         public void cancel() {
             try {
                 mmSocket.close();
