@@ -1,9 +1,4 @@
 package es.uva.mangostas.sharedplaylist.model;
-
-/**
- * Created by root on 18/11/16.
- */
-
 /**
  * Clase descendiente de ShpMediaObject la cual representa
  * los videos.
