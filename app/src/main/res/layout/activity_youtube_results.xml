@@ -10,14 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="es.uva.mangostas.sharedplaylist.Features.YoutubeResultsActivity">
 
-    <!--<ListView-->
-        <!--android:id="@+id/listViewRes"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true" />-->
-
     <ListView
         android:id="@+id/listViewRes"
         android:layout_width="fill_parent"
