@@ -1,12 +1,12 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import es.uva.mangostas.sharedplaylist.ServerActivity;
 
 /**
- * @author Alberto Amigo Alonso
- * @author Sergio Delgado Álvarez
- * @author Óscar Fernández Angulo
- * @author Santos Ángel Prado
+ * Created by root on 18/11/16.
  */
 
 /**
@@ -70,6 +70,5 @@ public class ShpSong extends ShpMediaObject {
      */
     public String getPath(){
         return path;
-        
     }
 }

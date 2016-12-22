@@ -34,8 +34,35 @@
     <string name="notvinculateddispositives">There are no linked devices.</string>
     <string name="iamconectedto">I connected to</string>
     <string name="notfound">No devices found.</string>
+
+
+    <string name="menu_yt_tit">YouTube</string>
+    <string name="menu_fs_tit">Local</string>
+    <string name="forward_song">Resend song</string>
+    <string name="forward_element">Resend element</string>
+    <string name="serviceErrorYt">There was an error on Youtube service</string>
+    <string name="ytbExcpt">There was an while trying to connect to YouTube</string>
+    <string name="title_activity_preferences">PreferencesActivity</string>
+    <string name="preferencesButton">Settings</string>
+    <string name="namePref">Your Name</string>
+    <string name="nameSufPref">Please provide your username</string>
+    <string name="langPref">Language</string>
+    <string name="langSubPref">Select the application language</string>
+    <string name="langEsListPref">Spanish</string>
+    <string name="langEnListPref">English</string>
+    <string name="amountPref">YouTube videos</string>
+    <string name="amountSubPref">Insert the amount of YouTube videos to show</string>
+    <string name="server_setting">As a server</string>
+    <string name="client_settings">As a client</string>
+    <string name="bt_act">Select device</string>
+    <string name="conn_settings">Connections amount</string>
+    <string name="connSufPref">Set the amount of connections the server will accept</string>
+    <string name="reproTit">Cyclical playing</string>
+    <string name="reprSufPred">Set whether an item must be set below the list after finished</string>
+    <string name="checkPref">Check received item</string>
+    <string name="checkSufPref">Set whether you want to confirm all the incoming items</string>
     <string name="helpBut">Help</string>
-    <string name="forward_song">Forward Song?</string>
-    <string name="forward_element">Forward element</string>
+    <string name="reqblue">This feature requires bluetooth</string>
+    <string name="makevisible">Make visible</string>
 
 </resources>
