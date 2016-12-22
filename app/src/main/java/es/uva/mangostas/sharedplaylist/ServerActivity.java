@@ -76,8 +76,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private int currentTime = 0;
     private static int unknownCount = 1;
 
-    private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
-
     //Preferencias
     private boolean verificarItems;
     private boolean reproduccionCiclica;
@@ -480,7 +478,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             if(tladapter.getItem(0) instanceof ShpVideo) {
                 if(!isIni) {
                     getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
-                    youTubePlayerFragmen.initialize(APIKEY, this);
+                    youTubePlayerFragmen.initialize(Constants.APIKEY, this);
                     isIni = true;
                 } else {
                     yTPlayer.loadVideo(((ShpVideo) tladapter.getItem(0)).getYtCode(),currentTime);

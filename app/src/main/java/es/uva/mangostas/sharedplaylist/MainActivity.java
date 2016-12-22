@@ -14,16 +14,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-
 import java.io.File;
-
+import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 import es.uva.mangostas.sharedplaylist.Features.Help;
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 
 import static android.Manifest.*;
 
+/**
+ * Actividad que implementa el menú principal de la aplicación y
+ * redirige a el resto de funcionalidades.
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    Button serverButton;
+    Button clientButton;
+    Button preferencesButton;
+
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
     Button helpButton;
@@ -32,21 +38,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        setContentView(R.layout.activity_main);
-
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        Button serverButton = (Button) findViewById(R.id.buttonServer);
+        serverButton = (Button) findViewById(R.id.buttonServer);
         serverButton.setOnClickListener(this);
 
-        Button clientButton = (Button) findViewById(R.id.buttonClient);
+        clientButton = (Button) findViewById(R.id.buttonClient);
         clientButton.setOnClickListener(this);
 
-        Button preferencesButton = (Button) findViewById(R.id.buttonPreferences);
+        preferencesButton = (Button) findViewById(R.id.buttonPreferences);
         preferencesButton.setOnClickListener(this);
 
         helpButton = (Button) findViewById(R.id.buttonHelp);
@@ -62,12 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     permission.READ_EXTERNAL_STORAGE)) {
-
-
-
             } else {
-
-
                 ActivityCompat.requestPermissions(this,
                         new String[]{permission.READ_EXTERNAL_STORAGE},
                         1);
@@ -128,12 +123,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
                         startActivity(intentServidor);
                     }
-
                 }
 
-
-
                 break;
+
             case R.id.buttonClient :
                 if (!btAdapter.isEnabled()) {
                     Toast.makeText(getApplicationContext(),
@@ -146,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     startActivity(new Intent(this, ClientActivity.class));
                 }
                 break;
+
             case R.id.buttonPreferences:
                 startActivity(new Intent(this, PreferencesActivity.class));
                 break;
@@ -160,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
     }
 
 }

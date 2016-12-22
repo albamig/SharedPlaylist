@@ -5,6 +5,8 @@ package es.uva.mangostas.sharedplaylist.BluetoothService;
  */
 
 public interface Constants {
+    // API Key
+    public static final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
     // Tipos de mensajes que puede enviar el servicio de bluetooth al manejador de la actividad
     public static final int MESSAGE_STATE_CHANGE = 1;
