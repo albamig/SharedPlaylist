@@ -1,7 +1,10 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
 /**
- * Created by root on 18/11/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 /**

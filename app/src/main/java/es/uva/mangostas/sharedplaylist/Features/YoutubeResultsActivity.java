@@ -1,3 +1,10 @@
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
 package es.uva.mangostas.sharedplaylist.Features;
 
 import android.app.Activity;

@@ -1,12 +1,12 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
-
 import es.uva.mangostas.sharedplaylist.ServerActivity;
 
 /**
- * Created by root on 18/11/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 /**
