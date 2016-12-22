@@ -145,7 +145,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     break;
 
                 case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
                     String mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
                     if (null != getApplicationContext()) {
                         Toast.makeText(getApplicationContext(), getString(R.string.conectedto)
@@ -309,15 +308,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         File appState = new File(getApplicationContext().getCacheDir(),"appState");
         if(!appState.exists()) {
-            //Inicializamos el reproductor de Youtube (SOLO SI SE EMPIEZA CON VIDEOS EN LA LISTA)
-            //tladapter.add(new ShpVideo("OBXRJgSd-aU","mojoy", "oyo"));
-            //tladapter.add(new ShpVideo("0rEVwwB3Iw0", "topo", "el topor"));
-            //tladapter.add(new ShpSong("/storage/emulated/0/Music/C. Tangana - 10_15 (2015)/1 C.H.I.T.O..mp3","espinaca","caranchoa"));
-            //tladapter.add(new ShpSong("/storage/emulated/0/Music/Black Sabbath - Paranoid.mp3","Paranoid","Black Sabbath"));
 
             //Añadimos elementos a la lista de manera estática
+            tladapter.add(new ShpVideo("oavMtUWDBTM", "Mr.Trololo", "RealPapaPit"));
             tladapter.add(new ShpVideo("OBXRJgSd-aU", "Rasputin","Boney M"));
-            tladapter.add(new ShpVideo("cytK7Nl0U60", "Es Épico", "Un mono"));
         }
 
         //Ponemos en marcha el servicio
@@ -560,7 +554,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_server, menu);
         return true;
     }
@@ -709,15 +702,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if(isIni){
                 yTPlayer.setFullscreen(true);
             }
 
-        }/* else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-                CAMBIOS AL PONER LA PANTALLA VERTICAL
-        }*/
+        }
     }
 
     @Override

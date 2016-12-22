@@ -138,19 +138,8 @@ public class ClientActivity extends AppCompatActivity {
         //Colocamos los escuchadores de la barra de busqueda de youtube
         setSearchBoxListeners();
 
-        // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
-
-        // Defined Array playList to show in ListView
         ArrayList<ShpMediaObject> playList = new ArrayList<>();
-
-
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written
-        // Forth - the Array of data
-
         tladapter = new TrackListAdapter(playList, this);
 
 
@@ -206,13 +195,13 @@ public class ClientActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "Position :" + position + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                         .show();
-
             }
 
         });
 
         //Ponemos el servicio en funcionamiento
         setupService();
+
         //Buscamos el dispositivo al que nos conectaremos
         Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);

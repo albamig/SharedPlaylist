@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             } else {
                                                 startActivity(intentServidor);
                                             }
-                                            //dialog.cancel
                                         }
                                     })
                             .setPositiveButton(getString(R.string.restore),
