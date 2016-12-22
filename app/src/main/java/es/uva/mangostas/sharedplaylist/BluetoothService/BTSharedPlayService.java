@@ -15,7 +15,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -248,7 +247,7 @@ public class BTSharedPlayService {
                 tmp = btAdapter.listenUsingRfcommWithServiceRecord("Text",
                         MY_UUID);
             } catch (IOException e) {
-                Log.e("ERROR", "AcceptThread", e);
+                tmp = null;
             }
             mmServerSocket = tmp;
         }
@@ -265,6 +264,7 @@ public class BTSharedPlayService {
                     // excepción
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
+                    this.start();
                     break;
                 }
 
@@ -284,7 +284,9 @@ public class BTSharedPlayService {
                                 try {
                                     socket.close();
                                 } catch (IOException e) {
-                                    Log.e("ERROR", "AcceptThread", e);
+                                    this.start();
+                                    break;
+
                                 }
                                 break;
                         }
@@ -301,7 +303,7 @@ public class BTSharedPlayService {
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
-                Log.e("ERROR", "AcceptThread", e);
+                return;
             }
         }
     }
@@ -324,7 +326,7 @@ public class BTSharedPlayService {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
 
             } catch (IOException e) {
-                Log.e("ERROR", "connectThread", e);
+                tmp = null;
             }
             mmSocket = tmp;
         }
@@ -344,8 +346,8 @@ public class BTSharedPlayService {
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
-                    Log.e("ERROR", "ConnectThread", e);
-
+                    this.start();
+                    return;
                 }
                 connectionFailed();
                 return;
@@ -367,7 +369,7 @@ public class BTSharedPlayService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e("ERROR", "ConnectThread", e);
+                return;
             }
         }
     }
@@ -400,7 +402,7 @@ public class BTSharedPlayService {
                 mHandler.obtainMessage(Constants.MESSAGE_WRITE, songToSend.length, -1, songToSend)
                         .sendToTarget();
             } catch (IOException e) {
-                Log.e("ERROR", "SendThread", e);
+                return;
             }
         }
     }
@@ -421,15 +423,16 @@ public class BTSharedPlayService {
         public ConnectedThread(BluetoothSocket socket) {
 
             mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
+            InputStream tmpIn;
+            OutputStream tmpOut;
 
             // Obetenemos los sockets de entrada y de salida del socket
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.e("ERROR: ", "Socket get streams exception", e);
+                tmpIn = null;
+                tmpOut = null;
             }
 
             mmInStream = tmpIn;
@@ -497,7 +500,6 @@ public class BTSharedPlayService {
                         }
 
                     } catch (IOException e) {
-
                         connectionLost();
                         // Start the service over to restart listening mode
                         BTSharedPlayService.this.start();
@@ -513,7 +515,8 @@ public class BTSharedPlayService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e("ERROR", "ConnectedThread", e);
+                return;
+
             }
         }
     }

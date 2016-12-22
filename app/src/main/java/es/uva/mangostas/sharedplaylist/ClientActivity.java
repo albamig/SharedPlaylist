@@ -318,7 +318,9 @@ public class ClientActivity extends AppCompatActivity {
             fis.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "La canción seleccionada no esta disponible",
+                    Toast.LENGTH_LONG).show();
+            return;
         }
 
         //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
