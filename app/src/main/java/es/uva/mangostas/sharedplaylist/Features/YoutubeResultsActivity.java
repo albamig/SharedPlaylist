@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
+import es.uva.mangostas.sharedplaylist.Constants;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**

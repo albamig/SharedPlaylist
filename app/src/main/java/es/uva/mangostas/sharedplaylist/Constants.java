@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.BluetoothService;
+package es.uva.mangostas.sharedplaylist;
 
 /**
  * Created by root on 1/12/16.

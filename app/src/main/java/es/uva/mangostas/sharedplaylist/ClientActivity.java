@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
-import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Features.TrackListAdapter;
 import es.uva.mangostas.sharedplaylist.Features.YoutubeResultsActivity;
