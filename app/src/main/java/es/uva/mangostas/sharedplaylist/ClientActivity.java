@@ -65,7 +65,7 @@ public class ClientActivity extends AppCompatActivity {
     private BluetoothDevice device;
 
     //Interfaz
-    public SearchBox search;
+    private SearchBox search;
     private FloatingActionsMenu fab;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_yt;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_local;
@@ -98,8 +98,6 @@ public class ClientActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), R.string.conected, Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_LIST_READ:
-                    byte[] listBuf = (byte[]) msg.obj;
-                    String listElement = new String(listBuf, 0, msg.arg1);
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getApplicationContext()) {
@@ -200,15 +198,12 @@ public class ClientActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                // ListView Clicked item index
-                int itemPosition = position;
 
-                // ListView Clicked item value
+
                 String itemValue = (String) listView.getItemAtPosition(position);
 
-                // Show Alert
                 Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                        "Position :" + position + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                         .show();
 
             }
@@ -272,10 +267,10 @@ public class ClientActivity extends AppCompatActivity {
             byte[] videoName = name.getBytes();
             byte[] videoChannel = channel.getBytes();
             byte[] video = new byte[msg.length()+64];
-            video[0] = (byte) (0 >> 24);
-            video[1] = (byte) (0 >> 16);
-            video[2] = (byte) (0 >> 8);
-            video[3] = (byte) (0 /*>> 0*/);
+            video[0] = (byte) (0);
+            video[1] = (byte) (0);
+            video[2] = (byte) (0);
+            video[3] = (byte) (0);
 
             //Añadimos el nombre de la cancion en los 30 bytes despues del tamaño
             for (int i = 0; i < videoName.length; i++) {
@@ -416,7 +411,7 @@ public class ClientActivity extends AppCompatActivity {
     /**
      * Cierra la barra de busqueda
      */
-    protected void closeSearch() {
+    private void closeSearch() {
         search.hideCircularly(this);
     }
 
@@ -444,10 +439,10 @@ public class ClientActivity extends AppCompatActivity {
             int pos = buscarDosPuntos(helper);
             direccion = helper.substring(pos);
             if (pos == 0) System.exit(-1);
-            if (esInterna == true) {
+            if (esInterna) {
                 predireccion = "/storage/emulated/0/";
                 predireccion = predireccion + direccion;
-            } else if (esExterna == true) {
+            } else if (esExterna) {
                 predireccion = "/storage/sdcard/";
                 predireccion = predireccion + direccion;
             } else {
