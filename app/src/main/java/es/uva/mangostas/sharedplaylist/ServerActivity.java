@@ -50,12 +50,6 @@ import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
-/**
- * @author Alberto Amigo Alonso
- * @author Sergio Delgado Álvarez
- * @author Óscar Fernández Angulo
- * @author Santos Ángel Prado
- */
 
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
         YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
@@ -135,7 +129,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                                 if (tladapter.getCount() == 1) {
                                                     nextSong();
                                                 }
-                                                Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getApplicationContext(), getString(R.string.videoadded), Toast.LENGTH_LONG).show();
                                             }
                                         });
                         alert = builder.create();
@@ -146,7 +140,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         if (tladapter.getCount() == 1) {
                             nextSong();
                         }
-                        Toast.makeText(getApplicationContext(), R.string.videoadded, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.videoadded), Toast.LENGTH_LONG).show();
                     }
                     break;
 
@@ -154,7 +148,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     // save the connected device's name
                     String mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
                     if (null != getApplicationContext()) {
-                        Toast.makeText(getApplicationContext(), R.string.conectedto
+                        Toast.makeText(getApplicationContext(), getString(R.string.conectedto)
                                 + mConnectedDevice, Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -165,7 +159,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     }
                     break;
                 case Constants.MESSAGE_SONG_READ:
-                    ShpSong newSong;
+                    ShpSong newSong = null;
                     byte[] songBuf = (byte[]) msg.obj;
                     File song = new File(getFilesDir(), "cancion");
                     if (song.exists()) {
@@ -210,7 +204,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                                 if (tladapter.getCount() == 1) {
                                                     nextSong();
                                                 }
-                                                Toast.makeText(getApplicationContext(), R.string.songaddedlist, Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getApplicationContext(), getString(R.string.songaddedlist), Toast.LENGTH_LONG).show();
 
                                             }
                                         });
@@ -222,7 +216,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         if (tladapter.getCount() == 1) {
                             nextSong();
                         }
-                        Toast.makeText(getApplicationContext(), R.string.songaddedlist, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.songaddedlist), Toast.LENGTH_LONG).show();
                     }
 
 
@@ -249,7 +243,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
         //Si es null, el dispositivo no soporta el bluetooth
         if(btAdapter == null) {
-            Toast.makeText(getApplicationContext(), R.string.bluetoothnotsuported, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.bluetoothnotsuported), Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -268,16 +262,16 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ServerActivity.this);
-                builder.setMessage(R.string.deletelistelement)
-                        .setTitle(R.string.deleteelement)
+                builder.setMessage(getString(R.string.deletelistelement))
+                        .setTitle(getString(R.string.deleteelement))
                         .setCancelable(false)
-                        .setNegativeButton(R.string.no,
+                        .setNegativeButton(getString(R.string.no),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
                                     }
                                 })
-                        .setPositiveButton(R.string.yes,
+                        .setPositiveButton(getString(R.string.yes),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         if (tladapter.getItem(position) instanceof ShpSong) {
@@ -358,7 +352,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
         mSendService.start();
 
     }
@@ -408,7 +402,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             fw.close();
         } catch (IOException e) {
             Log.e("ERROR","error reading file", e);
-            return;
         }
     }
 
@@ -445,10 +438,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 fr.close();
             } catch (FileNotFoundException e) {
                 Log.e("ERROR", "file not found", e);
-                return;
             } catch (IOException e) {
                 Log.e("ERROR", "error writing file", e);
-                return;
             }
 
             //Borramos el fichero de la cache.
@@ -533,14 +524,12 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         }
                     });
                 } catch (IOException e) {
-                    Log.e("ERROR", "NextSong", e);
-                    tladapter.remove(0);
-                    nextSong();
+                    e.printStackTrace();
                 }
             }
         } else {
             getFragmentManager().beginTransaction().hide(youTubePlayerFragmen).commit();
-            Toast.makeText(getApplicationContext(), R.string.endreproductionlist, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),getString(R.string.endreproductionlist), Toast.LENGTH_LONG).show();
         }
     }
     /**
@@ -647,8 +636,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
         if(!errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)) {
-          Toast toast = Toast.makeText(getApplicationContext(), R.string.reproductionerror +tladapter.getItem(0).getTitle()+
-                  ".\n "+R.string.reproductingnextsong  ,Toast.LENGTH_LONG);
+          Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.reproductionerror) +tladapter.getItem(0).getTitle()+
+                  ".\n "+getString(R.string.reproductingnextsong)  ,Toast.LENGTH_LONG);
           toast.setGravity(Gravity.TOP,0, 0);
           toast.show();
           tladapter.remove(0);

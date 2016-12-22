@@ -1,0 +1,23 @@
+Welcome to the help of SHAREDPLAYLIST.
+
+The application consists of two main roles:
+
+    - Create playlists and play them.
+    - Send music to a list already created.
+
+The following explains how to perform the two functionalities available.
+
+CREATING LISTS: the first thing to do to create a playlist is to click on the button
+"Create list" that is entered in the main menu. In case there is a previous list, it will skip a warning asking if we want to retrieve it.
+If not, a new window is opened which will list the items to be played, can be music files or YouTube videos.
+When someone sends an item to this list, it will be added to the end of the queue.
+
+SEND MUSIC: in order to send an item from our device to play in the
+Mobile device server it is necessary to access the "browse list" option of the main menu.
+It opens a dialog in which the devices found by Bluetooth appear.
+We select the desired one and both devices are linked.
+The next step is to select the element that we want to send to the playlist of the linked device, pressing the '+'
+We are given the option of choosing a local file or a YouTube video. Once the item is found,
+This will be added to the playlist.
+
+In the "Preferences" section of the main menu, some settings of the application can be modified.

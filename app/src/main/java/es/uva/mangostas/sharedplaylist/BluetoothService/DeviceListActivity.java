@@ -21,10 +21,7 @@ import java.util.Set;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
- * @author Alberto Amigo Alonso
- * @author Sergio Delgado Álvarez
- * @author Óscar Fernández Angulo
- * @author Santos Ángel Prado
+ * Created by root on 17/11/16.
  */
 
 /**
@@ -35,10 +32,10 @@ public class DeviceListActivity extends Activity {
 
     //Información extra para el intent
 
-    public static final String EXTRA_DEVICE_ADDRESS = "device_address";
+    public static String EXTRA_DEVICE_ADDRESS = "device_address";
 
     //Adaptador del Bluetooth
-    private BluetoothAdapter btAdapter;
+    BluetoothAdapter btAdapter;
 
     //ArrayAdapter para los dispositivos descubiertos
     private ArrayAdapter<String> mNewDevicesAdapter;
@@ -64,8 +61,8 @@ public class DeviceListActivity extends Activity {
 
         //Inicializar el Adaptador para los dispositivos encontrados
         // y uno mas para los dispositivos pareados
-        ArrayAdapter<String> pairedDevicesAdapter = new ArrayAdapter<>(this, R.layout.device_name);
-        mNewDevicesAdapter = new ArrayAdapter<>(this, R.layout.device_name);
+        ArrayAdapter<String> pairedDevicesAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+        mNewDevicesAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
 
         //Buscamos e inicializamos la lista con los dispositivos pareados
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);

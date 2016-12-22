@@ -58,4 +58,11 @@
     <string name="forward_song">¿Desea reenviar la canción?</string>
     <string name="forward_element">Reenviar elemento</string>
 
+    <string name="menu_yt_tit">YouTube</string>
+    <string name="menu_fs_tit">Local</string>
+    <string name="title_activity_preferences">Actividad de preferencias</string>
+    <string name="reqblue">Esta caracteristica requiere activar el bluetooth</string>
+    <string name="makevisible">Hacer visible</string>
+
+
 </resources>

@@ -12,26 +12,17 @@ import es.uva.mangostas.sharedplaylist.MainActivity;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
- * @author Alberto Amigo Alonso
- * @author Sergio Delgado Álvarez
- * @author Óscar Fernández Angulo
- * @author Santos Ángel Prado
+ * Created by oscar on 21/12/16.
  */
 
-/**
- * Actividad con la que comienza la aplicación. Muestra, surante unos segundos,
- * una pantalla con el logo de la aplicación y el nombre de los desarrolladores.
- */
 public class SplashScreenActivity extends AppCompatActivity {
-
-    // Tiempo que permanece visible la "splash screen"
+    // Set the duration of the splash screen
     private static final long SPLASH_SCREEN_DELAY = 1400;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Ponemos la orientacion vertical.
+        // Set portrait orientation
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.splash_screen);
@@ -40,16 +31,18 @@ public class SplashScreenActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                // Ejecutamos la actividad principal.
+                // Start the next activity
                 Intent mainIntent = new Intent().setClass(
                         SplashScreenActivity.this, MainActivity.class);
                 startActivity(mainIntent);
 
-                //Cerramos la actividad para no poder volver a ella con el boton de atras.
+                // Close the activity so the user won't able to go back this
+                // activity pressing Back button
                 finish();
             }
         };
 
+        // Simulate a long loading process on application startup.
         Timer timer = new Timer();
         timer.schedule(task, SPLASH_SCREEN_DELAY);
     }

@@ -14,13 +14,6 @@ import android.preference.PreferenceFragment;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
- * @author Alberto Amigo Alonso
- * @author Sergio Delgado Álvarez
- * @author Óscar Fernández Angulo
- * @author Santos Ángel Prado
- */
-
-/**
  * Actividad que gestiona las preferencias del usuario.
  */
 public class PreferencesActivity extends PreferenceActivity {

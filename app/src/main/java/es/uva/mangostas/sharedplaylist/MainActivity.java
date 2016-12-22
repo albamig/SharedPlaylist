@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -29,6 +28,7 @@ import es.uva.mangostas.sharedplaylist.Features.Help;
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 
 import static android.Manifest.permission;
+
 
 /**
  * @author Alberto Amigo Alonso
@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(appState.exists()){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(R.string.createlist)
-                            .setTitle(R.string.copyfound)
+                    builder.setMessage(getString(R.string.createlist))
+                            .setTitle(getString(R.string.copyfound))
                             .setCancelable(true)
-                            .setNegativeButton(R.string.neww,
+                            .setNegativeButton(getString(R.string.neww),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             if (!appState.delete()) {
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             //dialog.cancel
                                         }
                                     })
-                            .setPositiveButton(R.string.restore,
+                            .setPositiveButton(getString(R.string.restore),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             startActivity(intentServidor);
@@ -130,8 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     if (!btAdapter.isEnabled()) {
                         Toast.makeText(getApplicationContext(),
-                                "Esta caracteristica requiere " +
-                                        "activar el bluetooth",
+                                getString(R.string.reqblue),
                                 Toast.LENGTH_LONG).show();
                         Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableBT, REQUEST_ENABLE_BT);
@@ -145,8 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonClient :
                 if (!btAdapter.isEnabled()) {
                     Toast.makeText(getApplicationContext(),
-                            "Esta caracteristica requiere " +
-                                    "activar el bluetooth",
+                            getString(R.string.reqblue),
                             Toast.LENGTH_LONG).show();
                     Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBT, REQUEST_ENABLE_BT);
