@@ -39,6 +39,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
+import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.Features.TrackListAdapter;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;

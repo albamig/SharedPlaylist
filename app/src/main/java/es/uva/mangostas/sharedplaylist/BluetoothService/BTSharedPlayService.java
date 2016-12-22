@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import es.uva.mangostas.sharedplaylist.Constants;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
