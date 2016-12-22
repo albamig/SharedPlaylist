@@ -24,7 +24,6 @@ public class Help extends AppCompatActivity {
         String todo="";
         InputStream is=this.getResources().openRawResource(R.raw.ayuda);
         BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-        if (is!=null){
             try {
 
                 while ((linea=reader.readLine())!=null){
@@ -36,7 +35,6 @@ public class Help extends AppCompatActivity {
                 e.printStackTrace();
 
             }
-        }
 
     }
 

@@ -14,17 +14,14 @@ import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 import es.uva.mangostas.sharedplaylist.R;
 
-/**
- * Created by root on 21/12/16.
- */
 
 /**
  * Clase descenciente de BaseAdapter que sirve como adaptador
  * para las listView de la lista de reproducción
  */
 public class TrackListAdapter extends BaseAdapter {
-    private LayoutInflater inflater;
-    private ArrayList<ShpMediaObject> playList;
+    private final LayoutInflater inflater;
+    private final ArrayList<ShpMediaObject> playList;
 
     /**
      * Constructor principal
@@ -53,7 +50,7 @@ public class TrackListAdapter extends BaseAdapter {
 
     /**
      * Comprueba si el array asociado esta vacio
-     * @return
+     * @return Booleano verdadero si esta vacia falso si contiene elementos
      */
     public boolean isEmpty(){
         return playList.isEmpty();
