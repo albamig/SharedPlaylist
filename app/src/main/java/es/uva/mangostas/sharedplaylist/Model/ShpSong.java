@@ -19,7 +19,7 @@ public class ShpSong extends ShpMediaObject {
     private byte[] data;
 
     /**
-     * Construcctor principal
+     * Constructor principal
      * @param song Array de bytes del fichero de la canción en memoria
      * @param path Ruta de la canción en memoria
      */
