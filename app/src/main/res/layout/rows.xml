@@ -36,7 +36,6 @@
             android:layout_toLeftOf="@+id/linearLayout">
 
             <TextView
-                android:text="TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_Artis"
@@ -44,7 +43,6 @@
                 />
 
             <TextView
-                android:text="LargeText"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_Title"
                 android:layout_width="354dp"

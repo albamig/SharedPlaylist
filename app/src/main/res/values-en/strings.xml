@@ -65,5 +65,8 @@
     <string name="reqblue">This feature requires bluetooth</string>
     <string name="makevisible">Make visible</string>
     <string name="conectarse_buscar_dispositivos">Connect/Search devices</string>
+    <string name="dispositivos_vinculados">Paired devices</string>
+    <string name="otros_dispositivos_disponibles">Other enabled devices</string>
+    <string name="escanear_dispositivos">Scann devices</string>
 
 </resources>
