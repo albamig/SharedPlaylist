@@ -43,6 +43,10 @@ import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
+/**
+ * Actividad que se lanza al seleccionar el rol de "Cliente" dentro de la aplicación
+ * se encarga de gestionar la seleccio, y envios de las canciónes y videos.
+ */
 public class ClientActivity extends AppCompatActivity {
 
 

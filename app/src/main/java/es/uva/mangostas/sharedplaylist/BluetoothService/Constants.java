@@ -8,7 +8,7 @@ public interface Constants {
     // API Key
     public static final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
-    // Message types sent from the BluetoothChatService Handler
+    // Tipos de mensajes que puede enviar el servicio de bluetooth al manejador de la actividad
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_VIDEO_READ = 2;
     public static final int MESSAGE_WRITE = 3;
@@ -17,7 +17,7 @@ public interface Constants {
     public static final int MESSAGE_SONG_READ = 6;
     public static final int MESSAGE_LIST_READ = 7;
 
-    // Key names received from the BluetoothChatService Handler
+    // Nombres clave para el manejador del servicio
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 }

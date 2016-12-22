@@ -48,6 +48,7 @@
             android:theme="@android:style/Theme.Holo.Light.Dialog" />
  
         <activity android:name=".Features.YoutubeResultsActivity" />
+        <activity android:name=".Features.Help"/>
 
         <activity
             android:name=".Features.SplashScreenActivity"

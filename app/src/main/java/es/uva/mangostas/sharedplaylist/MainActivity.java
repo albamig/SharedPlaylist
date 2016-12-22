@@ -16,6 +16,10 @@ import android.widget.Button;
 import android.widget.Toast;
 import java.io.File;
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
+import es.uva.mangostas.sharedplaylist.Features.Help;
+import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
+
+import static android.Manifest.*;
 
 /**
  * Actividad que implementa el menú principal de la aplicación y
@@ -28,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
-
+    Button helpButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,20 +48,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         preferencesButton = (Button) findViewById(R.id.buttonPreferences);
         preferencesButton.setOnClickListener(this);
+
+        helpButton = (Button) findViewById(R.id.buttonHelp);
+        helpButton.setOnClickListener(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
+                permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    permission.READ_EXTERNAL_STORAGE)) {
             } else {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        new String[]{permission.READ_EXTERNAL_STORAGE},
                         1);
             }
         }
@@ -135,6 +142,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.buttonPreferences:
                 startActivity(new Intent(this, PreferencesActivity.class));
+                break;
+
+            case R.id.buttonHelp:
+                startActivity(new Intent(this, Help.class));
                 break;
         }
 
