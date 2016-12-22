@@ -2,7 +2,6 @@ package es.uva.mangostas.sharedplaylist.Features;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,11 +17,20 @@ import es.uva.mangostas.sharedplaylist.R;
 /**
  * Created by root on 21/12/16.
  */
-//Clase del adaptador de la lista de reproduccion
+
+/**
+ * Clase descenciente de BaseAdapter que sirve como adaptador
+ * para las listView de la lista de reproducción
+ */
 public class TrackListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private ArrayList<ShpMediaObject> playList;
 
+    /**
+     * Constructor principal
+     * @param playList Lista de reproducción
+     * @param context Contexto de la actividad
+     */
     public TrackListAdapter(ArrayList<ShpMediaObject> playList, Context context) {
         this.playList = playList;
         inflater= (LayoutInflater) context.getSystemService(
@@ -43,15 +51,27 @@ public class TrackListAdapter extends BaseAdapter {
         return i;
     }
 
+    /**
+     * Comprueba si el array asociado esta vacio
+     * @return
+     */
     public boolean isEmpty(){
         return playList.isEmpty();
     }
 
+    /**
+     * Elimina un elemento del array asociado y actualiza la vista
+     * @param i indice del elemento en la lista
+     */
     public void remove(int i){
         playList.remove(i);
         this.notifyDataSetChanged();
     }
 
+    /**
+     * Añade un elemento a la lista asociada y actualiza la vista
+     * @param object Objeto que se introducirá en la lista
+     */
     public void add(ShpMediaObject object){
         playList.add(object);
         this.notifyDataSetChanged();
