@@ -12,15 +12,15 @@ public interface Constants {
     public static final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
     // Tipos de mensajes que puede enviar el servicio de bluetooth al manejador de la actividad
-    public static final int MESSAGE_STATE_CHANGE = 1;
-    public static final int MESSAGE_VIDEO_READ = 2;
-    public static final int MESSAGE_WRITE = 3;
-    public static final int MESSAGE_DEVICE_NAME = 4;
-    public static final int MESSAGE_TOAST = 5;
-    public static final int MESSAGE_SONG_READ = 6;
-    public static final int MESSAGE_LIST_READ = 7;
+    int MESSAGE_STATE_CHANGE = 1;
+    int MESSAGE_VIDEO_READ = 2;
+    int MESSAGE_WRITE = 3;
+    int MESSAGE_DEVICE_NAME = 4;
+    int MESSAGE_TOAST = 5;
+    int MESSAGE_SONG_READ = 6;
+    int MESSAGE_LIST_READ = 7;
 
     // Nombres clave para el manejador del servicio
-    public static final String DEVICE_NAME = "device_name";
-    public static final String TOAST = "toast";
+    String DEVICE_NAME = "device_name";
+    String TOAST = "toast";
 }

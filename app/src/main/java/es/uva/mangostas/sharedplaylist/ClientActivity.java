@@ -37,7 +37,6 @@ import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -50,6 +49,13 @@ import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Actividad que se lanza al seleccionar el rol de "Cliente" dentro de la aplicación
  * se encarga de gestionar la seleccio, y envios de las canciónes y videos.
  */
@@ -59,7 +65,6 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
-    private static final int SELECT_VIDEO = 99;
     private static final int VIDEO_SELECTED = 1;
     private static final int SONG_SELECTED = 3;
 
@@ -71,7 +76,7 @@ public class ClientActivity extends AppCompatActivity {
     private BluetoothDevice device;
 
     //Interfaz
-    public SearchBox search;
+    private SearchBox search;
     private FloatingActionsMenu fab;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_yt;
     private com.getbase.floatingactionbutton.FloatingActionButton fab_local;
@@ -104,8 +109,6 @@ public class ClientActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), R.string.conected, Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_LIST_READ:
-                    byte[] listBuf = (byte[]) msg.obj;
-                    String listElement = new String(listBuf, 0, msg.arg1);
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getApplicationContext()) {
@@ -206,15 +209,12 @@ public class ClientActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                // ListView Clicked item index
-                int itemPosition = position;
 
-                // ListView Clicked item value
+
                 String itemValue = (String) listView.getItemAtPosition(position);
 
-                // Show Alert
                 Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                        "Position :" + position + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                         .show();
 
             }
@@ -235,7 +235,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mService.start();
     }
 
@@ -278,10 +278,10 @@ public class ClientActivity extends AppCompatActivity {
             byte[] videoName = name.getBytes();
             byte[] videoChannel = channel.getBytes();
             byte[] video = new byte[msg.length()+64];
-            video[0] = (byte) (0 >> 24);
-            video[1] = (byte) (0 >> 16);
-            video[2] = (byte) (0 >> 8);
-            video[3] = (byte) (0 /*>> 0*/);
+            video[0] = (byte) (0);
+            video[1] = (byte) (0);
+            video[2] = (byte) (0);
+            video[3] = (byte) (0);
 
             //Añadimos el nombre de la cancion en los 30 bytes despues del tamaño
             for (int i = 0; i < videoName.length; i++) {
@@ -304,7 +304,7 @@ public class ClientActivity extends AppCompatActivity {
      * Metodo que envía la canción seleccionada al dispositivo conectado
      * @param path Ruta de la canción a enviar.
      */
-    public void sendSong(String path) {
+    private void sendSong(String path) {
         //Definimos el archivo que se va  enviar a traves de su path de almacenamiento
         File song = new File(path);
 
@@ -324,11 +324,10 @@ public class ClientActivity extends AppCompatActivity {
             fis.read(songArray, 4, (int) song.length());
             fis.close();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "La canción seleccionada no esta disponible",
+                    Toast.LENGTH_LONG).show();
+            return;
         }
 
         //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
@@ -422,7 +421,7 @@ public class ClientActivity extends AppCompatActivity {
     /**
      * Cierra la barra de busqueda
      */
-    protected void closeSearch() {
+    private void closeSearch() {
         search.hideCircularly(this);
     }
 
@@ -434,30 +433,27 @@ public class ClientActivity extends AppCompatActivity {
      * @param context Contexto de la aplicacion
      * @return Path del URI introducido
      */
-    public String getRealPathFromURI(Context context, Uri Uri, String helper){
+    private String getRealPathFromURI(Context context, Uri Uri, String helper){
 
         if (Uri.toString().length() >= 64) {
-            String predireccion = "";
+            String predireccion;
             String direccion;
             String falsaUri = Uri.toString();
             boolean esInterna = false;
-            boolean esExterna = false;
             String falsaUriRecortada = falsaUri.substring(57);
             falsaUriRecortada = falsaUriRecortada.substring(0, 7);
             if (falsaUriRecortada.equals("primary")) {
                 esInterna = true;
-            } else esExterna = true;
+            }
             int pos = buscarDosPuntos(helper);
             direccion = helper.substring(pos);
             if (pos == 0) System.exit(-1);
-            if (esInterna == true) {
+            if (esInterna) {
                 predireccion = "/storage/emulated/0/";
                 predireccion = predireccion + direccion;
-            } else if (esExterna == true) {
+            } else {
                 predireccion = "/storage/sdcard/";
                 predireccion = predireccion + direccion;
-            } else {
-                System.exit(-1);
             }
             return predireccion;
         } else {
@@ -465,8 +461,10 @@ public class ClientActivity extends AppCompatActivity {
             try {
                 String[] proj = { MediaStore.Audio.Media.DATA };
                 cursor = context.getContentResolver().query(Uri,  proj, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-                cursor.moveToFirst();
+                int column_index = cursor != null ? cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA) : 0;
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                }
                 return cursor.getString(column_index);
             } finally {
                 if (cursor != null) {
@@ -497,7 +495,7 @@ public class ClientActivity extends AppCompatActivity {
                     i++;
                     k++;
                 }
-            }while(parar==false && i<=j);
+            }while(!parar&& i<=j);
 
             return k;
         }catch(Exception e){

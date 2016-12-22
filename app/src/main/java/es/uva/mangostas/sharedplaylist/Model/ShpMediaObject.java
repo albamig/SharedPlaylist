@@ -6,7 +6,6 @@ package es.uva.mangostas.sharedplaylist.Model;
  * @author Óscar Fernández Angulo
  * @author Santos Ángel Prado
  */
-
 /**
  * Clase abstracta que representa las funcionalidades
  * comúnes de los objetos compartibles.

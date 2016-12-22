@@ -50,6 +50,12 @@ import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
 
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
         YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
@@ -178,8 +184,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             // TODO El fichero no se ha renombrado
                         }
                         newSong.setPath(finalSong.getPath());
-
-
                     } catch (IOException e) {
                         // TODO Meter toast de que ha habido un problema
                         break;
@@ -354,7 +358,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mSendService.start();
 
     }
@@ -404,6 +408,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             fw.close();
         } catch (IOException e) {
             Log.e("ERROR","error reading file", e);
+            return;
         }
     }
 
@@ -440,8 +445,10 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                 fr.close();
             } catch (FileNotFoundException e) {
                 Log.e("ERROR", "file not found", e);
+                return;
             } catch (IOException e) {
                 Log.e("ERROR", "error writing file", e);
+                return;
             }
 
             //Borramos el fichero de la cache.
@@ -526,7 +533,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         }
                     });
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e("ERROR", "NextSong", e);
+                    tladapter.remove(0);
+                    nextSong();
                 }
             }
         } else {

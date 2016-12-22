@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -28,6 +29,13 @@ import es.uva.mangostas.sharedplaylist.Features.Help;
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 
 import static android.Manifest.permission;
+
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
 
 /**
  * Actividad que implementa el menú principal de la aplicación y
