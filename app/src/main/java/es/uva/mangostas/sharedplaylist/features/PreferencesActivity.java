@@ -5,7 +5,7 @@
  * @author Santos Ángel Prado
  */
 
-package es.uva.mangostas.sharedplaylist.Features;
+package es.uva.mangostas.sharedplaylist.features;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

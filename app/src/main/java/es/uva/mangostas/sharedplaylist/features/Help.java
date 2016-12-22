@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.Features;
+package es.uva.mangostas.sharedplaylist.features;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +23,6 @@ public class Help extends AppCompatActivity {
         setContentView(R.layout.ayuda);
         TextView area=(TextView) findViewById(R.id.ventana);
         String idioma=Locale.getDefault().getLanguage();
-        Toast.makeText(getApplicationContext(), idioma,
-                Toast.LENGTH_SHORT).show();
 
         String linea;
         String todo="";
@@ -36,18 +34,16 @@ public class Help extends AppCompatActivity {
             }
 
         BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-        if (is!=null){
-            try {
+        try {
 
-                while ((linea=reader.readLine())!=null){
-                    todo+=linea+"\n";
-                }
-                is.close();
-                area.setText(todo);
-            } catch (IOException e) {
-                e.printStackTrace();
-
+            while ((linea=reader.readLine())!=null){
+                todo+=linea+"\n";
             }
+            is.close();
+            area.setText(todo);
+        } catch (IOException e) {
+            e.printStackTrace();
+
         }
 
     }

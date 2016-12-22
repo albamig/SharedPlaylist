@@ -15,7 +15,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,13 +40,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
-import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
-import es.uva.mangostas.sharedplaylist.Features.TrackListAdapter;
-import es.uva.mangostas.sharedplaylist.Features.YoutubeResultsActivity;
-import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
-import es.uva.mangostas.sharedplaylist.Model.ShpSong;
-import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
+import es.uva.mangostas.sharedplaylist.bluetoothService.BTSharedPlayService;
+import es.uva.mangostas.sharedplaylist.bluetoothService.DeviceListActivity;
+import es.uva.mangostas.sharedplaylist.features.TrackListAdapter;
+import es.uva.mangostas.sharedplaylist.features.YoutubeResultsActivity;
+import es.uva.mangostas.sharedplaylist.model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.model.ShpSong;
+import es.uva.mangostas.sharedplaylist.model.ShpVideo;
 
 /**
  * Actividad que se lanza al seleccionar el rol de "Cliente" dentro de la aplicación
@@ -59,22 +58,17 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
-    private static final int SELECT_VIDEO = 99;
     private static final int VIDEO_SELECTED = 1;
     private static final int SONG_SELECTED = 3;
 
     private ListView listView;
-    private ArrayList<ShpMediaObject> playList;
     private TrackListAdapter tladapter;
     private BluetoothAdapter btAdapter;
     private BTSharedPlayService mService;
-    private BluetoothDevice device;
 
     //Interfaz
-    public SearchBox search;
+    private SearchBox search;
     private FloatingActionsMenu fab;
-    private com.getbase.floatingactionbutton.FloatingActionButton fab_yt;
-    private com.getbase.floatingactionbutton.FloatingActionButton fab_local;
     private ProgressDialog myPd_ring;
 
 
@@ -104,8 +98,6 @@ public class ClientActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getString(R.string.conected), Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_LIST_READ:
-                    byte[] listBuf = (byte[]) msg.obj;
-                    String listElement = new String(listBuf, 0, msg.arg1);
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getApplicationContext()) {
@@ -125,8 +117,8 @@ public class ClientActivity extends AppCompatActivity {
 
         search = (SearchBox) findViewById(R.id.searchbox);
         fab = (FloatingActionsMenu) findViewById(R.id.menu_fab);
-        fab_yt = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_yt);
-        fab_local = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_fs);
+        com.getbase.floatingactionbutton.FloatingActionButton fab_yt = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_yt);
+        com.getbase.floatingactionbutton.FloatingActionButton fab_local = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.action_fs);
         fab_yt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,7 +143,7 @@ public class ClientActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
 
         // Defined Array playList to show in ListView
-        playList = new ArrayList<>();
+        ArrayList<ShpMediaObject> playList = new ArrayList<>();
 
 
         // Define a new Adapter
@@ -207,14 +199,13 @@ public class ClientActivity extends AppCompatActivity {
                                     int position, long id) {
 
                 // ListView Clicked item index
-                int itemPosition = position;
 
                 // ListView Clicked item value
                 String itemValue = (String) listView.getItemAtPosition(position);
 
                 // Show Alert
                 Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                        "Position :" + position + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                         .show();
 
             }
@@ -235,7 +226,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
+        mService = new BTSharedPlayService(mHandler, "Client");
         mService.start();
     }
 
@@ -278,9 +269,9 @@ public class ClientActivity extends AppCompatActivity {
             byte[] videoName = name.getBytes();
             byte[] videoChannel = channel.getBytes();
             byte[] video = new byte[msg.length()+64];
-            video[0] = (byte) (0 >> 24);
-            video[1] = (byte) (0 >> 16);
-            video[2] = (byte) (0 >> 8);
+            video[0] = (byte) (0);
+            video[1] = (byte) (0);
+            video[2] = (byte) (0);
             video[3] = (byte) (0 /*>> 0*/);
 
             //Añadimos el nombre de la cancion en los 30 bytes despues del tamaño
@@ -304,7 +295,7 @@ public class ClientActivity extends AppCompatActivity {
      * Metodo que envía la canción seleccionada al dispositivo conectado
      * @param path Ruta de la canción a enviar.
      */
-    public void sendSong(String path) {
+    private void sendSong(String path) {
         //Definimos el archivo que se va  enviar a traves de su path de almacenamiento
         File song = new File(path);
 
@@ -324,11 +315,11 @@ public class ClientActivity extends AppCompatActivity {
             fis.read(songArray, 4, (int) song.length());
             fis.close();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Hubo un problema en el envio",
+                    Toast.LENGTH_LONG).show();
+            return;
+
         }
 
         //Finalmente si tenemos conexion enviamos el archivo a traves del servicio
@@ -353,7 +344,7 @@ public class ClientActivity extends AppCompatActivity {
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         //Obtenemos el objeto de dispositivo
-        device = btAdapter.getRemoteDevice(address);
+        BluetoothDevice device = btAdapter.getRemoteDevice(address);
         //Intentamos conectar
         mService.connect(device);
     }
@@ -422,7 +413,7 @@ public class ClientActivity extends AppCompatActivity {
     /**
      * Cierra la barra de busqueda
      */
-    protected void closeSearch() {
+    private void closeSearch() {
         search.hideCircularly(this);
     }
 
@@ -434,7 +425,7 @@ public class ClientActivity extends AppCompatActivity {
      * @param context Contexto de la aplicacion
      * @return Path del URI introducido
      */
-    public String getRealPathFromURI(Context context, Uri Uri, String helper){
+    private String getRealPathFromURI(Context context, Uri Uri, String helper){
 
         if (Uri.toString().length() >= 64) {
             String predireccion = "";
@@ -450,14 +441,12 @@ public class ClientActivity extends AppCompatActivity {
             int pos = buscarDosPuntos(helper);
             direccion = helper.substring(pos);
             if (pos == 0) System.exit(-1);
-            if (esInterna == true) {
+            if (esInterna) {
                 predireccion = "/storage/emulated/0/";
                 predireccion = predireccion + direccion;
-            } else if (esExterna == true) {
+            } else {
                 predireccion = "/storage/sdcard/";
                 predireccion = predireccion + direccion;
-            } else {
-                System.exit(-1);
             }
             return predireccion;
         } else {
@@ -465,7 +454,7 @@ public class ClientActivity extends AppCompatActivity {
             try {
                 String[] proj = { MediaStore.Audio.Media.DATA };
                 cursor = context.getContentResolver().query(Uri,  proj, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+                int column_index = cursor != null ? cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA) : 0;
                 cursor.moveToFirst();
                 return cursor.getString(column_index);
             } finally {
@@ -497,7 +486,7 @@ public class ClientActivity extends AppCompatActivity {
                     i++;
                     k++;
                 }
-            }while(parar==false && i<=j);
+            }while(!parar && i<=j);
 
             return k;
         }catch(Exception e){
@@ -551,12 +540,6 @@ public class ClientActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
     }
 
 }

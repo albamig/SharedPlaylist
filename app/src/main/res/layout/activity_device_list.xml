@@ -10,6 +10,9 @@
         android:background="#666"
         android:paddingLeft="5dp"
         android:text="@string/dispositivos_vinculados"
+        android:paddingRight="5dp"
+        android:paddingStart="5dp"
+        android:text="Dispositivos vinculados"
         android:textColor="#fff"
         android:visibility="gone"
 
@@ -30,6 +33,8 @@
         android:background="#666"
         android:paddingLeft="5dp"
         android:text="@string/otros_dispositivos_disponibles"
+        android:paddingRight="5dp"
+        android:paddingStart="5dp"
         android:textColor="#fff"
         android:visibility="gone"
 

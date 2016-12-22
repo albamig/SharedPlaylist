@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SharedPlaylist</string>
-    <string name="aceptar">Añadir</string>
-    <string name="action_settings">Ajustes</string>
-    <string name="cancelar">Cancelar</string>
     <string name="make_list">Crear lista</string>
-    <string name="fruta">Fruta</string>
     <string name="search_list">Buscar lista</string>
-    <string name="youTube">youTube</string>
-    <string name="local">lcal</string>
     <string name="serviceErrorYt">Se ha producido un error en el servicio de YouTube</string>
     <string name="jsonExcpt">Surgió un problema al tratar de conectarse a Youtube</string>
     <string name="preferencesButton">Preferencias</string>
     <string name="namePref">Tu nombre</string>
     <string name="nameSufPref">Por favor, introduce tu nombre</string>
-    <string name="langPref">Idioma</string>
-    <string name="langSubPref">Selecciona el idioma de la aplicación</string>
-    <string name="langEsListPref">Español</string>
-    <string name="langEnListPref">Inlés</string>
     <string name="amountPref">Numero de videos </string>
     <string name="amountSubPref">Inserta el número de videos de YouTube a mostrar</string>
     <string name="server_setting">Como servidor</string>
@@ -44,10 +34,8 @@
     <string name="endreproductionlist">Fin de la lista de reproducción.</string>
     <string name="reproductionerror">Error al reproducir.</string>
     <string name="reproductingnextsong">Reproduciendo siguiente canción.</string>
-    <string name="songsended">Canción enviada.</string>
     <string name="conected">Conectado</string>
     <string name="notavaliablesendwithoutconection">Imposible enviar sin una conexión.</string>
-    <string name="sending">Enviando...</string>
     <string name="songnotavaliable">La canción no está disponible.</string>
     <string name="imposibleconectdevice">Impsible contectar el dispositivo.</string>
     <string name="conectionlost">Conexión perdida.</string>
@@ -58,10 +46,8 @@
     <string name="forward_song">¿Desea reenviar la canción?</string>
     <string name="forward_element">Reenviar elemento</string>
 
-    <string name="menu_yt_tit">YouTube</string>
-    <string name="menu_fs_tit">Local</string>
     <string name="title_activity_preferences">Actividad de preferencias</string>
-    <string name="reqblue">Esta caracteristica requiere activar el bluetooth</string>
+    <string name="reqblue">Esta característica requiere activar el bluetooth</string>
     <string name="makevisible">Hacer visible</string>
     <string name="conectarse_buscar_dispositivos">Conectarse/Buscar Dispositivos</string>
     <string name="dispositivos_vinculados">Dispositivos vinculados</string>

@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.BluetoothService;
+package es.uva.mangostas.sharedplaylist.bluetoothService;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -32,10 +32,10 @@ public class DeviceListActivity extends Activity {
 
     //Información extra para el intent
 
-    public static String EXTRA_DEVICE_ADDRESS = "device_address";
+    public static final String EXTRA_DEVICE_ADDRESS = "device_address";
 
     //Adaptador del Bluetooth
-    BluetoothAdapter btAdapter;
+    private BluetoothAdapter btAdapter;
 
     //ArrayAdapter para los dispositivos descubiertos
     private ArrayAdapter<String> mNewDevicesAdapter;
@@ -132,7 +132,7 @@ public class DeviceListActivity extends Activity {
      * de las listas de dispositivos
      */
 
-    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //Paramos de escanear
