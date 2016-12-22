@@ -1,8 +1,5 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
-/**
- * Created by root on 18/11/16.
- */
 
 /**
  * Clase abstracta que representa las funcionalidades

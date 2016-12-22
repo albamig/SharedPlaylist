@@ -1,13 +1,6 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
-
 import es.uva.mangostas.sharedplaylist.ServerActivity;
-
-/**
- * Created by root on 18/11/16.
- */
 
 /**
  * Clase descendiente de ShpMediaObject que representa
