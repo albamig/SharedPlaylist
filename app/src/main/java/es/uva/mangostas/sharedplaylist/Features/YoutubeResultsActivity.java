@@ -1,3 +1,10 @@
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
 package es.uva.mangostas.sharedplaylist.Features;
 
 import android.app.Activity;
@@ -49,7 +56,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
     private String term;
     private ListView listViewRes;
-    List<SearchResult> searchResultList;
+    private List<SearchResult> searchResultList;
 
     private long number_of_videos_returned;
 
@@ -67,7 +74,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
         String num_str = PreferenceManager
                 .getDefaultSharedPreferences(this.getApplicationContext())
                 .getString("amount", "20");
-        number_of_videos_returned = new Long(num_str);
+        number_of_videos_returned = Long.valueOf(num_str);
     }
 
     @Override
@@ -94,7 +101,8 @@ public class YoutubeResultsActivity extends AppCompatActivity {
      */
     private SearchListResponse getResultsList() {
         try {
-            SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
+
+            return new AsyncTask<Void, Void, SearchListResponse>() {
                 @Override
                 protected SearchListResponse doInBackground(Void... voids) {
 
@@ -114,9 +122,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                                 "snippet/thumbnails/default/url)");
                         searchYt.setMaxResults(number_of_videos_returned);
 
-                        SearchListResponse searchResponse = searchYt.execute();
-
-                        return searchResponse;
+                        return searchYt.execute();
 
                     } catch (GoogleJsonResponseException e) {
                         Log.d("except", "salgo de la actividad");
@@ -129,8 +135,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
                     }
                 }
             }.execute((Void) null).get();
-
-            return searchResponse;
 
         } catch (InterruptedException e) {
             setResult(RESULT_IOEXCPT);
@@ -145,7 +149,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
      * Adaptador para implementar el patrón Holder en la vista de los resultados.
      */
     public class YtAdapter extends BaseAdapter {
-        private LayoutInflater inflater;
+        private final LayoutInflater inflater;
 
         public YtAdapter() {
             inflater= (LayoutInflater) getSystemService(
@@ -154,7 +158,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
         @Override
         public int getCount(){
-            return (int) searchResultList.size();
+            return searchResultList.size();
         }
 
         @Override

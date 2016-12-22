@@ -1,9 +1,15 @@
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
 package es.uva.mangostas.sharedplaylist.Features;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.AppCompatDelegate;
 
 import es.uva.mangostas.sharedplaylist.R;
 
@@ -18,8 +24,6 @@ import es.uva.mangostas.sharedplaylist.R;
  * Actividad que gestiona las preferencias del usuario.
  */
 public class PreferencesActivity extends PreferenceActivity {
-    private AppCompatDelegate mDelegate;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
