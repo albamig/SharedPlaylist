@@ -51,9 +51,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     //Codigos de los Intent
     private static final int REQUEST_ENABLE_BT = 3;
 
-    //Nombre del dispositivo conectado
-    String mConnectedDevice = null;
-
     //Adaptador para BT
     private BluetoothAdapter btAdapter = null;
 
@@ -143,7 +140,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
-                    mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
+                    String mConnectedDevice = msg.getData().getString(Constants.DEVICE_NAME);
                     if (null != getApplicationContext()) {
                         Toast.makeText(getApplicationContext(), R.string.conectedto
                                 + mConnectedDevice, Toast.LENGTH_SHORT).show();
@@ -156,11 +153,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     }
                     break;
                 case Constants.MESSAGE_SONG_READ:
-                    ShpSong newSong = null;
+                    ShpSong newSong;
                     byte[] songBuf = (byte[]) msg.obj;
                     File song = new File(getFilesDir(), "cancion");
                     if (song.exists()) {
-                        song.delete();
+                        if (!song.delete()) {
+                            // TODO Mensaje de error al borrar
+                        }
                     }
                     try {
                         FileOutputStream fos = new FileOutputStream(song);
@@ -169,14 +168,15 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
                         newSong = new ShpSong(songBuf, "");
                         File finalSong = new File(getFilesDir(), newSong.getTitle());
-                        song.renameTo(finalSong);
+                        if (!song.renameTo(finalSong)) {
+                            // TODO El fichero no se ha renombrado
+                        }
                         newSong.setPath(finalSong.getPath());
 
 
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        // TODO Meter toast de que ha habido un problema
+                        break;
                     }
 
                     if(verificarItems) {
@@ -272,7 +272,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                     public void onClick(DialogInterface dialog, int id) {
                                         if (tladapter.getItem(position) instanceof ShpSong) {
                                             File song = new File(((ShpSong) tladapter.getItem(position)).getPath());
-                                            song.delete();
+                                            if (!song.delete()) {
+                                                // TODO
+                                            }
                                         }
                                         tladapter.remove(position);
                                         if(position==0){
@@ -437,7 +439,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             }
 
             //Borramos el fichero de la cache.
-            appState.delete();
+            if (!appState.delete()) {
+                // TODO
+            }
 
         }
     }
@@ -467,7 +471,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      * Este metodo llama a los reprouctores depoendiendo del tipo
      * de cancion que hay en la primera posicion de la lista.
      */
-    public void nextSong() {
+    private void nextSong() {
         //Comprobamos que la lista no esta vacia
         if(!tladapter.isEmpty()) {
             //Si el elemento es de tipo video lanzamos el youtube
@@ -507,7 +511,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             }
                             //Si no hay reproducción ciclica eliminamos el archivo de la memoria
                             File song = new File(((ShpSong) tladapter.getItem(0)).getPath());
-                            song.delete();
+                            if (!song.delete()) {
+                                // TODO
+                            }
                             tladapter.remove(0);
                             nextSong();
 

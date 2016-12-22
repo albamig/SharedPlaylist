@@ -1,12 +1,12 @@
 package es.uva.mangostas.sharedplaylist;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -14,25 +14,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 import java.io.File;
-import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
+
 import es.uva.mangostas.sharedplaylist.Features.Help;
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 
-import static android.Manifest.*;
+import static android.Manifest.permission;
 
 /**
  * Actividad que implementa el menú principal de la aplicación y
  * redirige a el resto de funcionalidades.
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    Button serverButton;
-    Button clientButton;
-    Button preferencesButton;
 
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
-    Button helpButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,19 +38,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        serverButton = (Button) findViewById(R.id.buttonServer);
+        Button serverButton = (Button) findViewById(R.id.buttonServer);
         serverButton.setOnClickListener(this);
 
-        clientButton = (Button) findViewById(R.id.buttonClient);
+        Button clientButton = (Button) findViewById(R.id.buttonClient);
         clientButton.setOnClickListener(this);
 
-        preferencesButton = (Button) findViewById(R.id.buttonPreferences);
+        Button preferencesButton = (Button) findViewById(R.id.buttonPreferences);
         preferencesButton.setOnClickListener(this);
 
-        helpButton = (Button) findViewById(R.id.buttonHelp);
+        Button helpButton = (Button) findViewById(R.id.buttonHelp);
         helpButton.setOnClickListener(this);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onStart() {
         super.onStart();
@@ -60,9 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                     permission.READ_EXTERNAL_STORAGE)) {
-            } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{permission.READ_EXTERNAL_STORAGE},
                         1);
@@ -90,7 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             .setNegativeButton(R.string.neww,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
-                                            appState.delete();
+                                            if (!appState.delete()) {
+                                                // TODO
+                                            }
                                             if (!btAdapter.isEnabled()) {
                                                 Toast.makeText(getApplicationContext(),
                                                         "Esta caracteristica requiere " +
@@ -150,10 +150,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
 }
