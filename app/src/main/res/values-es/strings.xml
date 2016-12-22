@@ -45,7 +45,6 @@
     <string name="helpBut">Ayuda</string>
     <string name="forward_song">¿Desea reenviar la canción?</string>
     <string name="forward_element">Reenviar elemento</string>
-
     <string name="title_activity_preferences">Actividad de preferencias</string>
     <string name="reqblue">Esta característica requiere activar el bluetooth</string>
     <string name="makevisible">Hacer visible</string>
@@ -53,6 +52,4 @@
     <string name="dispositivos_vinculados">Dispositivos vinculados</string>
     <string name="otros_dispositivos_disponibles">Otros dispositivos disponibles</string>
     <string name="escanear_dispositivos">Escanear dispositivos</string>
-
-
 </resources>

@@ -26,8 +26,6 @@
     <string name="notvinculateddispositives">There are no linked devices.</string>
     <string name="iamconectedto">I connected to</string>
     <string name="notfound">No devices found.</string>
-
-
     <string name="forward_song">Resend song</string>
     <string name="forward_element">Resend element</string>
     <string name="serviceErrorYt">There was an error on Youtube service</string>
@@ -53,5 +51,5 @@
     <string name="dispositivos_vinculados">Paired devices</string>
     <string name="otros_dispositivos_disponibles">Other enabled devices</string>
     <string name="escanear_dispositivos">Scann devices</string>
-
+    <string name="jsonExcpt">There was a problem while trying to connect to Youtube</string>
 </resources>
