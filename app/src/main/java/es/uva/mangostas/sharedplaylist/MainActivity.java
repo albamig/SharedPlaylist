@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import es.uva.mangostas.sharedplaylist.Features.Help;
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 
 import static android.Manifest.*;
@@ -25,7 +26,7 @@ import static android.Manifest.*;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
-
+    Button helpButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button preferencesButton = (Button) findViewById(R.id.buttonPreferences);
         preferencesButton.setOnClickListener(this);
+
+        helpButton = (Button) findViewById(R.id.buttonHelp);
+        helpButton.setOnClickListener(this);
     }
 
     @Override
@@ -144,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.buttonPreferences:
                 startActivity(new Intent(this, PreferencesActivity.class));
+                break;
+
+            case R.id.buttonHelp:
+                startActivity(new Intent(this, Help.class));
                 break;
         }
 
