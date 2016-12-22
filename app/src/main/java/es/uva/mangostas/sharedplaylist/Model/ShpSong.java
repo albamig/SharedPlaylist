@@ -3,6 +3,13 @@ package es.uva.mangostas.sharedplaylist.Model;
 import es.uva.mangostas.sharedplaylist.ServerActivity;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Clase descendiente de ShpMediaObject que representa
  * las canciones.
  */

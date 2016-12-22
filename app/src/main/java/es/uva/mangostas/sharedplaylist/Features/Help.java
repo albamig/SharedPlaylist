@@ -10,6 +10,13 @@ import java.io.InputStreamReader;
 
 import es.uva.mangostas.sharedplaylist.R;
 
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
 public class Help extends AppCompatActivity {
 
 

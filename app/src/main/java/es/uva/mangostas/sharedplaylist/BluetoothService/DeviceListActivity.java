@@ -21,6 +21,13 @@ import java.util.Set;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Actividad que se encarga de gestionar la busqueda y selección
  * de los dispositivos bluetooth que estan disponibles.
  */

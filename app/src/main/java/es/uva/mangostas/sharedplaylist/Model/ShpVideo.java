@@ -1,6 +1,13 @@
 package es.uva.mangostas.sharedplaylist.Model;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Clase descendiente de ShpMediaObject la cual representa
  * los videos.
  */

@@ -1,5 +1,12 @@
 package es.uva.mangostas.sharedplaylist.BluetoothService;
 
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -16,6 +23,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import es.uva.mangostas.sharedplaylist.Constants;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**

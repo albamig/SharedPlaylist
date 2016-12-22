@@ -16,6 +16,13 @@ import es.uva.mangostas.sharedplaylist.R;
 
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Clase descenciente de BaseAdapter que sirve como adaptador
  * para las listView de la lista de reproducción
  */

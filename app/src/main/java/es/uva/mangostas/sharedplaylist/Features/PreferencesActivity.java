@@ -7,6 +7,16 @@ import android.support.v7.app.AppCompatDelegate;
 
 import es.uva.mangostas.sharedplaylist.R;
 
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
+ * Actividad que gestiona las preferencias del usuario.
+ */
 public class PreferencesActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
 
@@ -18,6 +28,9 @@ public class PreferencesActivity extends PreferenceActivity {
                 .replace(android.R.id.content, new PreferencesFrag()).commit();
     }
 
+    /**
+     * Fragmento para presentar las preferencias de la aplicación al usuario.
+     */
     public static class PreferencesFrag extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {

@@ -39,12 +39,17 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
-import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.Features.TrackListAdapter;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
 
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
         YouTubePlayer.PlayerStateChangeListener, MediaController.MediaPlayerControl {
@@ -75,8 +80,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     private int currentTime = 0;
     private static int unknownCount = 1;
-
-    private final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
     //Preferencias
     private boolean verificarItems;
@@ -352,7 +355,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mSendService.start();
 
     }
@@ -480,7 +483,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             if(tladapter.getItem(0) instanceof ShpVideo) {
                 if(!isIni) {
                     getFragmentManager().beginTransaction().show(youTubePlayerFragmen).commit();
-                    youTubePlayerFragmen.initialize(APIKEY, this);
+                    youTubePlayerFragmen.initialize(Constants.APIKEY, this);
                     isIni = true;
                 } else {
                     yTPlayer.loadVideo(((ShpVideo) tladapter.getItem(0)).getYtCode(),currentTime);

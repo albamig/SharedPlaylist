@@ -34,13 +34,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
-import es.uva.mangostas.sharedplaylist.BluetoothService.Constants;
 import es.uva.mangostas.sharedplaylist.BluetoothService.DeviceListActivity;
 import es.uva.mangostas.sharedplaylist.Features.TrackListAdapter;
 import es.uva.mangostas.sharedplaylist.Features.YoutubeResultsActivity;
 import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
 import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
+
+/**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
 
 /**
  * Actividad que se lanza al seleccionar el rol de "Cliente" dentro de la aplicación
@@ -222,7 +228,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mService.start();
     }
 
