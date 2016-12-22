@@ -24,6 +24,10 @@ import es.uva.mangostas.sharedplaylist.R;
  * Created by root on 17/11/16.
  */
 
+/**
+ * Actividad que se encarga de gestionar la busqueda y selección
+ * de los dispositivos bluetooth que estan disponibles.
+ */
 public class DeviceListActivity extends Activity {
 
     //Información extra para el intent
@@ -41,7 +45,6 @@ public class DeviceListActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         //Colocarlo como un modal y no como una nueva venatna
-        //requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_device_list);
 
         setResult(Activity.RESULT_CANCELED);
@@ -152,7 +155,8 @@ public class DeviceListActivity extends Activity {
     };
 
     /**
-     * El broadcastReciever para escuchar y poder escanear
+     * El broadcastReciever para escuchar eventos a la hora de
+     * realizar el descubrimiento de dispositivos.
      */
     private final BroadcastReceiver mReciver = new BroadcastReceiver() {
         @Override

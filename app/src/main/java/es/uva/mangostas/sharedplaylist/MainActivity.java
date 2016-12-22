@@ -20,6 +20,8 @@ import java.io.File;
 
 import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 
+import static android.Manifest.*;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private final int REQUEST_ENABLE_BT = 3;
     private BluetoothAdapter btAdapter;
@@ -51,11 +53,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
+                permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    permission.READ_EXTERNAL_STORAGE)) {
 
 
 
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        new String[]{permission.READ_EXTERNAL_STORAGE},
                         1);
             }
         }
