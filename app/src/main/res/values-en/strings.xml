@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SharedPlaylist</string>
-    <string name="aceptar">Add</string>
-    <string name="action_settings">Settings</string>
-    <string name="cancelar">Cancelar</string>
     <string name="make_list">Create list</string>
-    <string name="fruta">Fruit</string>
     <string name="search_list">Find list</string>
-    <string name="youTube">youTube</string>
-    <string name="local">lcal</string>
     <string name="createlist">Do you want to retrieve the list or create a new one?</string>
     <string name="copyfound">Backup Found</string>
     <string name="neww">New</string>
     <string name="restore">Get it back.</string>
     <string name="videoadded">Video added to list.</string>
-    <string name="conectedto">Conected to</string>
+    <string name="conectedto">Connected to</string>
     <string name="songaddedlist">Song added to list.</string>
     <string name="bluetoothnotsuported">Device does not support bluetooth.</string>
     <string name="deletelistelement">Do you want to remove the item from the list?</string>
@@ -24,10 +18,8 @@
     <string name="endreproductionlist">End of playlist.</string>
     <string name="reproductionerror">Error playing.</string>
     <string name="reproductingnextsong">Playing next song.</string>
-    <string name="songsended">Song sended</string>
-    <string name="conected">Conected</string>
+    <string name="conected">Connected</string>
     <string name="notavaliablesendwithoutconection">Impossible to send without a connection.</string>
-    <string name="sending">Sending...</string>
     <string name="songnotavaliable">The song is not available.</string>
     <string name="imposibleconectdevice">It is impossible to connect the device.</string>
     <string name="conectionlost">Connection lost.</string>
@@ -36,20 +28,13 @@
     <string name="notfound">No devices found.</string>
 
 
-    <string name="menu_yt_tit">YouTube</string>
-    <string name="menu_fs_tit">Local</string>
     <string name="forward_song">Resend song</string>
     <string name="forward_element">Resend element</string>
     <string name="serviceErrorYt">There was an error on Youtube service</string>
-    <string name="ytbExcpt">There was an while trying to connect to YouTube</string>
     <string name="title_activity_preferences">PreferencesActivity</string>
     <string name="preferencesButton">Settings</string>
     <string name="namePref">Your Name</string>
     <string name="nameSufPref">Please provide your username</string>
-    <string name="langPref">Language</string>
-    <string name="langSubPref">Select the application language</string>
-    <string name="langEsListPref">Spanish</string>
-    <string name="langEnListPref">English</string>
     <string name="amountPref">YouTube videos</string>
     <string name="amountSubPref">Insert the amount of YouTube videos to show</string>
     <string name="server_setting">As a server</string>

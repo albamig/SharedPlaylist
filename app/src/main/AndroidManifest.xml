@@ -30,7 +30,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <activity
-            android:name=".Features.PreferencesActivity"
+            android:name=".features.PreferencesActivity"
             android:label="@string/title_activity_preferences"
             android:theme="@style/AppTheme" />
       
@@ -42,16 +42,16 @@
         </activity>
 
         <activity
-            android:name=".BluetoothService.DeviceListActivity"
+            android:name=".bluetoothService.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/bt_act"
             android:theme="@android:style/Theme.Holo.Light.Dialog" />
  
-        <activity android:name=".Features.YoutubeResultsActivity" />
-        <activity android:name=".Features.Help"/>
+        <activity android:name=".features.YoutubeResultsActivity" />
+        <activity android:name=".features.Help"/>
 
         <activity
-            android:name=".Features.SplashScreenActivity"
+            android:name=".features.SplashScreenActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 

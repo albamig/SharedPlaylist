@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,15 +12,14 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true">
+        android:layout_alignParentLeft="true"
+        android:baselineAligned="false"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="40dp"
@@ -30,10 +30,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/linearLayout"
-            android:layout_toLeftOf="@+id/linearLayout">
+            android:layout_height="54dp">
 
             <TextView
                 android:text="TextView"
@@ -41,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_Artis"
                 android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 />
 
             <TextView
@@ -49,16 +47,8 @@
                 android:id="@+id/textView_Title"
                 android:layout_width="354dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:weightSum="1"
-            android:layout_height="50dp"
-            android:layout_alignParentTop="true"
-            android:layout_weight="0.14">
         </LinearLayout>
 
     </LinearLayout>

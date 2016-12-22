@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.BluetoothService;
+package es.uva.mangostas.sharedplaylist.bluetoothService;
 
 /**
  * Created by root on 1/12/16.
@@ -46,7 +46,7 @@ public class BTSharedPlayService {
     private ConnectedThread mConnectedThread;
     private SendThread mSendThread;
     private int state;
-    private String mtype;
+    private final String mtype;
     private ArrayList<ConnectedThread> myConnections;
     private static final String SERVER_TYPE = "Server";
     private static final String CLIENT_TYPE = "Client";
@@ -60,10 +60,9 @@ public class BTSharedPlayService {
 
     /**
      * Constructor del servicio
-     * @param context Contexto recibido desde la actividad que lo construye
      * @param handler Manejador de mensajes para devolver información a la actividad
      */
-    public BTSharedPlayService(Context context, Handler handler, String type) {
+    public BTSharedPlayService(Handler handler, String type) {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         state = STATE_NONE;
         mHandler = handler;
@@ -151,8 +150,8 @@ public class BTSharedPlayService {
      * @param socket Socket de la conexión
      * @param device Dispositivo remoto al que se realiza la conexión
      */
-    public synchronized void connected(BluetoothSocket socket,
-                                       BluetoothDevice device) {
+    private synchronized void connected(BluetoothSocket socket,
+                                        BluetoothDevice device) {
         //Cancelamos los hilos que estan conectando
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -179,35 +178,6 @@ public class BTSharedPlayService {
         mHandler.sendMessage(msg);
 
 
-    }
-
-    /**
-     * Detiene la ejecución del servico, para ello detiene
-     * los hilos que estan en funcionamiento
-     */
-    public synchronized void stop() {
-
-        if (mConnectThread != null) {
-            mConnectThread.cancel();
-            mConnectThread = null;
-        }
-
-        if (mtype.equals(CLIENT_TYPE) && mConnectedThread != null) {
-            mConnectedThread.cancel();
-            mConnectedThread = null;
-        } else if (mtype.equals(SERVER_TYPE) && myConnections.size() > 0) {
-            for (int i = 0; i < myConnections.size(); i++) {
-                myConnections.get(i).cancel();
-                myConnections.remove(myConnections.get(i));
-            }
-        }
-
-        if (mAcceptThread != null) {
-            mAcceptThread.cancel();
-            mAcceptThread = null;
-        }
-
-        setState(STATE_NONE);
     }
 
     /**
@@ -263,7 +233,7 @@ public class BTSharedPlayService {
     private class AcceptThread extends Thread {
         // The local server socket
         private final BluetoothServerSocket mmServerSocket;
-        private String mSocketType;
+        private final String mSocketType;
 
         public AcceptThread() {
             BluetoothServerSocket tmp = null;
@@ -274,7 +244,7 @@ public class BTSharedPlayService {
                 tmp = btAdapter.listenUsingRfcommWithServiceRecord("Text",
                         MY_UUID);
             } catch (IOException e) {
-
+                tmp = null;
             }
             mmServerSocket = tmp;
         }
@@ -282,7 +252,7 @@ public class BTSharedPlayService {
         public void run() {
             setName("AcceptThread" + mSocketType);
 
-            BluetoothSocket socket = null;
+            BluetoothSocket socket;
 
             //Esuchando posibles peticiones entrantes
             while (true) {
@@ -291,6 +261,7 @@ public class BTSharedPlayService {
                     // excepción
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
+                    this.start();
                     break;
                 }
 
@@ -310,6 +281,8 @@ public class BTSharedPlayService {
                                 try {
                                     socket.close();
                                 } catch (IOException e) {
+                                    this.start();
+                                    break;
                                 }
                                 break;
                         }
@@ -326,6 +299,7 @@ public class BTSharedPlayService {
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
+                return;
             }
         }
     }
@@ -348,6 +322,7 @@ public class BTSharedPlayService {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
 
             } catch (IOException e) {
+                tmp = null;
             }
             mmSocket = tmp;
         }
@@ -367,7 +342,7 @@ public class BTSharedPlayService {
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
-
+                    return;
                 }
                 connectionFailed();
                 return;
@@ -389,7 +364,7 @@ public class BTSharedPlayService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-
+                return;
             }
         }
     }
@@ -399,8 +374,8 @@ public class BTSharedPlayService {
      * el envio de información hacia el dispositivo vinculado
      */
     private class SendThread extends Thread {
-        private OutputStream mmOutStream;
-        private byte[] songToSend;
+        private final OutputStream mmOutStream;
+        private final byte[] songToSend;
 
         /**
          * Constructor principal
@@ -422,6 +397,7 @@ public class BTSharedPlayService {
                 mHandler.obtainMessage(Constants.MESSAGE_WRITE, songToSend.length, -1, songToSend)
                         .sendToTarget();
             } catch (IOException e) {
+                return;
             }
         }
     }
@@ -442,8 +418,8 @@ public class BTSharedPlayService {
         public ConnectedThread(BluetoothSocket socket) {
 
             mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
+            InputStream tmpIn;
+            OutputStream tmpOut;
 
             // Obetenemos los sockets de entrada y de salida del socket
             try {
@@ -451,6 +427,8 @@ public class BTSharedPlayService {
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
                 Log.e("ERROR: ", "Socket get streams exception", e);
+                tmpIn = null;
+                tmpOut = null;
             }
 
             mmInStream = tmpIn;
@@ -476,7 +454,7 @@ public class BTSharedPlayService {
                             size = (buffer[0] << 24) & 0xff000000 |
                                     (buffer[1] << 16) & 0x00ff0000 |
                                     (buffer[2] << 8) & 0x0000ff00 |
-                                    (buffer[3] << 0) & 0x000000ff;
+                                    (buffer[3]) & 0x000000ff;
 
                             //Si la condicion se cumple se trata de un video por lo tanto lo tratamos como tal.
                             if (size == 0) {
@@ -534,6 +512,7 @@ public class BTSharedPlayService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
+                return;
             }
         }
     }

@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.Features;
+package es.uva.mangostas.sharedplaylist.features;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
-import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
+import es.uva.mangostas.sharedplaylist.model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.model.ShpVideo;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
@@ -23,8 +23,8 @@ import es.uva.mangostas.sharedplaylist.R;
  * para las listView de la lista de reproducción
  */
 public class TrackListAdapter extends BaseAdapter {
-    private LayoutInflater inflater;
-    private ArrayList<ShpMediaObject> playList;
+    private final LayoutInflater inflater;
+    private final ArrayList<ShpMediaObject> playList;
 
     /**
      * Constructor principal

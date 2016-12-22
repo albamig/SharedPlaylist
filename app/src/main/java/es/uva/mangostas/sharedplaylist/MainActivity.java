@@ -24,8 +24,8 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import es.uva.mangostas.sharedplaylist.Features.Help;
-import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
+import es.uva.mangostas.sharedplaylist.features.Help;
+import es.uva.mangostas.sharedplaylist.features.PreferencesActivity;
 
 import static android.Manifest.permission;
 
@@ -104,7 +104,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             if (!appState.delete()) {
-                                                // TODO
+                                                Toast.makeText(getApplicationContext(), "No se pudo" +
+                                                        "borrar el fichero de la lista, podrá resta" +
+                                                        "urarlo la proxima vez", Toast.LENGTH_LONG)
+                                                        .show();
                                             }
                                             if (!btAdapter.isEnabled()) {
                                                 Toast.makeText(getApplicationContext(),

@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.Model;
+package es.uva.mangostas.sharedplaylist.model;
 
 /**
  * Created by root on 18/11/16.
@@ -13,7 +13,7 @@ public abstract class ShpMediaObject {
     private String title;
     private String artist;
 
-    public ShpMediaObject() {
+    ShpMediaObject() {
 
     }
 
@@ -37,7 +37,7 @@ public abstract class ShpMediaObject {
      * Setter del artista del objeto
      * @param artist Artista
      */
-    public void setArtist(String artist) {
+    void setArtist(String artist) {
         this.artist = artist;
     }
 
@@ -45,7 +45,7 @@ public abstract class ShpMediaObject {
      * Setter del titulo del objeto
      * @param title Titulo
      */
-    public void setTitle(String title) {
+    void setTitle(String title) {
         this.title = title;
     }
 }

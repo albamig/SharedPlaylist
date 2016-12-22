@@ -1,7 +1,4 @@
-package es.uva.mangostas.sharedplaylist.Model;
-
-import android.support.annotation.Nullable;
-import android.util.Log;
+package es.uva.mangostas.sharedplaylist.model;
 
 import es.uva.mangostas.sharedplaylist.ServerActivity;
 
@@ -16,7 +13,6 @@ import es.uva.mangostas.sharedplaylist.ServerActivity;
 public class ShpSong extends ShpMediaObject {
 
     private String path;
-    private byte[] data;
 
     /**
      * Constructor principal
@@ -24,7 +20,7 @@ public class ShpSong extends ShpMediaObject {
      * @param path Ruta de la canción en memoria
      */
     public ShpSong(byte[] song, String path) {
-        data = new byte[song.length];
+        byte[] data = new byte[song.length];
         for (int i = 0; i < song.length; i++) {
             data[i] = song[i];
         }

@@ -44,11 +44,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import es.uva.mangostas.sharedplaylist.BluetoothService.BTSharedPlayService;
-import es.uva.mangostas.sharedplaylist.Features.TrackListAdapter;
-import es.uva.mangostas.sharedplaylist.Model.ShpMediaObject;
-import es.uva.mangostas.sharedplaylist.Model.ShpSong;
-import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
+import es.uva.mangostas.sharedplaylist.bluetoothService.BTSharedPlayService;
+import es.uva.mangostas.sharedplaylist.features.TrackListAdapter;
+import es.uva.mangostas.sharedplaylist.model.ShpMediaObject;
+import es.uva.mangostas.sharedplaylist.model.ShpSong;
+import es.uva.mangostas.sharedplaylist.model.ShpVideo;
 
 
 public class ServerActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener,
@@ -159,12 +159,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                     }
                     break;
                 case Constants.MESSAGE_SONG_READ:
-                    ShpSong newSong = null;
+                    ShpSong newSong;
                     byte[] songBuf = (byte[]) msg.obj;
                     File song = new File(getFilesDir(), "cancion");
                     if (song.exists()) {
                         if (!song.delete()) {
-                            // TODO Mensaje de error al borrar
+                            Toast.makeText(getApplicationContext(), "No se pudo eliminar la canción" +
+                                    "de la memoria del dispositivo", Toast.LENGTH_LONG).show();
                         }
                     }
                     try {
@@ -175,11 +176,13 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         newSong = new ShpSong(songBuf, "");
                         File finalSong = new File(getFilesDir(), newSong.getTitle());
                         if (!song.renameTo(finalSong)) {
-                            // TODO El fichero no se ha renombrado
+                            Toast.makeText(getApplicationContext(), "No fue posible renombrar el fichero" +
+                                    "recibido", Toast.LENGTH_LONG).show();
                         }
                         newSong.setPath(finalSong.getPath());
                     } catch (IOException e) {
-                        // TODO Meter toast de que ha habido un problema
+                        Toast.makeText(getApplicationContext(), "Succedio un problema en la recepci" +
+                                "ón de la canción", Toast.LENGTH_LONG).show();
                         break;
                     }
 
@@ -277,7 +280,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                                         if (tladapter.getItem(position) instanceof ShpSong) {
                                             File song = new File(((ShpSong) tladapter.getItem(position)).getPath());
                                             if (!song.delete()) {
-                                                // TODO
+                                                Toast.makeText(getApplicationContext(), "No pudo" +
+                                                        "eliminarse la canción de la memoria del " +
+                                                        "dispositivo", Toast.LENGTH_LONG).show();
                                             }
                                         }
                                         tladapter.remove(position);
@@ -352,7 +357,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
+        mSendService = new BTSharedPlayService(mHandler, "Server");
         mSendService.start();
 
     }
@@ -444,7 +449,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
             //Borramos el fichero de la cache.
             if (!appState.delete()) {
-                // TODO
+                Toast.makeText(getApplicationContext(), "No se pudo eliminar los ficheros de la" +
+                        "caché del dispositivo", Toast.LENGTH_LONG).show();
             }
 
         }
@@ -460,15 +466,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
             startActivity(discoverableIntent);
         }
-    }
-
-    /**
-     * Eliminamos de la cache el fichero que almacena el estado de la aplicacion.
-     * @return resultado del borrado del fichero.
-     */
-    private boolean deleteState(){
-        File appState = new File(getApplicationContext().getCacheDir(),"appState");
-        return appState.delete();
     }
 
     /**
@@ -516,7 +513,9 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                             //Si no hay reproducción ciclica eliminamos el archivo de la memoria
                             File song = new File(((ShpSong) tladapter.getItem(0)).getPath());
                             if (!song.delete()) {
-                                // TODO
+                                Toast.makeText(getApplicationContext(), "No pudo" +
+                                        "eliminarse la canción de la memoria del " +
+                                        "dispositivo", Toast.LENGTH_LONG).show();
                             }
                             tladapter.remove(0);
                             nextSong();
@@ -524,6 +523,8 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
                         }
                     });
                 } catch (IOException e) {
+                    tladapter.remove(0);
+                    nextSong();
                     e.printStackTrace();
                 }
             }
