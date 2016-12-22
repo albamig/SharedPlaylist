@@ -51,8 +51,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     //Codigos de los Intent
     private static final int REQUEST_ENABLE_BT = 3;
 
-    private ListView listView;
-    private Toolbar toolbar;
     //Nombre del dispositivo conectado
     String mConnectedDevice = null;
 
@@ -67,7 +65,6 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
     private Handler handler;
     private MediaController myMediaController;
     private YouTubePlayer yTPlayer;
-    private ArrayList<ShpMediaObject> playList;
     private TrackListAdapter tladapter;
     private YouTubePlayerFragment youTubePlayerFragmen;
     private Boolean isIni = false;
@@ -246,14 +243,14 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
             finish();
         }
 
-        toolbar = (Toolbar) findViewById(R.id.appBarLayout);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.appBarLayout);
         this.setSupportActionBar(toolbar);
 
 
         // Get ListView object from xml
-        listView = (ListView) findViewById(R.id.listView);
+        ListView listView = (ListView) findViewById(R.id.listView);
         // Defined Array playList to show in ListView
-        playList = new ArrayList<>();
+        ArrayList<ShpMediaObject> playList = new ArrayList<>();
         //Assign adapter to ListView
         tladapter = new TrackListAdapter(playList, this);
         listView.setAdapter(tladapter);
@@ -672,8 +669,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
 
     @Override
     public int getBufferPercentage() {
-        int porcentage = (myMediaPlayer.getCurrentPosition() * 100) / myMediaPlayer.getDuration();
-        return porcentage;
+        return (myMediaPlayer.getCurrentPosition() * 100) / myMediaPlayer.getDuration();
     }
 
     @Override
