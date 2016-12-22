@@ -1,0 +1,23 @@
+Bienvenido a la ayuda de SHAREDPLAYLIST.
+
+La aplicación consta de dos roles principales:
+
+    - Crear listas de reproducción y reproducirlas.
+    - Enviar música a una lista ya creada.
+
+A continuación se explicará como llevar a cabo las dos funcionalidades disponibles.
+
+CREAR LISTAS: lo primero que hay que hacer para poder crear una lista de reproducción es pulsar en el botón
+"crear lista" que se enuentra en el menú principal. En el caso de exista una lista previa, saltará un aviso preguntando si deseamos recuperarla.
+En caso negativo, se nos abre una ventana nueva en la que se listarán los elementos a reproducir, pueden ser ficheros de música o videos de YouTube.
+Cuando alguien envía a esta lista un elemento para su reproducción, este se añadirá al final de la cola.
+
+ENVIAR MÚSICA: para poder enviar desde nuestro dispositivo un elemento para que se reproduzca en el
+dispositivo móvil servidor es necesario acceder a la opción "buscar lista" del menú principal.
+Se nos abre un diálogo en el que aparecen los dispositivos encontrados por Bluetooth.
+Seleccionamos el deseado y ambos dispostivos quedan vinculados.
+El siguiente paso a dar es seleccionar el elemento que queremos enviar a la lista de reproducción del dispositivo vinculado, pulsando en el boton '+'
+se nos da la opción de elegir un fichero local o un video de YouTube. Una vez encontrado el elemento,
+este se añadira a la lista de reproducción deseada.
+
+En el apartado "Preferencias" del menú principal, se pueden modificar algunos paramentros de configuración de la aplicación.

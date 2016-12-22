@@ -1,9 +1,9 @@
 package es.uva.mangostas.sharedplaylist;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.Manifest;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -15,10 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-
 import java.io.File;
 
-import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
+import es.uva.mangostas.sharedplaylist.Model.Help;
+import es.uva.mangostas.sharedplaylist.Model.PreferencesActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private final int REQUEST_ENABLE_BT = 3;
@@ -45,6 +45,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button preferencesButton = (Button) findViewById(R.id.buttonPreferences);
         preferencesButton.setOnClickListener(this);
+
+        Button ayudaButton = (Button) findViewById(R.id.buttonHelp);
+        ayudaButton.setOnClickListener(this);
+
+
     }
 
     @Override
@@ -142,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.buttonPreferences:
                 startActivity(new Intent(this, PreferencesActivity.class));
+                break;
+            case R.id.buttonHelp:
+                startActivity(new Intent(this, Help.class));
                 break;
         }
 

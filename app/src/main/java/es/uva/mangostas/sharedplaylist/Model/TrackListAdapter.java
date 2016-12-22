@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.Features;
+package es.uva.mangostas.sharedplaylist.Model;
 
 import android.content.Context;
 import android.view.LayoutInflater;

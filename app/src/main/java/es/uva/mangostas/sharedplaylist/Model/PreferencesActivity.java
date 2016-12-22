@@ -1,4 +1,4 @@
-package es.uva.mangostas.sharedplaylist.Features;
+package es.uva.mangostas.sharedplaylist.Model;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

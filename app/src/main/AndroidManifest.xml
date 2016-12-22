@@ -30,7 +30,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <activity
-            android:name=".Features.PreferencesActivity"
+            android:name=".PreferencesActivity"
             android:label="@string/title_activity_preferences"
             android:theme="@style/AppTheme" />
       
@@ -47,10 +47,15 @@
             android:label="@string/bt_act"
             android:theme="@android:style/Theme.Holo.Light.Dialog" />
  
-        <activity android:name=".Features.YoutubeResultsActivity" />
+        <activity android:name=".YoutubeResultsActivity" />
 
         <activity
-            android:name=".Features.SplashScreenActivity"
+            android:name=".Help"
+            android:label="@string/title_activity_preferences"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".SplashScreenActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 
