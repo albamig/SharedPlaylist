@@ -3,7 +3,6 @@ package es.uva.mangostas.sharedplaylist.Features;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,10 +26,8 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Handler;
 
 import es.uva.mangostas.sharedplaylist.R;
 
@@ -41,9 +38,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
     private String term;
     private ListView listViewRes;
-    //TextView yt_title, yt_chan;
-    private ArrayList<Bitmap> yt_img_array;
-    private Handler handler;
     List<SearchResult> searchResultList;
 
     private long number_of_videos_returned;
@@ -70,69 +64,82 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-                try {
-                    SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
-                        @Override
-                        protected SearchListResponse doInBackground(Void... voids) {
+        SearchListResponse searchResponse = getResultsList();
 
-                            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-                                    new HttpRequestInitializer() {
-                                        public void initialize(HttpRequest request) throws IOException {
-                                        }
-                                    }).setApplicationName("SharedPlaylist")
-                                    .build();
-
-                            try {
-                                YouTube.Search.List searchYt = youtube.search().list("id,snippet");
-                                searchYt.setKey(APIKEY);
-                                searchYt.setQ(term);
-                                searchYt.setType("video");
-                                searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, " +
-                                        "snippet/thumbnails/default/url)");
-                                searchYt.setMaxResults(number_of_videos_returned);
-
-                                SearchListResponse searchResponse = searchYt.execute();
-
-
-                                return searchResponse;
-
-                            } catch (GoogleJsonResponseException e) {
-                                Log.d("except", "salgo de la actividad");
-                                setResult(RESULT_GJEXCPT);
-                                finish();
-                                return null;
-                            } catch (IOException e) {
-                                Log.d("except", "salgo de la actividad");
-                                setResult(RESULT_IOEXCPT);
-                                finish();
-                                return null;
-                            }
-                        }
-                    }.execute((Void) null).get();
-
-                if (searchResponse == null) {
-                    return;
-                } else {
-                    searchResultList = searchResponse.getItems();
-                }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+        if (searchResponse != null) {
+            searchResultList = searchResponse.getItems();
+        } else {
+            finish();
+            return;
+        }
 
         YtAdapter ytAdapter = new YtAdapter();
         listViewRes.setAdapter(ytAdapter);
     }
 
+    /**
+     * Realiza la consulta en YouTube bajo el termino en cuestión.
+     *
+     * @return Lista con el titulo, videoID, canal y url de imágenes de los resultados.
+     */
+    public SearchListResponse getResultsList() {
+        try {
+            SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
+                @Override
+                protected SearchListResponse doInBackground(Void... voids) {
+
+                    YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+                            new HttpRequestInitializer() {
+                                public void initialize(HttpRequest request) throws IOException {
+                                }
+                            }).setApplicationName("SharedPlaylist")
+                            .build();
+
+                    try {
+                        YouTube.Search.List searchYt = youtube.search().list("id,snippet");
+                        searchYt.setKey(APIKEY);
+                        searchYt.setQ(term);
+                        searchYt.setType("video");
+                        searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, " +
+                                "snippet/thumbnails/default/url)");
+                        searchYt.setMaxResults(number_of_videos_returned);
+
+                        SearchListResponse searchResponse = searchYt.execute();
+
+                        return searchResponse;
+
+                    } catch (GoogleJsonResponseException e) {
+                        Log.d("except", "salgo de la actividad");
+                        setResult(RESULT_GJEXCPT);
+                        return null;
+                    } catch (IOException e) {
+                        Log.d("except", "salgo de la actividad");
+                        setResult(RESULT_IOEXCPT);
+                        return null;
+                    }
+                }
+            }.execute((Void) null).get();
+
+            return searchResponse;
+
+        } catch (InterruptedException e) {
+            setResult(RESULT_IOEXCPT);
+            return null;
+        } catch (ExecutionException e) {
+            setResult(RESULT_IOEXCPT);
+            return null;
+        }
+    }
+
+    /**
+     * Adaptador para implementar el patrón Holder en la vista de los resultados.
+     */
     public class YtAdapter extends BaseAdapter {
         private LayoutInflater inflater;
 
-        public YtAdapter(){
+        public YtAdapter() {
             inflater= (LayoutInflater) getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
-
         }
 
         @Override

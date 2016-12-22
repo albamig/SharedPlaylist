@@ -18,6 +18,9 @@ public class PreferencesActivity extends PreferenceActivity {
                 .replace(android.R.id.content, new PreferencesFrag()).commit();
     }
 
+    /**
+     * Fragmento para presentar las preferencias de la aplicación al usuario.
+     */
     public static class PreferencesFrag extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {

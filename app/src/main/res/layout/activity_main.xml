@@ -8,7 +8,6 @@
 
     <Button
         android:text="@string/make_list"
-        android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/buttonServer"
@@ -20,7 +19,6 @@
 
     <Button
         android:text="@string/search_list"
-        android:textStyle="bold"
         android:textColor="@color/blanco"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,7 +29,6 @@
 
     <Button
         android:text="@string/preferencesButton"
-        android:textStyle="bold"
         android:textColor="@color/blanco"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,7 +39,6 @@
 
     <Button
         android:text="@string/helpBut"
-        android:textStyle="bold"
         android:textColor="@color/blanco"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
