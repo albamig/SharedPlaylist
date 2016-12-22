@@ -1,10 +1,12 @@
-package es.uva.mangostas.sharedplaylist.BluetoothService;
+package es.uva.mangostas.sharedplaylist;
 
 /**
  * Created by root on 1/12/16.
  */
 
 public interface Constants {
+    // API Key
+    public static final String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
     // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;

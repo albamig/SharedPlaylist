@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +20,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import es.uva.mangostas.sharedplaylist.Constants;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**

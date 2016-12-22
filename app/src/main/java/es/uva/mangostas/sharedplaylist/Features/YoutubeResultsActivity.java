@@ -29,9 +29,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import es.uva.mangostas.sharedplaylist.Constants;
 import es.uva.mangostas.sharedplaylist.R;
 
-
+/**
+ * Actvidad que ejecuta la petición y presenta los resultados obtenidos
+ * de YouTube bajo el término solicitado por el usuario.
+ */
 public class YoutubeResultsActivity extends AppCompatActivity {
     public static final int RESULT_GJEXCPT = 99;
     public static final int RESULT_IOEXCPT = 98;
@@ -41,7 +45,6 @@ public class YoutubeResultsActivity extends AppCompatActivity {
     List<SearchResult> searchResultList;
 
     private long number_of_videos_returned;
-    private String APIKEY = "AIzaSyASYbIO42ecBEzgB5kiPpu2OHJV8_5ulnk";
 
 
     @Override
@@ -82,7 +85,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
      *
      * @return Lista con el titulo, videoID, canal y url de imágenes de los resultados.
      */
-    public SearchListResponse getResultsList() {
+    private SearchListResponse getResultsList() {
         try {
             SearchListResponse searchResponse = new AsyncTask<Void, Void, SearchListResponse>() {
                 @Override
@@ -97,7 +100,7 @@ public class YoutubeResultsActivity extends AppCompatActivity {
 
                     try {
                         YouTube.Search.List searchYt = youtube.search().list("id,snippet");
-                        searchYt.setKey(APIKEY);
+                        searchYt.setKey(Constants.APIKEY);
                         searchYt.setQ(term);
                         searchYt.setType("video");
                         searchYt.setFields("items(id/videoId, snippet/title, snippet/channelTitle, " +
