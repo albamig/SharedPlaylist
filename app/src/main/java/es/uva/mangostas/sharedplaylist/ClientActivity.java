@@ -162,8 +162,8 @@ public class ClientActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ClientActivity.this);
-                builder.setMessage(R.string.forward_song)
-                        .setTitle(R.string.forward_element)
+                builder.setMessage(getString(R.string.forward_song))
+                        .setTitle(getString(R.string.forward_element))
                         .setCancelable(false)
                         .setNegativeButton(getString(R.string.no),
                                 new DialogInterface.OnClickListener() {
@@ -226,7 +226,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(mHandler, "Client");
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
         mService.start();
     }
 

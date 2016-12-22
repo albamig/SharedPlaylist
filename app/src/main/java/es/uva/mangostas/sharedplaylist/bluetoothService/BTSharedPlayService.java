@@ -46,6 +46,7 @@ public class BTSharedPlayService {
     private ConnectedThread mConnectedThread;
     private SendThread mSendThread;
     private int state;
+    private Context context;
     private final String mtype;
     private ArrayList<ConnectedThread> myConnections;
     private static final String SERVER_TYPE = "Server";
@@ -62,10 +63,11 @@ public class BTSharedPlayService {
      * Constructor del servicio
      * @param handler Manejador de mensajes para devolver información a la actividad
      */
-    public BTSharedPlayService(Handler handler, String type) {
+    public BTSharedPlayService(Context context, Handler handler, String type) {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         state = STATE_NONE;
         mHandler = handler;
+        this.context = context;
         mtype = type;
     }
 
@@ -202,7 +204,7 @@ public class BTSharedPlayService {
         // Envia mensaje de fallo
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, String.valueOf(R.string.imposibleconectdevice));
+        bundle.putString(Constants.TOAST, context.getString(R.string.imposibleconectdevice));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -217,7 +219,7 @@ public class BTSharedPlayService {
         // Enviar mensaje de fallo
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, String.valueOf(R.string.conectionlost));
+        bundle.putString(Constants.TOAST, context.getString(R.string.conectionlost));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
         // Reiniciar el servicio
