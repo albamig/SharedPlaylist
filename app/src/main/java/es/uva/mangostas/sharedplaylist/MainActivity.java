@@ -22,6 +22,13 @@ import es.uva.mangostas.sharedplaylist.Features.PreferencesActivity;
 import static android.Manifest.*;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Actividad que implementa el menú principal de la aplicación y
  * redirige a el resto de funcionalidades.
  */

@@ -15,7 +15,10 @@ import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
- * Created by root on 21/12/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 /**

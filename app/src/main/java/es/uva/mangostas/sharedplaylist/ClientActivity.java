@@ -43,6 +43,13 @@ import es.uva.mangostas.sharedplaylist.Model.ShpSong;
 import es.uva.mangostas.sharedplaylist.Model.ShpVideo;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Actividad que se lanza al seleccionar el rol de "Cliente" dentro de la aplicación
  * se encarga de gestionar la seleccio, y envios de las canciónes y videos.
  */
@@ -52,7 +59,6 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
-    private static final int SELECT_VIDEO = 99;
     private static final int VIDEO_SELECTED = 1;
     private static final int SONG_SELECTED = 3;
 
@@ -228,7 +234,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mService.start();
     }
 

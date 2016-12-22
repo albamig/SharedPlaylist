@@ -33,6 +33,13 @@ import es.uva.mangostas.sharedplaylist.Constants;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
+ */
+
+/**
  * Actvidad que ejecuta la petición y presenta los resultados obtenidos
  * de YouTube bajo el término solicitado por el usuario.
  */

@@ -21,7 +21,10 @@ import java.util.Set;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
- * Created by root on 17/11/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 /**

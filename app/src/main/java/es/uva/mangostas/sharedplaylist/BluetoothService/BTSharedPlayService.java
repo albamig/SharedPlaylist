@@ -1,7 +1,10 @@
 package es.uva.mangostas.sharedplaylist.BluetoothService;
 
 /**
- * Created by root on 1/12/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 import android.bluetooth.BluetoothAdapter;
