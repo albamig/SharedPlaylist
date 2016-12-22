@@ -70,5 +70,6 @@ public class ShpSong extends ShpMediaObject {
      */
     public String getPath(){
         return path;
+        
     }
 }
