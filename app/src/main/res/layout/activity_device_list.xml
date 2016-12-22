@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:paddingLeft="5dp"
+        android:text="@string/dispositivos_vinculados"
         android:paddingRight="5dp"
         android:paddingStart="5dp"
         android:text="Dispositivos vinculados"
@@ -31,9 +32,9 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:paddingLeft="5dp"
+        android:text="@string/otros_dispositivos_disponibles"
         android:paddingRight="5dp"
         android:paddingStart="5dp"
-        android:text="Otros dispositivos disponibles"
         android:textColor="#fff"
         android:visibility="gone"
 
@@ -52,6 +53,6 @@
         android:id="@+id/button_scan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Escanear dispositivos"
+        android:text="@string/escanear_dispositivos"
         />
 </LinearLayout>

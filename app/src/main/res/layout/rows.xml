@@ -33,7 +33,6 @@
             android:layout_height="54dp">
 
             <TextView
-                android:text="TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_Artis"
@@ -42,7 +41,6 @@
                 />
 
             <TextView
-                android:text="LargeText"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_Title"
                 android:layout_width="354dp"

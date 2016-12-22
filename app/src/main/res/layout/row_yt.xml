@@ -40,14 +40,12 @@
             tools:ignore="UselessParent">
 
             <TextView
-                android:text="LargeText"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_ytTit"
                 android:layout_width="match_parent"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <TextView
-                android:text="TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView_ytChan" />
