@@ -63,6 +63,7 @@
     <string name="title_activity_preferences">Actividad de preferencias</string>
     <string name="reqblue">Esta caracteristica requiere activar el bluetooth</string>
     <string name="makevisible">Hacer visible</string>
+    <string name="conectarse_buscar_dispositivos">Conectarse/Buscar Dispositivos</string>
 
 
 </resources>

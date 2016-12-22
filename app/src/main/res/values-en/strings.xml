@@ -64,5 +64,6 @@
     <string name="helpBut">Help</string>
     <string name="reqblue">This feature requires bluetooth</string>
     <string name="makevisible">Make visible</string>
+    <string name="conectarse_buscar_dispositivos">Connect/Search devices</string>
 
 </resources>
