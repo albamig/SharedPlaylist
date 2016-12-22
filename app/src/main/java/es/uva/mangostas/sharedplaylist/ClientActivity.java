@@ -30,7 +30,6 @@ import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -53,7 +52,6 @@ public class ClientActivity extends AppCompatActivity {
     //Codigos de los Intent
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final String TYPE = "Client";
-    private static final int SELECT_VIDEO = 99;
     private static final int VIDEO_SELECTED = 1;
     private static final int SONG_SELECTED = 3;
 
@@ -293,7 +291,7 @@ public class ClientActivity extends AppCompatActivity {
      * Metodo que envía la canción seleccionada al dispositivo conectado
      * @param path Ruta de la canción a enviar.
      */
-    public void sendSong(String path) {
+    private void sendSong(String path) {
         //Definimos el archivo que se va  enviar a traves de su path de almacenamiento
         File song = new File(path);
 
@@ -312,9 +310,6 @@ public class ClientActivity extends AppCompatActivity {
             FileInputStream fis = new FileInputStream(song);
             fis.read(songArray, 4, (int) song.length());
             fis.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -423,30 +418,27 @@ public class ClientActivity extends AppCompatActivity {
      * @param context Contexto de la aplicacion
      * @return Path del URI introducido
      */
-    public String getRealPathFromURI(Context context, Uri Uri, String helper){
+    private String getRealPathFromURI(Context context, Uri Uri, String helper){
 
         if (Uri.toString().length() >= 64) {
-            String predireccion = "";
+            String predireccion;
             String direccion;
             String falsaUri = Uri.toString();
             boolean esInterna = false;
-            boolean esExterna = false;
             String falsaUriRecortada = falsaUri.substring(57);
             falsaUriRecortada = falsaUriRecortada.substring(0, 7);
             if (falsaUriRecortada.equals("primary")) {
                 esInterna = true;
-            } else esExterna = true;
+            }
             int pos = buscarDosPuntos(helper);
             direccion = helper.substring(pos);
             if (pos == 0) System.exit(-1);
             if (esInterna) {
                 predireccion = "/storage/emulated/0/";
                 predireccion = predireccion + direccion;
-            } else if (esExterna) {
+            } else {
                 predireccion = "/storage/sdcard/";
                 predireccion = predireccion + direccion;
-            } else {
-                System.exit(-1);
             }
             return predireccion;
         } else {
@@ -454,8 +446,10 @@ public class ClientActivity extends AppCompatActivity {
             try {
                 String[] proj = { MediaStore.Audio.Media.DATA };
                 cursor = context.getContentResolver().query(Uri,  proj, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-                cursor.moveToFirst();
+                int column_index = cursor != null ? cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA) : 0;
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                }
                 return cursor.getString(column_index);
             } finally {
                 if (cursor != null) {
@@ -486,7 +480,7 @@ public class ClientActivity extends AppCompatActivity {
                     i++;
                     k++;
                 }
-            }while(parar==false && i<=j);
+            }while(!parar&& i<=j);
 
             return k;
         }catch(Exception e){
