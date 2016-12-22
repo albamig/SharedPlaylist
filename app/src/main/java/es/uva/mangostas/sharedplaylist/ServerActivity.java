@@ -357,7 +357,7 @@ public class ServerActivity extends AppCompatActivity implements YouTubePlayer.O
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, "Server");
+        mSendService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mSendService.start();
 
     }

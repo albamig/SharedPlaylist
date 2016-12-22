@@ -36,7 +36,6 @@ import com.quinny898.library.persistentsearch.SearchResult;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -226,7 +225,7 @@ public class ClientActivity extends AppCompatActivity {
      */
     private void setupService() {
         //Inicializamos el servicio de Envio.
-        mService = new BTSharedPlayService(getApplicationContext(), mHandler, "Client");
+        mService = new BTSharedPlayService(getApplicationContext(), mHandler, TYPE);
         mService.start();
     }
 
@@ -275,17 +274,11 @@ public class ClientActivity extends AppCompatActivity {
             video[3] = (byte) (0 /*>> 0*/);
 
             //Añadimos el nombre de la cancion en los 30 bytes despues del tamaño
-            for (int i = 0; i < videoName.length; i++) {
-                video[i+4] = videoName[i];
-            }
+            System.arraycopy(videoName, 0, video, 4, videoName.length);
             //Añadimos el canal del video en los 30 bytes siguientes al nombre
-            for (int i = 0; i < videoChannel.length; i++) {
-                video[i+34] = videoChannel[i];
-            }
+            System.arraycopy(videoChannel, 0, video, 34, videoChannel.length);
             //Copiamos los datos del ID del video al array y lo enviamos
-            for (int i = 0; i < message.length; i++) {
-                video[i+64] = message[i];
-            }
+            System.arraycopy(message, 0, video, 64, message.length);
             mService.write(video);
             tladapter.add(new ShpVideo(msg, name, channel));
         }
@@ -428,16 +421,15 @@ public class ClientActivity extends AppCompatActivity {
     private String getRealPathFromURI(Context context, Uri Uri, String helper){
 
         if (Uri.toString().length() >= 64) {
-            String predireccion = "";
+            String predireccion;
             String direccion;
             String falsaUri = Uri.toString();
             boolean esInterna = false;
-            boolean esExterna = false;
             String falsaUriRecortada = falsaUri.substring(57);
             falsaUriRecortada = falsaUriRecortada.substring(0, 7);
             if (falsaUriRecortada.equals("primary")) {
                 esInterna = true;
-            } else esExterna = true;
+            }
             int pos = buscarDosPuntos(helper);
             direccion = helper.substring(pos);
             if (pos == 0) System.exit(-1);
@@ -455,7 +447,12 @@ public class ClientActivity extends AppCompatActivity {
                 String[] proj = { MediaStore.Audio.Media.DATA };
                 cursor = context.getContentResolver().query(Uri,  proj, null, null, null);
                 int column_index = cursor != null ? cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA) : 0;
-                cursor.moveToFirst();
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                } else {
+                    return null;
+                }
+
                 return cursor.getString(column_index);
             } finally {
                 if (cursor != null) {

@@ -18,7 +18,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ventana"
-                android:fontFamily="casual"
                 android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>

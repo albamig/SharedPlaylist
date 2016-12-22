@@ -12,7 +12,10 @@ import es.uva.mangostas.sharedplaylist.MainActivity;
 import es.uva.mangostas.sharedplaylist.R;
 
 /**
- * Created by oscar on 21/12/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 public class SplashScreenActivity extends AppCompatActivity {

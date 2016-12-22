@@ -16,9 +16,7 @@ public class ShpSong extends ShpMediaObject {
      */
     public ShpSong(byte[] song, String path) {
         byte[] data = new byte[song.length];
-        for (int i = 0; i < song.length; i++) {
-            data[i] = song[i];
-        }
+        System.arraycopy(song, 0, data, 0, song.length);
         this.path = path;
         String aux = new String(data);
         //Se buscan el titulo y el artista de la canción en los metadatos, en caso

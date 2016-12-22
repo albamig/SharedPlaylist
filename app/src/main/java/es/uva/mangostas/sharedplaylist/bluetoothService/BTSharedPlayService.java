@@ -1,7 +1,10 @@
 package es.uva.mangostas.sharedplaylist.bluetoothService;
 
 /**
- * Created by root on 1/12/16.
+ * @author Alberto Amigo Alonso
+ * @author Sergio Delgado Álvarez
+ * @author Óscar Fernández Angulo
+ * @author Santos Ángel Prado
  */
 
 import android.bluetooth.BluetoothAdapter;
@@ -46,7 +49,7 @@ public class BTSharedPlayService {
     private ConnectedThread mConnectedThread;
     private SendThread mSendThread;
     private int state;
-    private Context context;
+    private final Context context;
     private final String mtype;
     private ArrayList<ConnectedThread> myConnections;
     private static final String SERVER_TYPE = "Server";
@@ -238,7 +241,7 @@ public class BTSharedPlayService {
         private final String mSocketType;
 
         public AcceptThread() {
-            BluetoothServerSocket tmp = null;
+            BluetoothServerSocket tmp;
             mSocketType = "Insecure";
 
             // Creacción de un nuevo socket de escucha para el servidor
@@ -293,17 +296,6 @@ public class BTSharedPlayService {
             }
 
         }
-
-        /**
-         * Cancelar el hilo de conexión
-         */
-        public void cancel() {
-            try {
-                mmServerSocket.close();
-            } catch (IOException e) {
-                return;
-            }
-        }
     }
 
 
@@ -317,7 +309,7 @@ public class BTSharedPlayService {
 
         public ConnectThread(BluetoothDevice device) {
             mmDevice = device;
-            BluetoothSocket tmp = null;
+            BluetoothSocket tmp;
 
             // Obtenemos un socket bluetooth a partir del dispositivo remoto
             try {
@@ -366,7 +358,7 @@ public class BTSharedPlayService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                return;
+                this.start();
             }
         }
     }
@@ -387,9 +379,7 @@ public class BTSharedPlayService {
         private SendThread(OutputStream mmOutStream, byte[] song) {
             songToSend = new byte[song.length];
             this.mmOutStream = mmOutStream;
-            for (int i = 0; i < song.length; i++) {
-                songToSend[i] = song[i];
-            }
+            System.arraycopy(song, 0, songToSend, 0, song.length);
         }
 
         public void run() {
@@ -399,7 +389,7 @@ public class BTSharedPlayService {
                 mHandler.obtainMessage(Constants.MESSAGE_WRITE, songToSend.length, -1, songToSend)
                         .sendToTarget();
             } catch (IOException e) {
-                return;
+                this.start();
             }
         }
     }
@@ -483,9 +473,7 @@ public class BTSharedPlayService {
                             //Si se cumple la condicion ya hemos leido los ultimos bytes de infomación
                             // por lo tanto los copiamos al buffer y enviamos los datos a la
                             // actividad del servidor.
-                            for (int i = 0; i < bytes; i++) {
-                                fin[totalBytes - bytes + i] = buffer[i];
-                            }
+                            System.arraycopy(buffer, 0, fin, totalBytes - bytes + 0, bytes);
                             mHandler.obtainMessage(Constants.MESSAGE_SONG_READ, totalBytes, -1, fin)
                                     .sendToTarget();
                             fin = null;
@@ -514,7 +502,7 @@ public class BTSharedPlayService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                return;
+                this.start();
             }
         }
     }
